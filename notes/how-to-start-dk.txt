@@ -1,0 +1,18 @@
+# How to mount the DK ISO (needs su and assumes the dir /mnt/dk to exist):
+mount -o loop /home/julien/Dosbox/dungeon-keeper.iso /mnt/dk
+
+# Given that DK is already installed from ISO to disk in ~/Dosbox/
+# we can mount that inside of Dosbox like so:
+MOUNT C ~/Dosbox
+
+# We then need to mount the DK CD ROM (see above) like so:
+MOUNT D /mnt/dk -t cdrom
+
+# Now let's switch to our Drive C:
+C:
+
+# Now go into the DK directory:
+cd KEEPER
+
+# Aaand we can finally start up DK:
+KEEPER.EXE

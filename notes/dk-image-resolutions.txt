@@ -1,0 +1,9 @@
+All of these seem to be 4:3, so we could code auto-detection of resolution!
+
+LDATA/DKMAP**			1280 x 960
+LDATA/FRONT				 640 x 480
+LDATA/LOADING			 320 x 200
+LDATA/TORTURE			 640 x 480
+KEEPER/DATA/NOCD		 320 x 200
+KEEPER/DATA/LOADING		 320 x 200
+KEEPER/DATA/LEGAL		 640 x 480

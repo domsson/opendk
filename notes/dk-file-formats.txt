@@ -1,6 +1,11 @@
 Info on file formats
 ====================
 
+For maps, this is gold
+----------------------
+	http://keeper.lubiki.pl/dk1_docs/dk_mapfiles_ref.htm
+
+
 .SMK
 ----
 	Smacker Video
@@ -9,3 +14,12 @@ Info on file formats
 	https://github.com/jonof/jftekwar/tree/master/libsmacker
 	http://wiki.multimedia.cx/index.php?title=Smacker
 	http://scummvm.svn.sourceforge.net/viewvc/scummvm/scummvm/trunk/video/
+
+
+
+.DAT / TAB
+----------
+
+"The game contains some DAT/TAB file pairs. TAB file contains bitmap size and position in DAT file, DAT file contains RAW bitmap data. Additionally, external palette file is required. Palettes can be recognized by file size - they have 768 bytes. Pictures in Syndicate from missions have 16 colors, so they are 4bpp, menu artwork have 256 colors - 8bpp."
+
+	http://syndicate.lubiki.pl/synd/rework/synd_rework_dattab.php

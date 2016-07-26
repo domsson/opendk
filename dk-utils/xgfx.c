@@ -29,33 +29,48 @@ int main (int argc, char **argv)
     
     sprintf (fname, "%s.tab", argv[1]);
     tabfp = fopen (fname, "rb");
-    if (!tabfp)
+    if (!tabfp) // added this to account for DOS caps file names
+	{
+	    sprintf (fname, "%s.TAB", argv[1]); 
+		tabfp = fopen (fname, "rb");
+	}
+	if (!tabfp)
     {
-	printf ("Can't open %s.\n", fname);
-	return 1;
+		printf ("Can't open %s.\n", fname);
+		return 1;
     }
     sprintf (fname, "%s.dat", argv[1]);
     datfp = fopen (fname, "rb");
+	if (!datfp) // added this for the same reason as above
+	{
+		sprintf (fname, "%s.DAT", argv[1]);
+	    datfp = fopen (fname, "rb");
+	}
     if (!datfp)
     {
-	printf ("Can't open %s.\n", fname);
-	return 1;
+		printf ("Can't open %s.\n", fname);
+		return 1;
     }
     sprintf (fname, "%s.pal", argv[2]);
     palfp = fopen (fname, "rb");
+    if (!palfp) // added this for the same reason
+	{
+		sprintf (fname, "%s.PAL", argv[2]);
+	    palfp = fopen (fname, "rb");
+	}
     if (!palfp)
     {
-	printf ("Can't open %s.\n", fname);
-	return 1;
+		printf ("Can't open %s.\n", fname);
+		return 1;
     }
     fread (tab, 6, 1, tabfp);
     fread (palette, 768, 1, palfp);
     animfp = fopen ("animate", "wb");
     while (!feof (tabfp))
     {
-	printf ("\rWorking... picture number %d", picnum);
-	sprintf (fname, "pic%d.bmp", picnum++);
-	off = read_long (tabfp);
+		printf ("\rWorking... picture number %d", picnum);
+		sprintf (fname, "pic%d.bmp", picnum++);
+		off = read_long (tabfp);
 	if (off < 0)
 	{
 	    printf ("\nError - negative offset\n");
@@ -70,7 +85,9 @@ int main (int argc, char **argv)
 	height = fgetc (tabfp);
 	buffer = malloc (width*height);
 	for (i=0; i < width*height; i++)
+	{
 	    buffer[i]=0;
+	}
 	r=0;
 	c=0;
 	fseek (datfp, off, SEEK_SET);
@@ -79,25 +96,27 @@ int main (int argc, char **argv)
 	    off++;
 	    g = (char) (fgetc (datfp)&255);
 	    if (g < 0)
-		c-=g;
+		{
+			c-=g;
+		}
 	    else if (!g)
 	    {
-		c=0;
-		r++;
+			c=0;
+			r++;
 	    }
 	    else
 	    {
-		for (i=0; i < g; i++)
-		{
-		    if (r >= height || c >= width)
-		    {
-			printf ("\nError - colour leak\n");
-			return 1;
-		    }
-		    buffer[(width*r)+c]=fgetc (datfp);
-		    c++;
-		    off++;
-		}
+			for (i=0; i < g; i++)
+			{
+				if (r >= height || c >= width)
+				{
+					printf ("\nError - colour leak\n");
+					return 1;
+				}
+				buffer[(width*r)+c]=fgetc (datfp);
+				c++;
+				off++;
+			}
 	    }
 	}
 	write_bmp (fname, width, height, palette, buffer, 0, 1, 2, 4);
@@ -117,8 +136,8 @@ void write_bmp (char *fname, int width, int height,
     out = fopen (fname, "wb");
     if (!out)
     {
-	printf ("\nCan't open file %s. Aborting.\n", fname);
-	exit (1);
+		printf ("\nCan't open file %s. Aborting.\n", fname);
+		exit (1);
     }
     
     l = width*height;
@@ -140,18 +159,22 @@ void write_bmp (char *fname, int width, int height,
     
     for (i=0; i < 256; i++)
     {
-	fputc (pal[i*3+blue]*mult, out);
-	fputc (pal[i*3+green]*mult, out);
-	fputc (pal[i*3+red]*mult, out);
-	fputc (0, out);
+		fputc (pal[i*3+blue]*mult, out);
+		fputc (pal[i*3+green]*mult, out);
+		fputc (pal[i*3+red]*mult, out);
+		fputc (0, out);
     }
     
     for (i=1; i <= height; i++)
     {
-	fwrite (data+(height-i)*width, width, 1, out);
-	if (width & 3)
-	    for (j=0; j < 4-(width&3); j++)
-		fputc (0, out);
+		fwrite (data+(height-i)*width, width, 1, out);
+		if (width & 3)
+		{
+			for (j=0; j < 4-(width&3); j++)
+			{
+				fputc (0, out);
+			}
+		}
     }
     
     fclose (out);
@@ -188,7 +211,9 @@ long file_length (char *path)
     
     fp = fopen (path, "rb");
     if (!fp)
-	return -1;
+	{
+		return -1;
+	}
     fseek (fp, 0, SEEK_END);
     ret = ftell (fp);
     fclose (fp);

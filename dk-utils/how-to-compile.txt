@@ -1,2 +1,9 @@
+# dernc
+
 gcc -c dernc.c -D MAIN
 gcc -o dernc dernc.o
+
+# xgfx
+
+gcc -c xgfx.c
+gcc -o xgfx xgfx.o

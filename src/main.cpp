@@ -12,5 +12,5 @@ int main() {
 	openDK.run();
 
 	delete path;
-	return 0;
+	return EXIT_SUCCESS;
 }

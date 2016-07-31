@@ -16,7 +16,7 @@ namespace OpenDK
 	class OpenDK
 	{
 	private:
-		sf::RenderWindow *window;
+		sf::RenderWindow window;
 
 		int width;
 		int height;

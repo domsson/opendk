@@ -14,7 +14,7 @@ namespace OpenDK
 	static const float SECONDS_PER_FRAME = 1.0 / TARGET_FPS;
 
 	OpenDK::OpenDK()
-		: window(nullptr), width(INITIAL_WIDTH), height(INITIAL_HEIGHT), title(TITLE),
+		: width(INITIAL_WIDTH), height(INITIAL_HEIGHT), title(TITLE),
 		iconLoaded(false)
 	{
 		iconLoaded = gameIcon.loadFromFile(GAME_ICON);
@@ -23,17 +23,16 @@ namespace OpenDK
 
 	OpenDK::~OpenDK()
 	{
-		window->close();
-		delete window;
+		window.close();
 	}
 
 	void OpenDK::initWindow()
 	{
-		window = new sf::RenderWindow(sf::VideoMode(width, height), title, sf::Style::Close);
-		window->setMouseCursorVisible(false);
+		window.create(sf::VideoMode(width, height), title, sf::Style::Close);
+		window.setMouseCursorVisible(false);
 		if (iconLoaded)
 		{
-			window->setIcon(gameIcon.getSize().x, gameIcon.getSize().y, gameIcon.getPixelsPtr());
+			window.setIcon(gameIcon.getSize().x, gameIcon.getSize().y, gameIcon.getPixelsPtr());
 		}
 	}
 
@@ -42,15 +41,8 @@ namespace OpenDK
 		//std::cout << "Hello World!" << std::endl;
 		sf::Clock clock;
 
-		while (window->isOpen())
+		while (window.isOpen())
 		{
-			sf::Event event;
-		    while (window->pollEvent(event))
-		    {
-		        // "close requested" event: we close the window
-		        if (event.type == sf::Event::Closed)
-		            window->close();
-		    }
 
 			float elapsedSeconds = clock.restart().asSeconds();
 
@@ -62,6 +54,16 @@ namespace OpenDK
 					std::this_thread::sleep_for(std::chrono::milliseconds(sleepingTime));
 				}
 			}
+
+			sf::Event event;
+			while (window.pollEvent(event))
+		    {
+		        // "close requested" event: we close the window
+		        if (event.type == sf::Event::Closed)
+				{
+					window.close();
+				}
+		    }
 
 			update();
 			render();
@@ -76,9 +78,9 @@ namespace OpenDK
 	void OpenDK::render()
 	{
 	    // Clear screen
-        window->clear();
+		window.clear();
         // Update the window
-        window->display();
+        window.display();
 	}
 
 }

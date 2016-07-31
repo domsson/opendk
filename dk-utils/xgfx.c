@@ -71,56 +71,56 @@ int main (int argc, char **argv)
 		printf ("\rWorking... picture number %d", picnum);
 		sprintf (fname, "pic%d.bmp", picnum++);
 		off = read_long (tabfp);
-	if (off < 0)
-	{
-	    printf ("\nError - negative offset\n");
-	    return 1;
-	}
-	width = fgetc (tabfp);
-	if (width==-1)
-	{
-	    printf ("\nError - negative width\n");
-	    return 1;
-	}
-	height = fgetc (tabfp);
-	buffer = malloc (width*height);
-	for (i=0; i < width*height; i++)
-	{
-	    buffer[i]=0;
-	}
-	r=0;
-	c=0;
-	fseek (datfp, off, SEEK_SET);
-	while (r < height)
-	{
-	    off++;
-	    g = (char) (fgetc (datfp)&255);
-	    if (g < 0)
+		if (off < 0)
 		{
-			c-=g;
+			printf ("\nError - negative offset\n");
+			return 1;
 		}
-	    else if (!g)
-	    {
-			c=0;
-			r++;
-	    }
-	    else
-	    {
-			for (i=0; i < g; i++)
+		width = fgetc (tabfp);
+		if (width==-1)
+		{
+			printf ("\nError - negative width\n");
+			return 1;
+		}
+		height = fgetc (tabfp);
+		buffer = malloc (width*height);
+		for (i=0; i < width*height; i++)
+		{
+			buffer[i]=0;
+		}
+		r=0;
+		c=0;
+		fseek (datfp, off, SEEK_SET);
+		while (r < height)
+		{
+			off++;
+			g = (char) (fgetc (datfp)&255);
+			if (g < 0)
 			{
-				if (r >= height || c >= width)
-				{
-					printf ("\nError - colour leak\n");
-					return 1;
-				}
-				buffer[(width*r)+c]=fgetc (datfp);
-				c++;
-				off++;
+				c-=g;
 			}
-	    }
-	}
-	write_bmp (fname, width, height, palette, buffer, 0, 1, 2, 4);
-	free (buffer);
+			else if (!g)
+			{
+				c=0;
+				r++;
+			}
+			else
+			{
+				for (i=0; i < g; i++)
+				{
+					if (r >= height || c >= width)
+					{
+						printf ("\nError - colour leak\n");
+						return 1;
+					}
+					buffer[(width*r)+c]=fgetc (datfp);
+					c++;
+					off++;
+				}
+			}
+		}
+		write_bmp (fname, width, height, palette, buffer, 0, 1, 2, 4);
+		free (buffer);
     }
     return 0;
 }

@@ -1,0 +1,2 @@
+Q: Can I `delete` a `nullptr` or do I need to check for `nullptr` first?
+A: You can go ahead and delete it without any check.

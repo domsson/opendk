@@ -9,6 +9,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace OpenDK
 {
@@ -16,7 +17,7 @@ namespace OpenDK
 	class OpenDK
 	{
 	private:
-		sf::RenderWindow window;
+		sf::Window window;
 
 		int width;
 		int height;

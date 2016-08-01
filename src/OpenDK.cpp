@@ -77,8 +77,6 @@ namespace OpenDK
 
 	void OpenDK::render()
 	{
-	    // Clear screen
-		window.clear();
         // Update the window
         window.display();
 	}

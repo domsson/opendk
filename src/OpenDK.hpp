@@ -29,6 +29,7 @@ namespace OpenDK
 		bool iconLoaded;
 
 		void initWindow();
+		void initGLEW();
 
 	public:
 		// Something

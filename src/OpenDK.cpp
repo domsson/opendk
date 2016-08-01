@@ -19,6 +19,7 @@ namespace OpenDK
 	{
 		iconLoaded = gameIcon.loadFromFile(GAME_ICON);
 		initWindow();
+		initGLEW();
 	}
 
 	OpenDK::~OpenDK()
@@ -33,6 +34,15 @@ namespace OpenDK
 		if (iconLoaded)
 		{
 			window.setIcon(gameIcon.getSize().x, gameIcon.getSize().y, gameIcon.getPixelsPtr());
+		}
+	}
+
+	void OpenDK::initGLEW()
+	{
+		glewExperimental = GL_TRUE;
+		if (glewInit() != GLEW_OK)
+		{
+			std::cout << "Failed to initialize GLEW" << std::endl;
 		}
 	}
 
@@ -85,6 +95,8 @@ namespace OpenDK
 
 	void OpenDK::render()
 	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
         // Update the window
         window.display();
 	}

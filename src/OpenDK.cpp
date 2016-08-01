@@ -40,8 +40,9 @@ namespace OpenDK
 	{
 		//std::cout << "Hello World!" << std::endl;
 		sf::Clock clock;
+		bool running = true;
 
-		while (window.isOpen())
+		while (running)
 		{
 
 			float elapsedSeconds = clock.restart().asSeconds();
@@ -61,13 +62,20 @@ namespace OpenDK
 		        // "close requested" event: we close the window
 		        if (event.type == sf::Event::Closed)
 				{
-					window.close();
+					running = false;
+					// window.close();
 				}
-		    }
+				else if (event.type == sf::Event::KeyPressed)
+				{
+					if (event.key.code == sf::Keyboard::Escape)
+					running = false;
+				}
+			}
 
 			update();
 			render();
 		}
+		window.close();
 	}
 
 	void OpenDK::update()

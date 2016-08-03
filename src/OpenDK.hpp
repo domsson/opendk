@@ -30,6 +30,7 @@ namespace OpenDK
 
 		void initWindow();
 		void initGLEW();
+		void initGL();
 
 	public:
 		// Something

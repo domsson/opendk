@@ -13,6 +13,22 @@ namespace OpenDK
 	{
 	public:
 
+		/**
+		 * Default Buffer Type to use if none has been set explicitly.
+		 * Most relevant are GL_ARRAY_BUFFER for Vertex Buffer Objects
+		 * and GL_ELEMENT_ARRAY_BUFFER for Index Buffer Objects.
+		 */
+		static const GLenum DEFAULT_BUFFER_TYPE;
+
+		/**
+		 * Default Draw Type to use if none has been set explicitly.
+		 */
+		static const GLenum DEFAULT_DRAW_TYPE;
+
+		/**
+		 * Creates a BufferObject of the default type and with default draw type.
+		 * In order to make use of this BufferObject, its data has to be set via setData().
+		 */
 		BufferObject();
 
 		/**
@@ -32,13 +48,13 @@ namespace OpenDK
 
 		/**
 		 * Creates a BufferObject from integer data, assuming that it is supposed to be an IBO.
-		 * @param data An array of type int
+		 * @param data An array of type GLuint
 		 */
 		BufferObject(GLuint data[], GLsizeiptr size);
 
 		/**
 		 * Creates a BufferObject from float data, assuming that it is supposed to be a VBO
-		 * @param data An array of type float
+		 * @param data An array of type GLfloat
 		 */
 		BufferObject(GLfloat data[], GLsizeiptr size);
 
@@ -112,17 +128,17 @@ namespace OpenDK
 		 */
 		void free();
 
-		/**
-		 * Let OpenGL generate an id/name for this Buffer and remember it.
-		 */
-		void generateId();
-
 	protected:
 
 		GLuint id;
 		GLsizeiptr size;
 		GLenum bufferType;
 		GLenum drawType;
+
+		/**
+		 * Let OpenGL generate an id/name for this Buffer and remember it.
+		 */
+		void generateId();
 
 		/**
 		 * Actually creates this Buffer from the given int data.

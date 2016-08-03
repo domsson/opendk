@@ -3,8 +3,8 @@
 namespace OpenDK
 {
 
-	static const GLenum DEFAULT_BUFFER_TYPE = GL_ARRAY_BUFFER;
-	static const GLenum DEFAULT_DRAW_TYPE = GL_STATIC_DRAW;
+	const GLenum BufferObject::DEFAULT_BUFFER_TYPE = GL_ARRAY_BUFFER;
+	const GLenum BufferObject::DEFAULT_DRAW_TYPE = GL_STATIC_DRAW;
 
 	BufferObject::BufferObject()
 	: id(0), size(0), bufferType(DEFAULT_BUFFER_TYPE), drawType(DEFAULT_DRAW_TYPE)

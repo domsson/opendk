@@ -1,5 +1,10 @@
 #pragma once
 
+#include <map>
+
+#include <GL/glew.h>
+#include <SFML/OpenGL.hpp>
+
 #include "VertexBufferObject.hpp"
 #include "ShaderAttribute.hpp"
 
@@ -30,18 +35,18 @@ namespace OpenDK
 		 * Get this VAO's ID as registered with OpenGL.
 		 * @return This VAO's ID
 		 */
-		GLuint getId();
+		GLuint getId() const;
 
 		/**
 		 * Bind this VAO in the OpenGL state machine.
 		 * After binding, you may perform actions on it, for example drawing it.
 		 */
-		void bind();
+		void bind() const;
 
 		/**
 		 * Unbind the currently bound VAO from the OpenGL state machine.
 		 */
-		void unbind();
+		void unbind() const;
 
 		/**
 		 * Delete this VAO from OpenGL / the GPU.
@@ -55,6 +60,8 @@ namespace OpenDK
 		 * The name of this OpenGL object.
 		 */
 		GLuint id;
+
+		std::map <ShaderAttribute, VertexBufferObject> vbos;
 
 		/**
 		 * Request a VAO ID from OpenGL and set it as this VAO's ID.

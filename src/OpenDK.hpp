@@ -13,12 +13,16 @@
 #include <SFML/Audio.hpp>
 #include <SFML/OpenGL.hpp>
 
+#include "engine/opengl/DummyRenderer.hpp"
+
 namespace OpenDK
 {
 
 	class OpenDK
 	{
 	private:
+		DummyRenderer renderer;
+
 		sf::Window window;
 
 		int width;

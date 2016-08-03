@@ -3,12 +3,12 @@
 namespace OpenDK
 {
 
-	enum class ShaderAttribute
+	enum ShaderAttribute
 	{
-		POSITION,
-		COLOR,
-		TEXTURE,
-		NORMALS
+		POSITION = 0,
+		COLOR    = 1,
+		TEXTURE  = 2,
+		NORMALS  = 3
 	};
 
 }

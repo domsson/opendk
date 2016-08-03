@@ -11,27 +11,32 @@ namespace OpenDK
 
 	void VertexArrayObject::addVBO(VertexBufferObject vbo, ShaderAttribute shaderAttribute)
 	{
-		// TODO
+		vbos[shaderAttribute] = vbo;
+		bind();
+		vbo.bind();
+		glVertexAttribPointer(shaderAttribute, vbo.getChunkSize(), GL_FLOAT, false, 0, 0);
+		glEnableVertexAttribArray(shaderAttribute);	// Enable the new VBO
+		vbo.unbind();
+		unbind();
 	}
 
 	VertexBufferObject VertexArrayObject::getVBO(ShaderAttribute shaderAttribute)
 	{
-		// TODO
-		VertexBufferObject vbo;
-		return vbo;
+		// TODO return by value, reference, pointer? what's best here?
+		return vbos[shaderAttribute];
 	}
 
-	GLuint VertexArrayObject::getId()
+	GLuint VertexArrayObject::getId() const
 	{
 		return id;
 	}
 
-	void VertexArrayObject::bind()
+	void VertexArrayObject::bind() const
 	{
 		glBindVertexArray(id);
 	}
 
-	void VertexArrayObject::unbind()
+	void VertexArrayObject::unbind() const
 	{
 		glBindVertexArray(0);
 	}

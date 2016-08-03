@@ -75,32 +75,32 @@ namespace OpenDK
 		initBuffer(data);
 	}
 
-	GLuint BufferObject::getId()
+	GLuint BufferObject::getId() const
 	{
 		return id;
 	}
 
-	GLsizeiptr BufferObject::getSize()
+	GLsizeiptr BufferObject::getSize() const
 	{
 		return size;
 	}
 
-	GLenum BufferObject::getBufferType()
+	GLenum BufferObject::getBufferType() const
 	{
 		return bufferType;
 	}
 
-	GLenum BufferObject::getDrawType()
+	GLenum BufferObject::getDrawType() const
 	{
 		return drawType;
 	}
 
-	void BufferObject::bind()
+	void BufferObject::bind() const
 	{
 		glBindBuffer(bufferType, id);
 	}
 
-	void BufferObject::unbind()
+	void BufferObject::unbind() const
 	{
 		glBindBuffer(bufferType, 0);
 	}

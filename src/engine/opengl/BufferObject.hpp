@@ -72,7 +72,6 @@ namespace OpenDK
 		 */
 		void setDrawType(GLuint drawType);
 
-
 		/**
 		 * Set this buffer's data. This will trigger the actual creation of this Buffer.
 		 * Once the data has been set, this Buffer will have an id and can be bound and drawn.
@@ -93,35 +92,35 @@ namespace OpenDK
 		 * Get this Buffer's id/name as registered with OpenGL.
 		 * @return This Buffer's id (name)
 		 */
-		GLuint getId();
+		GLuint getId() const;
 
 		/**
 		 * Get this Buffer's data size.
 		 * @return This Buffer's data size
 		 */
-		GLsizeiptr getSize();
+		GLsizeiptr getSize() const;
 
 		/**
 		 * Get this Buffer's type.
 		 * @return This Buffer's type
 		 */
-		GLenum getBufferType();
+		GLenum getBufferType() const;
 
 		/**
 		 * Get this Buffer's draw type.
 		 * @return This Buffer's draw type
 		 */
-		GLenum getDrawType();
+		GLenum getDrawType() const;
 
 		/**
 		 * Bind this Buffer in the OpenGL state machine in order to perform actions on/with it.
 		 */
-		void bind();
+		void bind() const;
 
 		/**
 		 * Unbind this Buffer (as well as any other of the same type) from the OpenGL state machine.
 		 */
-		void unbind();
+		void unbind() const;
 
 		/**
 		 * Delete this Buffer from OpenGL. This will not delete this object, just the actual Buffer from OpenGL.

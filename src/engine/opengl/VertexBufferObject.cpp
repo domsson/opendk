@@ -27,7 +27,7 @@ namespace OpenDK {
 		this->chunkSize = (chunkSize > 0) ? chunkSize : DEFAULT_CHUNK_SIZE;
 	}
 
-	GLint VertexBufferObject::getChunkSize()
+	GLint VertexBufferObject::getChunkSize() const
 	{
 		return chunkSize;
 	}

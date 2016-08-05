@@ -113,17 +113,20 @@ namespace OpenDK
 		GLenum getDrawType() const;
 
 		/**
-		 * Bind this Buffer in the OpenGL state machine in order to perform actions on/with it.
+		 * Bind this Buffer in the OpenGL state machine in order 
+		 * to perform actions on/with it.
 		 */
 		void bind() const;
 
 		/**
-		 * Unbind this Buffer (as well as any other of the same type) from the OpenGL state machine.
+		 * Unbind this Buffer (as well as any other of the same type)
+		 * from the OpenGL state machine.
 		 */
 		void unbind() const;
 
 		/**
-		 * Delete this Buffer from OpenGL. This will not delete this object, just the actual Buffer from OpenGL.
+		 * Delete this Buffer from OpenGL. This will not delete this object,
+		 * just the actual Buffer from OpenGL.
 		 */
 		void free();
 
@@ -147,7 +150,7 @@ namespace OpenDK
 		 * Afterwards, this Buffer will have a valid id/name and can be used for drawing.
 		 * @param data An array of type int
 		 */
-		void initBuffer(GLuint data[]);
+		void init(GLuint data[]);
 	
 		/**
 		 * Actually creates this Buffer from the given float data.
@@ -155,7 +158,7 @@ namespace OpenDK
 		 * Afterwards, this Buffer will have a valid id/name and can be used for drawing.
 		 * @param data An array of type float
 		 */
-		void initBuffer(GLfloat data[]);
+		void init(GLfloat data[]);
 	
 	};
 

@@ -24,13 +24,13 @@ namespace OpenDK
 	BufferObject::BufferObject(GLuint data[], GLsizeiptr size)
 	: id(0), size(size), bufferType(GL_ELEMENT_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
 	{
-		initBuffer(data);
+		init(data);
 	}
 
 	BufferObject::BufferObject(GLfloat data[], GLsizeiptr size)
 	: id(0), size(size), bufferType(GL_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
 	{
-		initBuffer(data);
+		init(data);
 	}
 
 	void BufferObject::setBufferType(GLuint bufferType)
@@ -61,7 +61,7 @@ namespace OpenDK
 			return;
 		}
 		this->size = size;
-		initBuffer(data);
+		init(data);
 	}
 
 	void BufferObject::setData(GLuint data[], GLsizeiptr size)
@@ -72,7 +72,7 @@ namespace OpenDK
 			return;
 		}
 		this->size = size;
-		initBuffer(data);
+		init(data);
 	}
 
 	GLuint BufferObject::getId() const
@@ -115,14 +115,14 @@ namespace OpenDK
 		glGenBuffers(1, &id);
 	}
 
-	void BufferObject::initBuffer(GLuint data[]) {
+	void BufferObject::init(GLuint data[]) {
 		generateId();
 		bind();
 		glBufferData(bufferType, size, data, drawType);
 		unbind();
 	}
 
-	void BufferObject::initBuffer(GLfloat data[]) {
+	void BufferObject::init(GLfloat data[]) {
 		generateId();
 		bind();
 		glBufferData(bufferType, size, data, drawType);

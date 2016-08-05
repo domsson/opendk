@@ -22,16 +22,14 @@ namespace OpenDK
 
 	VertexBufferObject* VertexArrayObject::getVBO(ShaderAttribute shaderAttribute)
 	{
-		VertexBufferObject *vbo;
 		try
 		{
-			vbo = &vbos.at(shaderAttribute);
+			return &vbos.at(shaderAttribute);
 		}
 		catch (std::out_of_range)
 		{
-			vbo = nullptr;
+			return nullptr;
 		}
-		return vbo;
 	}
 
 	void VertexArrayObject::setIBO(IndexBufferObject ibo)

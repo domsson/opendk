@@ -129,4 +129,8 @@ namespace OpenDK
 		unbind();
 	}
 
+	bool BufferObject::operator==(const BufferObject& other) const {
+		return id == other.id;
+	}
+
 }

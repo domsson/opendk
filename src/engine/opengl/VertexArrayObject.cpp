@@ -20,10 +20,28 @@ namespace OpenDK
 		unbind();
 	}
 
-	VertexBufferObject VertexArrayObject::getVBO(ShaderAttribute shaderAttribute)
+	VertexBufferObject* VertexArrayObject::getVBO(ShaderAttribute shaderAttribute)
 	{
-		// TODO return by value, reference, pointer? what's best here?
-		return vbos[shaderAttribute];
+		VertexBufferObject *vbo;
+		try
+		{
+			vbo = &vbos.at(shaderAttribute);
+		}
+		catch (std::out_of_range)
+		{
+			vbo = nullptr;
+		}
+		return vbo;
+	}
+
+	void VertexArrayObject::setIBO(IndexBufferObject ibo)
+	{
+		this->ibo = ibo;
+	}
+	
+	IndexBufferObject* VertexArrayObject::getIBO()
+	{
+		return &ibo;
 	}
 
 	GLuint VertexArrayObject::getId() const

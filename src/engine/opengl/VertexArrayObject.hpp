@@ -6,6 +6,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include "VertexBufferObject.hpp"
+#include "IndexBufferObject.hpp"
 #include "ShaderAttribute.hpp"
 
 namespace OpenDK
@@ -27,10 +28,23 @@ namespace OpenDK
 		/**
 		 * Get a VBO that has been previously added to this VAO.
 		 * @param shaderAttribute The ShaderAttribute to which the VBO belongs
-		 * @return The VBO belonging to the given ShaderAttribute or null
+		 * @return The VBO belonging to the given ShaderAttribute or nullptr
 		 */
-		VertexBufferObject getVBO(ShaderAttribute shaderAttribute);
+		VertexBufferObject* getVBO(ShaderAttribute shaderAttribute);
+
+		/**
+		 * Set an IndexBufferObject that will be used to render the VBO data
+		 * of this VertexArrayObject.
+		 * @param ibo The IBO to bind to this VAO
+		 */
+		void setIBO(IndexBufferObject ibo);
 		
+		/**
+		 * Get the IndexBufferObject associated with this VertexArrayObject.
+		 * @return The IBO bound to this VAO or nullptr
+		 */
+		IndexBufferObject* getIBO();
+
 		/**
 		 * Get this VAO's ID as registered with OpenGL.
 		 * @return This VAO's ID
@@ -62,6 +76,7 @@ namespace OpenDK
 		GLuint id;
 
 		std::map <ShaderAttribute, VertexBufferObject> vbos;
+		IndexBufferObject ibo;
 
 		/**
 		 * Request a VAO ID from OpenGL and set it as this VAO's ID.

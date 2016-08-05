@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <iostream> // Give you stuff like `cout`
+#include <iostream> // Gives you stuff like `cout`
 #include <chrono>
 #include <thread>
 

@@ -127,6 +127,8 @@ namespace OpenDK
 		 */
 		void free();
 
+		bool operator==(const BufferObject& other) const;
+
 	protected:
 
 		GLuint id;

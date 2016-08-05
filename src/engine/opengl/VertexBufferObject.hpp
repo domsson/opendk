@@ -24,6 +24,7 @@ namespace OpenDK {
 		 * Creates a VertexBufferObject from float data
 		 * and with default chunk size.
 		 * @param data An array of type GLfloat
+		 * @param size The size of data in bytes (= sizeof(data))
 		 */
 		VertexBufferObject(GLfloat data[], GLsizeiptr size);
 

@@ -41,7 +41,14 @@ namespace OpenDK
 	
 	IndexBufferObject* VertexArrayObject::getIBO()
 	{
-		return &ibo;
+		if (ibo.getId() == 0)
+		{
+			return nullptr;
+		}
+		else
+		{
+			return &ibo;
+		}
 	}
 
 	GLuint VertexArrayObject::getId() const

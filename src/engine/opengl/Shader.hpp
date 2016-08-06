@@ -9,7 +9,6 @@
 
 #include <GL/glew.h>
 
-
 namespace OpenDK
 {
 	
@@ -28,17 +27,16 @@ namespace OpenDK
 		GLuint getId() const;
 		GLenum getShaderType() const;
 
-		void free();
+		void free() const;
 
 	private:
 
 		GLuint id;
 		GLenum shaderType;
-		//const GLchar* source;
 		GLint compileStatus;
 
-		//bool load(const GLchar* filePath);
-		//bool init();
+		bool init(const GLchar* filePath);
+		bool compile();
 
 		void generateId();
 	};

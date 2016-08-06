@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
 
+#include "Shader.hpp"
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
 

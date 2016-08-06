@@ -17,6 +17,9 @@ namespace OpenDK
 
 	void DummyRenderer::initDummyData()
 	{
+		Shader vs = Shader();
+		vs.create("./bin/shaders/vertexshader.vs", GL_VERTEX_SHADER);
+
 		vbo = new VertexBufferObject();
 		vao = new VertexArrayObject();
 

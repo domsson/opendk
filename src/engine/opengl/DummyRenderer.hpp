@@ -4,6 +4,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include "Shader.hpp"
+#include "ShaderProgram.hpp"
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
 

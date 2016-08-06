@@ -29,22 +29,11 @@ namespace OpenDK
 		vbo->setData(vertices, sizeof(vertices));
 		vao->addVBO(*vbo, ShaderAttribute::POSITION);
 
-		Shader vs = Shader();
-		vs.create("./bin/shaders/vertexshader.vs", GL_VERTEX_SHADER);
-
-		Shader fs = Shader();
-		fs.create("./bin/shaders/fragmentshader.fs", GL_FRAGMENT_SHADER);
-
-		shaderProgram = glCreateProgram();
-
-		glAttachShader(shaderProgram, vs.getId());
-		glAttachShader(shaderProgram, fs.getId());
-		glLinkProgram(shaderProgram);
-
-		glUseProgram(shaderProgram);
-
-		vs.free();
-		fs.free();
+		ShaderProgram sp = ShaderProgram();
+		sp.addShader("./bin/shaders/vertexshader.vs", GL_VERTEX_SHADER);
+		sp.addShader("./bin/shaders/fragmentshader.fs", GL_FRAGMENT_SHADER);
+		sp.link();
+		sp.use();
 	}
 
 	void DummyRenderer::render()

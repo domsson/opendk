@@ -30,8 +30,8 @@ namespace OpenDK
 		vao->addVBO(*vbo, ShaderAttribute::POSITION);
 
 		ShaderProgram sp = ShaderProgram();
-		sp.addShader("./bin/shaders/vertexshader.vs", GL_VERTEX_SHADER);
-		sp.addShader("./bin/shaders/fragmentshader.fs", GL_FRAGMENT_SHADER);
+		sp.addShader("./bin/shaders/temp.vert", GL_VERTEX_SHADER);
+		sp.addShader("./bin/shaders/temp.frag", GL_FRAGMENT_SHADER);
 		sp.link();
 		sp.use();
 	}
@@ -43,5 +43,5 @@ namespace OpenDK
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		vao->unbind();
 	}
-	
+
 }

@@ -20,7 +20,17 @@ namespace OpenDK
 
 		generateId();
 		bind();
-		glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA : GL_RGB, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, image.getPixelsPtr());
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			hasAlpha ? GL_RGBA : GL_RGB,
+			image.getSize().x,
+			image.getSize().y,
+			0,
+			GL_RGBA,
+			GL_UNSIGNED_INT_8_8_8_8_REV,
+			image.getPixelsPtr()
+		);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		unbind();
 

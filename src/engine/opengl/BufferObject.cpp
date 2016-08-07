@@ -37,7 +37,7 @@ namespace OpenDK
 	{
 		if (id != 0)
 		{
-			std::cerr << typeid(this).name() << ": Can't set buffer type, BufferObject is already initialized" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Can't set buffer type, BufferObject is already initialized" << std::endl;
 			return;
 		}
 		this->bufferType = bufferType;
@@ -47,7 +47,7 @@ namespace OpenDK
 	{
 		if (id != 0)
 		{
-			std::cerr << typeid(this).name() << ": Can't set draw type, BufferObject is already initialized" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Can't set draw type, BufferObject is already initialized" << std::endl;
 			return;
 		}
 		this->drawType = drawType;
@@ -57,7 +57,7 @@ namespace OpenDK
 	{
 		if (id != 0)
 		{
-			std::cerr << typeid(this).name() << ": Can't set data, BufferObject is already initialized" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
 			return;
 		}
 		bufferType = GL_ARRAY_BUFFER;
@@ -69,7 +69,7 @@ namespace OpenDK
 	{
 		if (id != 0)
 		{
-			std::cerr << typeid(this).name() << ": Can't set data, BufferObject is already initialized" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
 			return;
 		}
 		bufferType = GL_ELEMENT_ARRAY_BUFFER;

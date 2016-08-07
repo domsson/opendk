@@ -32,7 +32,10 @@ namespace OpenDK
 		if (iterator == uniforms.end())
 		{
 			GLint location = fetchUniformLocation(name);
-			return (uniforms[name] = location);
+			if (location >= 0) // Locations not available in shader will give -1
+			{
+				uniforms[name] = location;
+			}
 			return location;
 		}
 		else

@@ -11,6 +11,12 @@ namespace OpenDK
 
 	void VertexArrayObject::addVBO(VertexBufferObject vbo, ShaderAttribute shaderAttribute)
 	{
+		if (vbo.getSize() <= 0)
+		{
+			std::cerr << typeid(this).name() << ": [ERR] Can't add VBO to VAO because VBO is uninitialized" << std::endl;
+			return;
+		}
+
 		vbos[shaderAttribute] = vbo;
 		bind();
 		vbo.bind();
@@ -34,6 +40,12 @@ namespace OpenDK
 
 	void VertexArrayObject::setIBO(IndexBufferObject ibo)
 	{
+		if (ibo.getSize() <= 0)
+		{
+			std::cerr << typeid(this).name() << ": [ERR] Can't add IBO to VAO because IBO is uninitialized" << std::endl;
+			return;
+		}
+
 		this->ibo = ibo;
 		bind();
 		ibo.bind();

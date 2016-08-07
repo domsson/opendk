@@ -6,13 +6,14 @@ namespace OpenDK
 	IndexBufferObject::IndexBufferObject()
 	: BufferObject()
 	{
-		// Nothing
+		// setBufferType(GL_ELEMENT_ARRAY_BUFFER);
 	}
 
 	IndexBufferObject::IndexBufferObject(GLuint data[], GLsizeiptr size)
 	: BufferObject(data, size)
 	{
-		// Nothing
+		// Feeding GLuint data to BufferObject automatically makes it an IBO
+		// (Meaning that we don't need to call setBufferType() manually)
 	}
 
 }

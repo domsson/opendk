@@ -13,13 +13,13 @@ namespace OpenDK {
 	VertexBufferObject::VertexBufferObject(GLfloat data[], GLsizeiptr size)
 	: BufferObject(data, size), chunkSize(DEFAULT_CHUNK_SIZE)
 	{
-		// Nothing
+		// Automatically uses GL_ARRAY_BUFFER (VBO)
 	}
 
 	VertexBufferObject::VertexBufferObject(GLfloat data[], GLsizeiptr size, GLint chunkSize)
 	: BufferObject(data, size), chunkSize(chunkSize)
 	{
-		// Nothing
+		// Automatically uses GL_ELEMENT_ARRAY_BUFFER (IBO)
 	}
 
 	void VertexBufferObject::setChunkSize(GLint chunkSize)

@@ -17,7 +17,7 @@ namespace OpenDK
 	public:
 
 		VertexArrayObject();
-		
+
 		/**
 		 * Add a VBO to this VAO and enable it in the OpenGL state machine.
 		 * @param vbo The VBO that you want to add to this VAO
@@ -38,12 +38,14 @@ namespace OpenDK
 		 * @param ibo The IBO to bind to this VAO
 		 */
 		void setIBO(IndexBufferObject ibo);
-		
+
 		/**
 		 * Get the IndexBufferObject associated with this VertexArrayObject.
 		 * @return The IBO bound to this VAO or nullptr
 		 */
 		IndexBufferObject* getIBO();
+
+		bool hasIBO() const;
 
 		/**
 		 * Get this VAO's ID as registered with OpenGL.

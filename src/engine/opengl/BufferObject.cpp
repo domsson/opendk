@@ -60,6 +60,7 @@ namespace OpenDK
 			std::cerr << typeid(this).name() << ": Can't set data, BufferObject is already initialized" << std::endl;
 			return;
 		}
+		bufferType = GL_ARRAY_BUFFER;
 		this->size = size;
 		init(data);
 	}
@@ -71,6 +72,7 @@ namespace OpenDK
 			std::cerr << typeid(this).name() << ": Can't set data, BufferObject is already initialized" << std::endl;
 			return;
 		}
+		bufferType = GL_ELEMENT_ARRAY_BUFFER;
 		this->size = size;
 		init(data);
 	}

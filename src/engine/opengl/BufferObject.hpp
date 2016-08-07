@@ -34,15 +34,15 @@ namespace OpenDK
 		/**
 		 * Creates a BufferObject of the specified type and with default draw type.
 		 * In order to make use of this BufferObject, its data has to be set via setData().
-		 * @param bufferType A valid Buffer Type (see VALID_BUFFER_TYPES for a list of valid types)
+		 * @param bufferType A valid Buffer Type
 		 */
 		BufferObject(GLenum bufferType);
 
 		/**
 		 * Creates a BufferObject of the specified type and specified draw type.
 		 * In order to make use of this BufferObject, its data has to be set via setData().
-		 * @param bufferType A valid Buffer Type (see VALID_BUFFER_TYPES for a list of valid types)
-		 * @param drawType A valid Draw Type (see VALID_DRAW_TYPES for a list of valid types)
+		 * @param bufferType A valid Buffer Type
+		 * @param drawType A valid Draw Type
 		 */
 		BufferObject(GLenum bufferType, GLenum drawType);
 
@@ -113,7 +113,7 @@ namespace OpenDK
 		GLenum getDrawType() const;
 
 		/**
-		 * Bind this Buffer in the OpenGL state machine in order 
+		 * Bind this Buffer in the OpenGL state machine in order
 		 * to perform actions on/with it.
 		 */
 		void bind() const;
@@ -151,7 +151,7 @@ namespace OpenDK
 		 * @param data An array of type int
 		 */
 		void init(GLuint data[]);
-	
+
 		/**
 		 * Actually creates this Buffer from the given float data.
 		 * This will register the buffer with OpenGL and send its data to OpenGL.
@@ -159,7 +159,7 @@ namespace OpenDK
 		 * @param data An array of type float
 		 */
 		void init(GLfloat data[]);
-	
+
 	};
 
 }

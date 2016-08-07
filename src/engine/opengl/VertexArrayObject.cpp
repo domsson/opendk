@@ -16,8 +16,8 @@ namespace OpenDK
 		vbo.bind();
 		glVertexAttribPointer(shaderAttribute, vbo.getChunkSize(), GL_FLOAT, false, 0, 0);
 		glEnableVertexAttribArray(shaderAttribute);	// Enable the new VBO
-		vbo.unbind();
 		unbind();
+		vbo.unbind();
 	}
 
 	VertexBufferObject* VertexArrayObject::getVBO(ShaderAttribute shaderAttribute)
@@ -35,8 +35,12 @@ namespace OpenDK
 	void VertexArrayObject::setIBO(IndexBufferObject ibo)
 	{
 		this->ibo = ibo;
+		bind();
+		ibo.bind();
+		unbind();
+		ibo.unbind();
 	}
-	
+
 	IndexBufferObject* VertexArrayObject::getIBO()
 	{
 		if (ibo.getId() == 0)
@@ -47,6 +51,11 @@ namespace OpenDK
 		{
 			return &ibo;
 		}
+	}
+
+	bool VertexArrayObject::hasIBO() const
+	{
+		return (ibo.getId() != 0);
 	}
 
 	GLuint VertexArrayObject::getId() const

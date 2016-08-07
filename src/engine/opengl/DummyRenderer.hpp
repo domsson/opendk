@@ -5,6 +5,7 @@
 
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
+#include "Texture.hpp"
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
 
@@ -20,10 +21,9 @@ namespace OpenDK
 
 		void initDummyData();
 		void render();
-		
+
 	private:
 		VertexArrayObject *vao;
-		VertexBufferObject *vbo;
 		GLuint shaderProgram;
 	};
 

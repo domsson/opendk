@@ -11,6 +11,8 @@ namespace OpenDK
 	{
 		vao->free();
 		delete vao;
+		delete sp;
+		delete tex;
 	}
 
 	void DummyRenderer::initDummyData()
@@ -34,9 +36,9 @@ namespace OpenDK
 		};
 
 		GLfloat unwrap[] = {
-			0.0f, 0.0f,
-			0.5f, 1.0f,
-			1.0f, 0.0f
+			0.0f, 1.0f - 0.0f,  // Lower-left corner
+			1.0f, 1.0f - 0.0f,  // Lower-right corner
+			0.5f, 1.0f - 1.0f   // Top-center corner
 		};
 
 		GLuint indices[] = {
@@ -60,15 +62,17 @@ namespace OpenDK
 		sp->addShader("./bin/shaders/temp.frag", GL_FRAGMENT_SHADER);
 		sp->bindAttribute(ShaderAttribute::POSITION, "position");
 		sp->bindAttribute(ShaderAttribute::COLOR, "color");
+		sp->bindAttribute(ShaderAttribute::TEXTURE, "texCoord");
 		sp->link();
 
-		Texture tex;
-		//tex.load("./bin/textures/placeholder.png"); // TODO SEGFAULT :(
+		tex = new Texture();
+		tex->load("./bin/textures/placeholder.png");
 	}
 
 	void DummyRenderer::render()
 	{
 		sp->use();
+		tex->bind();
 		vao->bind();
 		if (vao->hasIBO())
 		{

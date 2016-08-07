@@ -25,6 +25,7 @@ namespace OpenDK
 	private:
 		VertexArrayObject *vao;
 		ShaderProgram* sp;
+		Texture* tex;
 	};
 
 }

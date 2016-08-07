@@ -21,7 +21,6 @@ namespace OpenDK
 
 		void bindAttribute(ShaderAttribute location, const GLchar* attrName);
 		GLint getUniformLocation(const std::string& name);
-		GLint fetchUniformLocation(const std::string& name);
 
 		GLuint getId() const;
 
@@ -35,6 +34,8 @@ namespace OpenDK
 		GLint linkStatus;
 		std::map <GLenum, Shader> shaders;
 		std::map <std::string, GLint> uniforms;
+
+		GLint fetchUniformLocation(const std::string& name);
 
 		void freeShaders() const;
 

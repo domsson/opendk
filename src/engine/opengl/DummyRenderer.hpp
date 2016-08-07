@@ -24,7 +24,7 @@ namespace OpenDK
 
 	private:
 		VertexArrayObject *vao;
-		GLuint shaderProgram;
+		ShaderProgram* sp;
 	};
 
 }

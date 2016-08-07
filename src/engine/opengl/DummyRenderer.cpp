@@ -28,9 +28,9 @@ namespace OpenDK
 		};
 
 		GLfloat colors[] = {
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
+			1.0f, 0.0f, 1.0f,
+			1.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 1.0f,
 		};
 
 		GLfloat unwrap[] = {
@@ -52,22 +52,23 @@ namespace OpenDK
 
 		vao->addVBO(vboPos, ShaderAttribute::POSITION);
 		vao->addVBO(vboCol, ShaderAttribute::COLOR);
-		//vao->addVBO(vboUvw, ShaderAttribute::TEXTURE);
-		vao->setIBO(ibo); // TODO this will lead to a segfault in glDrawElements ...
+		vao->addVBO(vboUvw, ShaderAttribute::TEXTURE);
+		vao->setIBO(ibo);
 
-		ShaderProgram sp = ShaderProgram();
-		sp.addShader("./bin/shaders/temp.vert", GL_VERTEX_SHADER);
-		sp.addShader("./bin/shaders/temp.frag", GL_FRAGMENT_SHADER);
-		sp.link();
-		sp.use();
+		sp = new ShaderProgram();
+		sp->addShader("./bin/shaders/temp.vert", GL_VERTEX_SHADER);
+		sp->addShader("./bin/shaders/temp.frag", GL_FRAGMENT_SHADER);
+		sp->bindAttribute(ShaderAttribute::POSITION, "position");
+		sp->bindAttribute(ShaderAttribute::COLOR, "color");
+		sp->link();
 
-		//Texture tex;
-		//tex.load("./bin/textures/placeholder.png");
+		Texture tex;
+		//tex.load("./bin/textures/placeholder.png"); // TODO SEGFAULT :(
 	}
 
 	void DummyRenderer::render()
 	{
-		glUseProgram(shaderProgram);
+		sp->use();
 		vao->bind();
 		if (vao->hasIBO())
 		{

@@ -18,6 +18,34 @@ namespace OpenDK
 		}
 	}
 
+	void ShaderProgram::bindAttribute(ShaderAttribute location, const GLchar* attrName)
+	{
+		if (id != 0)
+		{
+			glBindAttribLocation(id, location, attrName);
+		}
+	}
+
+	GLint ShaderProgram::getUniformLocation(const std::string& name)
+	{
+		auto iterator = uniforms.find(name);
+		if (iterator == uniforms.end())
+		{
+			GLint location = fetchUniformLocation(name);
+			return (uniforms[name] = location);
+			return location;
+		}
+		else
+		{
+			return iterator->second;
+		}
+	}
+
+	GLint ShaderProgram::fetchUniformLocation(const std::string& name)
+	{
+		return glGetUniformLocation(id, name.c_str());
+	}
+
 	GLuint ShaderProgram::getId() const
 	{
 		return id;
@@ -44,7 +72,7 @@ namespace OpenDK
 			std::cerr << infoLog << std::endl;
 			return false;
 		}
-		
+
 		if (deleteShaders)
 		{
 			freeShaders();	 // deletes the individual shaders from opengl
@@ -53,7 +81,7 @@ namespace OpenDK
 
 		return true;
 	}
-	
+
 	void ShaderProgram::freeShaders() const
 	{
 		for (const auto &shader : shaders)
@@ -61,7 +89,7 @@ namespace OpenDK
 			shader.second.free();
 		}
 	}
-	
+
 	void ShaderProgram::use()
 	{
 		glUseProgram(id);

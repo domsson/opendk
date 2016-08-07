@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 
 #include "Shader.hpp"
+#include "ShaderAttribute.hpp"
 
 namespace OpenDK
 {
@@ -13,12 +14,14 @@ namespace OpenDK
 	class ShaderProgram
 	{
 	public:
-		
+
 		ShaderProgram();
-		
+
 		void addShader(const GLchar* file, GLenum shaderType);
-		//void setVertexShader(const GLchar* file);
-		//void setFragmentShader(const GLchar* file);
+
+		void bindAttribute(ShaderAttribute location, const GLchar* attrName);
+		GLint getUniformLocation(const std::string& name);
+		GLint fetchUniformLocation(const std::string& name);
 
 		GLuint getId() const;
 
@@ -31,6 +34,7 @@ namespace OpenDK
 		GLuint id;
 		GLint linkStatus;
 		std::map <GLenum, Shader> shaders;
+		std::map <std::string, GLint> uniforms;
 
 		void freeShaders() const;
 

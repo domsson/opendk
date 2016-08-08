@@ -54,11 +54,6 @@ namespace OpenDK
 		return id;
 	}
 
-	bool ShaderProgram::link()
-	{
-		return link(true);
-	}
-
 	bool ShaderProgram::link(bool deleteShaders)
 	{
 		glLinkProgram(id);
@@ -96,6 +91,12 @@ namespace OpenDK
 	void ShaderProgram::use()
 	{
 		glUseProgram(id);
+	}
+
+	void ShaderProgram::free()
+	{
+		freeShaders();
+		shaders.clear();
 	}
 
 	void ShaderProgram::generateId()

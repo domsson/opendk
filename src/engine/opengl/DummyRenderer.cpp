@@ -10,6 +10,7 @@ namespace OpenDK
 	DummyRenderer::~DummyRenderer()
 	{
 		vao->free();
+		tex->free();
 		delete vao;
 		delete sp;
 		delete tex;

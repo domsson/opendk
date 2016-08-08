@@ -20,13 +20,33 @@ namespace OpenDK
 		void addShader(const GLchar* file, GLenum shaderType);
 
 		void bindAttribute(ShaderAttribute location, const GLchar* attrName);
+
 		GLint getUniformLocation(const std::string& name);
 
+		/**
+		 * Get the name / id of this ShaderProgram as registered with the GL.
+		 * @return The id of this program as registered with OpenGL
+		 */
 		GLuint getId() const;
 
-		bool link();
-		bool link(bool deleteShaders);
+		/**
+		 * Links all previously added Shaders into an executable ShaderProgram.
+		 * This requires at least a compiled vertex and fragment Shader.
+		 * If successful, the ShaderProgram can then be used for rendering.
+		 * @return true if linking succeeded, otherwise false
+		 */
+		bool link(bool deleteShaders = true);
+
+		/**
+		 * Installs this ShaderProgram as part of the current rendering state.
+		 */
 		void use();
+
+		/**
+		 * Frees the GPU memory and invalidates the names associated with
+		 * every shader that has been added to this ShaderProgram.
+		 */
+		void free();
 
 	private:
 

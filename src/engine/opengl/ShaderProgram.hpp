@@ -22,10 +22,17 @@ namespace OpenDK
 		 * that Shader to this ShaderProgram. Once all Shaders have been added
 		 * in this way, you need to call link() in order to actually create the
 		 * functioning ShaderProgram from these individual Shaders.
-		 * @param file
+		 * @param file The shader's source file
+		 * @param shaderType The type of the shader
 		 */
 		void addShader(const GLchar* file, const GLenum shaderType);
 
+		/**
+		 * Adds a Shader to this ShaderProgram. Once all Shaders have been added
+		 * in this way, you need to call link() in order to actually create the
+		 * functioning ShaderProgram from these individual Shaders.
+		 * @param shader The Shader to be added to this ShaderProgram
+		 */
 		void addShader(const Shader shader);
 
 		/**
@@ -55,6 +62,12 @@ namespace OpenDK
 		 * @return true if linking succeeded, otherwise false
 		 */
 		bool link(const bool deleteShaders = true);
+
+		/**
+		 * @return true if this ShaderProgram has been successfully linked,
+		 * 			false otherwise
+		 */
+		bool linked() const;
 
 		/**
 		 * Installs this ShaderProgram as part of the current rendering state.

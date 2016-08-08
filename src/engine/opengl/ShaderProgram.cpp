@@ -85,6 +85,11 @@ namespace OpenDK
 		return true;
 	}
 
+	bool ShaderProgram::linked() const
+	{
+		return (id != 0 && linkStatus == GL_TRUE);
+	}
+
 	void ShaderProgram::freeShaders() const
 	{
 		for (const auto &shader : shaders)

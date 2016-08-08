@@ -3,7 +3,7 @@
 namespace OpenDK
 {
 	DummyRenderer::DummyRenderer()
-	: vao(nullptr)
+	: vao(nullptr), sp(nullptr), tex(nullptr)
 	{
 	}
 
@@ -25,13 +25,23 @@ namespace OpenDK
 		vao = new VertexArrayObject();
 
 		GLfloat vertices[] = {
-			-0.5f, -0.5f, 0.0f,	// 0: bottom left
-			 0.5f, -0.5f, 0.0f,	// 1: bottom right
-			 0.5f,  0.5f, 0.0f,	// 2: top right
-			-0.5f,  0.5f, 0.0f	// 3: top left
+			-0.5f, -0.5f,  0.5f,	// 0: bottom left front
+			 0.5f, -0.5f,  0.5f,	// 1: bottom right front
+			 0.5f,  0.5f,  0.5f,	// 2: top right front
+			-0.5f,  0.5f,  0.5f,	// 3: top left front
+
+			 0.5f, -0.5f,  0.5f,	// A (=1)
+			 0.5f, -0.5f, -0.5f,	// B
+			 0.5f,  0.5f, -0.5f,	// C
+			 0.5f,  0.5f,  0.5f		// D (=2)
 		};
 
 		GLubyte colors[] = {
+			255, 255, 255,
+			255, 255, 255,
+			255, 255, 255,
+			255, 255, 255,
+
 			255, 255, 255,
 			255, 255, 255,
 			255, 255, 255,
@@ -39,14 +49,21 @@ namespace OpenDK
 		};
 
 		GLfloat unwrap[] = {
-			0.0f, 1.0f,	// 0: bottom left
-			1.0f, 1.0f,	// 1: bottom right
-			1.0f, 0.0f,	// 2: top right
-			0.0f, 0.0f	// 3: top left
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,
+			1.0f, 1.0f,
+			1.0f, 0.0f,
+			0.0f, 0.0f
 		};
 
 		GLuint indices[] = {
-			0, 1, 2, 2, 3, 0
+			0, 1, 2, 2, 3, 0,
+
+			1, 4, 5, 5, 2, 1
 		};
 
 		vboPos.setData(vertices, sizeof(vertices));

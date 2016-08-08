@@ -24,25 +24,24 @@ namespace OpenDK
 		vao = new VertexArrayObject();
 
 		GLfloat vertices[] = {
-			-0.5f, -0.5f, 0.0f,	// 0: Lower-left
-			 0.5f, -0.5f, 0.0f,	// 1: Lower-right
-			 0.5f,  0.5f, 0.0f,	// 2: Top-right
-			-0.5f,  0.5f, 0.0f	// 3: Top-left
-
+			-0.5f, -0.5f, 0.0f,	// 0: bottom left
+			 0.5f, -0.5f, 0.0f,	// 1: bottom right
+			 0.5f,  0.5f, 0.0f,	// 2: top right
+			-0.5f,  0.5f, 0.0f	// 3: top left
 		};
 
 		GLubyte colors[] = {
-			255U, 255U, 255U,
-			255U, 255U, 255U,
-			255U, 255U, 255U,
-			255U, 255U, 255U
+			255, 255, 255,
+			255, 255, 255,
+			255, 255, 255,
+			255, 255, 255
 		};
 
 		GLfloat unwrap[] = {
-			0.0f, 1.0f,	// 0: Lower-left corner
-			1.0f, 1.0f,	// 1: Lower-right corner
-			1.0f, 0.0f,	// 2: Top-right corner
-			0.0f, 0.0f	// 3: Top-left corner
+			0.0f, 1.0f,	// 0: bottom left
+			1.0f, 1.0f,	// 1: bottom right
+			1.0f, 0.0f,	// 2: top right
+			0.0f, 0.0f	// 3: top left
 		};
 
 		GLuint indices[] = {

@@ -15,6 +15,11 @@ namespace OpenDK
 	{
 	public:
 
+		/**
+		 * Creates an empty, uninitialized ShaderProgram.
+		 * Before it can be used, you need to add at least add
+		 * a vertex and a fragment shader and then call link().
+		 */
 		ShaderProgram();
 
 		/**
@@ -82,15 +87,25 @@ namespace OpenDK
 
 	private:
 
+		// This Program's OpenGL name/id (0 if not yet assigned)
 		GLuint id;
+
+		// Link status: GL_TRUE = linked, GL_FALSE = not (yet) linked
 		GLint linkStatus;
+
+		// All Shaders that have been added to this ShaderProgram
 		std::map <GLenum, Shader> shaders;
+
+		// Stores fetched uniform variables and their locations
 		std::map <std::string, GLint> uniforms;
 
+		// Query the location of a given uniform variable within Shaders
 		GLint fetchUniformLocation(const std::string& name);
 
+		// Delete all individual Shaders from OpenGL and the `shaders` map
 		void freeShaders() const;
 
+		// Get a name/id for this program from OpenGL
 		void generateId();
 
 	};

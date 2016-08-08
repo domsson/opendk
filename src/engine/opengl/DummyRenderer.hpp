@@ -1,8 +1,11 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 #include <SFML/OpenGL.hpp>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
@@ -27,6 +30,10 @@ namespace OpenDK
 		VertexArrayObject *vao;
 		ShaderProgram* sp;
 		Texture* tex;
+
+		glm::mat4 modelMatrix;
+		glm::mat4 viewMatrix;
+		glm::mat4 projectionMatrix;
 	};
 
 }

@@ -30,10 +30,10 @@ namespace OpenDK
 			 0.5f,  0.5f,  0.5f,	// 2: top right front
 			-0.5f,  0.5f,  0.5f,	// 3: top left front
 
-			 0.5f, -0.5f,  0.5f,	// A (=1)
-			 0.5f, -0.5f, -0.5f,	// B
-			 0.5f,  0.5f, -0.5f,	// C
-			 0.5f,  0.5f,  0.5f		// D (=2)
+			 0.5f, -0.5f,  0.5f,	// 4 (=1)
+			 0.5f, -0.5f, -0.5f,	// 5
+			 0.5f,  0.5f, -0.5f,	// 6
+			 0.5f,  0.5f,  0.5f		// 7 (=2)
 		};
 
 		GLubyte colors[] = {
@@ -61,9 +61,8 @@ namespace OpenDK
 		};
 
 		GLuint indices[] = {
-			0, 1, 2, 2, 3, 0,
-
-			1, 4, 5, 5, 2, 1
+			0, 1, 2, 2, 3, 0,	// Front side
+			4, 5, 6, 6, 7, 4	// Right side
 		};
 
 		vboPos.setData(vertices, sizeof(vertices));
@@ -90,13 +89,32 @@ namespace OpenDK
 		tex->load("./bin/textures/placeholder.png");
 
 		// 'tis just a test
-		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+		//glm::mat4 modelMatrix;
+		//glm::mat4 view;
+		//glm::mat4 projection;
+
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
+		projectionMatrix = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
+		//projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
+		/*
+		GLint modelLoc = glGetUniformLocation(ourShader.Program, "modelMatrix");
+        GLint viewLoc = glGetUniformLocation(ourShader.Program, "viewMatrix");
+        GLint projLoc = glGetUniformLocation(ourShader.Program, "projectionMatrix");
+        */
 	}
 
 	void DummyRenderer::render()
 	{
 		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		sp->use();
+
+		// Pass them to the shaders
+        glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"),       1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),        1, GL_FALSE, glm::value_ptr(viewMatrix));
+        glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"),  1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
 		tex->bind();
 		vao->bind();
 		if (vao->hasIBO())

@@ -3,6 +3,7 @@
 namespace OpenDK {
 
 	const GLint VertexBufferObject::DEFAULT_CHUNK_SIZE = 3;
+	const GLint VertexBufferObject::COLOR_CHUNK_SIZE = 2;
 
 	VertexBufferObject::VertexBufferObject()
 	: BufferObject(), chunkSize(DEFAULT_CHUNK_SIZE)
@@ -13,13 +14,25 @@ namespace OpenDK {
 	VertexBufferObject::VertexBufferObject(GLfloat data[], GLsizeiptr size)
 	: BufferObject(data, size), chunkSize(DEFAULT_CHUNK_SIZE)
 	{
-		// Automatically uses GL_ARRAY_BUFFER (VBO)
+		// Nothing
 	}
 
 	VertexBufferObject::VertexBufferObject(GLfloat data[], GLsizeiptr size, GLint chunkSize)
 	: BufferObject(data, size), chunkSize(chunkSize)
 	{
-		// Automatically uses GL_ELEMENT_ARRAY_BUFFER (IBO)
+		// Nothing
+	}
+
+	VertexBufferObject::VertexBufferObject(GLubyte data[], GLsizeiptr size)
+	: BufferObject(data, size), chunkSize(COLOR_CHUNK_SIZE)
+	{
+		// Nothing
+	}
+
+	VertexBufferObject::VertexBufferObject(GLubyte data[], GLsizeiptr size, GLint chunkSize)
+	: BufferObject(data, size), chunkSize(chunkSize)
+	{
+		// Nothing
 	}
 
 	void VertexBufferObject::setChunkSize(GLint chunkSize)

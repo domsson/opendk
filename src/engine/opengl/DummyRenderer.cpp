@@ -31,11 +31,11 @@ namespace OpenDK
 
 		};
 
-		GLfloat colors[] = {
-			1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f
+		GLubyte colors[] = {
+			255U, 255U, 255U,
+			255U, 255U, 255U,
+			255U, 255U, 255U,
+			255U, 255U, 255U
 		};
 
 		GLfloat unwrap[] = {

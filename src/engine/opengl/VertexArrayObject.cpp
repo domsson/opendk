@@ -20,7 +20,9 @@ namespace OpenDK
 		vbos[shaderAttribute] = vbo;
 		bind();
 		vbo.bind();
-		glVertexAttribPointer(shaderAttribute, vbo.getChunkSize(), GL_FLOAT, false, 0, 0);
+		GLenum dataType = vbo.getDataType();
+		bool normalize = dataType == GL_UNSIGNED_BYTE ? true : false;
+		glVertexAttribPointer(shaderAttribute, vbo.getChunkSize(), dataType, normalize, 0, 0);
 		glEnableVertexAttribArray(shaderAttribute);	// Enable the new VBO
 		unbind();
 		vbo.unbind();

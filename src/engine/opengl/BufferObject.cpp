@@ -6,23 +6,31 @@ namespace OpenDK
 	const GLenum BufferObject::DEFAULT_BUFFER_TYPE = GL_ARRAY_BUFFER;
 	const GLenum BufferObject::DEFAULT_DRAW_TYPE = GL_STATIC_DRAW;
 
+	const GLenum BufferObject::DEFAULT_DATA_TYPE = GL_FLOAT;
+
 	BufferObject::BufferObject()
-	: id(0), size(0), bufferType(DEFAULT_BUFFER_TYPE), drawType(DEFAULT_DRAW_TYPE)
+	: id(0), size(0), dataType(DEFAULT_DATA_TYPE), bufferType(DEFAULT_BUFFER_TYPE), drawType(DEFAULT_DRAW_TYPE)
 	{
 	}
 
 	BufferObject::BufferObject(GLenum bufferType)
-	: id(0), size(0), bufferType(bufferType), drawType(DEFAULT_DRAW_TYPE)
+	: id(0), size(0), dataType(DEFAULT_DATA_TYPE), bufferType(bufferType), drawType(DEFAULT_DRAW_TYPE)
 	{
 	}
 
 	BufferObject::BufferObject(GLenum bufferType, GLenum drawType)
-	: id(0), size(0), bufferType(bufferType), drawType(drawType)
+	: id(0), size(0), dataType(DEFAULT_DATA_TYPE), bufferType(bufferType), drawType(drawType)
 	{
 	}
 
 	BufferObject::BufferObject(GLuint data[], GLsizeiptr size)
-	: id(0), size(size), bufferType(GL_ELEMENT_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
+	: id(0), size(size), dataType(GL_UNSIGNED_INT), bufferType(GL_ELEMENT_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
+	{
+		setData(data, size);
+	}
+
+	BufferObject::BufferObject(GLubyte data[], GLsizeiptr size)
+	: id(0), size(size), dataType(GL_UNSIGNED_BYTE), bufferType(GL_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
 	{
 		setData(data, size);
 	}
@@ -62,6 +70,7 @@ namespace OpenDK
 		}
 		bufferType = GL_ARRAY_BUFFER;
 		this->size = size;
+		dataType = GL_FLOAT;
 		init(data);
 	}
 
@@ -74,6 +83,20 @@ namespace OpenDK
 		}
 		bufferType = GL_ELEMENT_ARRAY_BUFFER;
 		this->size = size;
+		dataType = GL_UNSIGNED_INT;
+		init(data);
+	}
+
+	void BufferObject::setData(GLubyte data[], GLsizeiptr size)
+	{
+		if (id != 0)
+		{
+			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
+			return;
+		}
+		bufferType = GL_ARRAY_BUFFER;
+		this->size = size;
+		dataType = GL_UNSIGNED_BYTE;
 		init(data);
 	}
 
@@ -85,6 +108,11 @@ namespace OpenDK
 	GLsizeiptr BufferObject::getSize() const
 	{
 		return size;
+	}
+
+	GLenum BufferObject::getDataType() const
+	{
+		return dataType;
 	}
 
 	GLenum BufferObject::getBufferType() const
@@ -120,6 +148,13 @@ namespace OpenDK
 		}
 	}
 
+	void BufferObject::init(GLfloat data[]) {
+		generateId();
+		bind();
+		glBufferData(bufferType, size, data, drawType);
+		unbind();
+	}
+
 	void BufferObject::init(GLuint data[]) {
 		generateId();
 		bind();
@@ -127,7 +162,7 @@ namespace OpenDK
 		unbind();
 	}
 
-	void BufferObject::init(GLfloat data[]) {
+	void BufferObject::init(GLubyte data[]) {
 		generateId();
 		bind();
 		glBufferData(bufferType, size, data, drawType);

@@ -12,10 +12,11 @@ namespace OpenDK {
 		 * The default number of components per vertex attribute.
 		 */
 		static const GLint DEFAULT_CHUNK_SIZE;
+		static const GLint COLOR_CHUNK_SIZE;
 
 		/**
 		 * Creates a VertexBufferObject with default chunk size
-		 * but without its data being set yet. This means you will have 
+		 * but without its data being set yet. This means you will have
 		 * to call setData() on it before you can use it with OpenGL.
 		 */
 		VertexBufferObject();
@@ -38,6 +39,24 @@ namespace OpenDK {
 		VertexBufferObject(GLfloat data[], GLsizeiptr size, GLint chunkSize);
 
 		/**
+		 * Creates a VertexBufferObject from unsigned byte data.
+		 * It is assumed to hold vertex color data, hence the chunk size
+		 * will automatically be set to 2.
+		 * @param data An array of type GLubyte
+		 * @param size The size of data in bytes (= sizeof(data))
+		 */
+		VertexBufferObject(GLubyte data[], GLsizeiptr size);
+
+		/**
+		 * Creates a VertexBufferObject from unsigned byte data
+		 * and with the given chunk size.
+		 * @param data An array of type GLubyte
+		 * @param size The number of elements in data
+		 * @param chunkSize The number of components per vertex attribute
+		 */
+		VertexBufferObject(GLubyte data[], GLsizeiptr size, GLint chunkSize);
+
+		/**
 		 * Set the chunk size for this VertexBufferObject.
 		 * @param chunkSize The number of components per vertex attribute
 		 */
@@ -50,7 +69,7 @@ namespace OpenDK {
 		GLint getChunkSize() const;
 
 	private:
-		
+
 		/**
 		 * The number of components per vertex attribute,
 		 * which is three for most cases: xyz, rgb, uvw, ...

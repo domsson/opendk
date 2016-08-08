@@ -24,25 +24,29 @@ namespace OpenDK
 		vao = new VertexArrayObject();
 
 		GLfloat vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+			-0.5f, -0.5f, 0.0f,	// 0: Lower-left
+			 0.5f, -0.5f, 0.0f,	// 1: Lower-right
+			 0.5f,  0.5f, 0.0f,	// 2: Top-right
+			-0.5f,  0.5f, 0.0f	// 3: Top-left
+
 		};
 
 		GLfloat colors[] = {
 			1.0f, 1.0f, 1.0f,
 			1.0f, 1.0f, 1.0f,
 			1.0f, 1.0f, 1.0f,
+			1.0f, 1.0f, 1.0f
 		};
 
 		GLfloat unwrap[] = {
-			0.0f, 1.0f - 0.0f,  // Lower-left corner
-			1.0f, 1.0f - 0.0f,  // Lower-right corner
-			0.5f, 1.0f - 1.0f   // Top-center corner
+			0.0f, 1.0f,	// 0: Lower-left corner
+			1.0f, 1.0f,	// 1: Lower-right corner
+			1.0f, 0.0f,	// 2: Top-right corner
+			0.0f, 0.0f	// 3: Top-left corner
 		};
 
 		GLuint indices[] = {
-			0, 1, 2
+			0, 1, 2, 2, 3, 0
 		};
 
 		vboPos.setData(vertices, sizeof(vertices));
@@ -67,6 +71,9 @@ namespace OpenDK
 
 		tex = new Texture();
 		tex->load("./bin/textures/placeholder.png");
+
+		// 'tis just a test
+		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	void DummyRenderer::render()

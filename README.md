@@ -13,5 +13,6 @@ Development
 Installing dependencies
 -----------------------
 
-    apt-get install libsfml-dev
-    apt-get install libglew-dev
+    apt-get install libsfml-dev  # SFML - Simple Fast Media Library
+    apt-get install libglew-dev  # GLEW - OpenGL Extension Wrangler
+    apt-get install libglm-dev   # GLM  - OpenGL Mathematics

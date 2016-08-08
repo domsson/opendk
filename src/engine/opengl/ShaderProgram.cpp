@@ -8,17 +8,22 @@ namespace OpenDK
 		generateId();
 	}
 
-	void ShaderProgram::addShader(const GLchar* file, GLenum shaderType)
+	void ShaderProgram::addShader(const GLchar* file, const GLenum shaderType)
 	{
-		Shader shader;
-		if (shader.create(file, shaderType))
+		Shader shader(file, shaderType);
+		addShader(shader);
+	}
+
+	void ShaderProgram::addShader(const Shader shader)
+	{
+		if (shader.created())
 		{
-			shaders[shaderType] = shader;
+			shaders[shader.getShaderType()] = shader;
 			glAttachShader(id, shader.getId());
 		}
 	}
 
-	void ShaderProgram::bindAttribute(ShaderAttribute location, const GLchar* attrName)
+	void ShaderProgram::bindAttribute(const ShaderAttribute location, const GLchar* attrName)
 	{
 		if (id != 0)
 		{
@@ -54,7 +59,7 @@ namespace OpenDK
 		return id;
 	}
 
-	bool ShaderProgram::link(bool deleteShaders)
+	bool ShaderProgram::link(const bool deleteShaders)
 	{
 		glLinkProgram(id);
 

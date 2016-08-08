@@ -78,6 +78,7 @@ namespace OpenDK
 
 	void DummyRenderer::render()
 	{
+		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		sp->use();
 		tex->bind();
 		vao->bind();

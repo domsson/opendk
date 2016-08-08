@@ -36,15 +36,12 @@ namespace OpenDK
 		auto iterator = uniforms.find(name);
 		if (iterator == uniforms.end())
 		{
-			GLint location = fetchUniformLocation(name);
-			if (location >= 0) // Locations not available in shader will give -1
-			{
-				uniforms[name] = location;
-			}
-			return location;
+			// Location not known yet, fetch it from the Shader
+			return (uniforms[name] = fetchUniformLocation(name));
 		}
 		else
 		{
+			// We fetched this before, return the stored value
 			return iterator->second;
 		}
 	}

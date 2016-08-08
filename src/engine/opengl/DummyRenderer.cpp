@@ -89,25 +89,15 @@ namespace OpenDK
 		tex->load("./bin/textures/placeholder.png");
 
 		// 'tis just a test
-		//glm::mat4 modelMatrix;
-		//glm::mat4 view;
-		//glm::mat4 projection;
-
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
 		projectionMatrix = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
 		//projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-
-		/*
-		GLint modelLoc = glGetUniformLocation(ourShader.Program, "modelMatrix");
-        GLint viewLoc = glGetUniformLocation(ourShader.Program, "viewMatrix");
-        GLint projLoc = glGetUniformLocation(ourShader.Program, "projectionMatrix");
-        */
 	}
 
 	void DummyRenderer::render()
 	{
-		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		sp->use();
 
 		// Pass them to the shaders

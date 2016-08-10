@@ -49,6 +49,11 @@ namespace OpenDK
 
 	void OpenDK::initGL()
 	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glEnable(GL_DEPTH_TEST);	// Do not render hidden geometry
+		glEnable(GL_CULL_FACE);		// Do not render back sides
+		glCullFace(GL_BACK);		// cull back face (default)
+		glFrontFace(GL_CCW);		// GL_CCW for counter clock-wise (default)
 		renderer.initDummyData();
 	}
 
@@ -101,7 +106,6 @@ namespace OpenDK
 
 	void OpenDK::render()
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		renderer.render();

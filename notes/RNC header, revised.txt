@@ -1,0 +1,413 @@
+Normal mode:
+0x0	3	"RNC"
+0x3	1	mode
+	03	compression method: 0-store, 1-huffman, 2-prefix
+0x4	4	decompressed size
+0x8	4	compressed size
+0xC	2	decompressed checksum
+0xE	2	compressed checksum
+0x10	1	difference in compressed and uncompressed data sizes in largest chunk when compressed larger
+0x11	1	amount of pack chunks, used to decompress in-place
+
+Special case for RNC0:
+0x0	3	"RNC"
+0x3	1	mode; 0 for store
+0x4	4	decompressed size
+
+-
+
+Archive mode:
+0x0	3	"RNC"
+0x3	1	mode	(actually, always 41 or 'A')
+	40	archive mode flag
+	03	compression method (always 1): 0-store, 1-huffman, 2-prefix
+0x4	2	size of header, or offset to files
+0x6	2	CRC for filetable entries
+0x8	var	entries
+var	var	files
+var	4	00000000, marking end of file
+Entry format:
+	header:
+	0x0	2	offset to next directory or end of filetable
+	0x2	var	directory name; root is NULL
+	var	var	file entries
+	var	1	NULL-terminator for block
+	entries:
+	0x0	var	NULL-terminated string
+	var	4	offset to data
+Files are all RNC format
+
+-
+
+Indexed mode:
+0x0	3	"RNC"
+0x3	1	mode
+	80	indexed mode flag
+	03	compression method: 0-store, 1-huffman, 2-prefix
+0x4	4	decompressed size
+0x8	4	compressed size
+0xC	2	block count
+0xE	1	block size in kilobytes
+0xF	3	RESERVED
+0x12	2ea.	filesizes for each compressed file
+
+-
+
+RNX extension devised by Acclaim
+
+  RNX files consist of a series of RNC files and codewords.  Each block can not be larger than 0x4000, although there is no size check for raw binary data.
+  The end of a file is always when the word 'END!' is reached, and any NULL identifiers are skipped.  All data is expected to be alligned to 0x4 boundries with NULLs, ensuring identifiers are always at multiples of four.
+  Accepted types:
+        RNX-    Standard RNC file, used when data follows.
+        RNC-    Standard RNC file, used when last in series.
+        FILL    Fill next size blocks with value
+            0x0   2   size, which can not exceed 0x4000
+            0x2   1   fill value
+            0x3   1   RESERVED
+        RAW!    Uncompressed block
+            0x0   4   size (technically has no size check so can exceed 0x4000)
+        END!    Returns decompressed object
+
+  Although RNX is typically used as an identifier in place of RNC until the final file in a set, this is not necessarily enforced.  Expect to catch both.
+
++_+
+
+First two bits of compressed data indicate special features:
+0	normal file
+1	locked file
+2	encoded file
+
+-
+
+Compression modes.
+Huffman (1):
+2 flag bits as above
+Packs:
+	start with 3 huffman tables; 5bit max value, 4bit leaf depth
+	(raw table, distance table, length table)
+	16bit chunk count
+	Chunks:
+		raw length; uses first table
+		distance; second table + 1
+		length; third table + 2
+
+Prefix (2):
+(read left to right as a stream of bytes)
+2 flag bits as above
+0.*#	output byte #
+1.10.*D	copy 2 bytes from D+1
+1.110.-B-.*D	copy 3 bytes from D+1 in bank B
+1.111.*L.-B-.*D	if L: copy L+8 bytes from D+1 in bank B
+1.111.*0.0	end of file
+1.111.*0.1	end of pack chunk
+1.0.-L-.-B-.*D	copy length L from D+1 in bank B
+1.0.111.nnnn	write next (n+3)*4 bytes
+
+lengths:
+00	4
+10	5
+010	6
+011	7
+110	8
+
+banks:
+0	0x0
+110	0x100	   01
+1000	0x200	  000
+1001	0x300	  100
+10101	0x400	 1010
+10111	0x500	 1110
+11101	0x600	 1011
+11111	0x700	 1111
+101000	0x800	00010
+101001	0x900	10010
+101100	0xA00	00110
+101101	0xB00	10110
+111000	0xC00	00011
+111001	0xD00	10011
+111100	0xE00	00111
+111101	0xF00	10111
+
++_+
+
+Encoding
+  Encoding is based on a short integer key.  Encoding and decoding use the same method; the current key is XORed against a single byte to encode or decode it.
+
+  Each subsequent raw value length updates the current key value.  For instance, in this type 2 file keyed to 0x1999:
+57.B9 0C.EC98A4A9BEA9EBBF
+-decodes to:
+17.20 0C.2054686572652773
+-where 0x20 is decoded with 0x99 and 2054686572652773 is decoded with 0xCC, the next value in the series.
+
+  The key is updated by shifting it right one bit.  It is refilled with a copy of its original value.
+  The easiest method of doing this is to treat the key as a long value, seeded with the key in both the upper and lower short.
+kkkk.kkkk
+  When 16 bits have been read, reinject the original key in the upper short.
+
++_+
+
+Sample python code for decompressing the data.
+Note that you'll have to parse the headers and shuffle the data in on your own.
+
+    def _updatekey(key=0):
+	"""Yields the next key in the key sequence.  Supply it with the original seed."""
+        if not key:
+            yield 0
+        # Set original pattern in upper part of long every 16 bits.
+        k = key<<16
+        n = 0
+        while True:
+            if not n:
+                key |= k
+                n+=16
+            yield key&0xFF
+            key>>=1
+            n-=1
+
+    def _mirror(val, num):
+        """Mirrors bottom num bits of value."""
+        v = 0
+        for i in range(num):
+            v<<=1
+            v|= val&1
+            val>>=1
+        return v
+
+    def _stream(data):
+        for i in data:
+            yield i
+
+    def crc(data):
+        """Generates CRC from field data, returning a short int.
+	If you intend to running it many times you could calc the table
+	just once (during __init__, for instance) and feed it here."""
+        tbl = list()
+        crc = 0
+
+        # generate CRC table
+        for i in range(256):
+            for j in range(8):
+                i = (i>>1)^0xA001 if (i&1) else (i>>1)
+            tbl.append(i)
+
+        # compute CRC from data
+        for i in data:
+            crc^= i
+            crc = (crc>>8) ^ tbl[crc&0xFF]
+
+        # return as a short
+        return crc&0xFFFF
+
+    def huf_in(itr, length=5, depth=4):
+        """Returns a huffman table read from the bitstream itr."""
+        tbl, lens = list(), list()
+        lmax = 1
+        n = itr.send((length, 'read'))
+
+        for i in range(n):
+            v = itr.send((depth, 'read'))
+            lens.append(v)
+            if lmax<v:
+                lmax = v
+
+        c = 0
+        for i in range(1, 17):    # lmax instead of 17
+            for j in range(n):
+                if lens[j]==i:
+                    v = _mirror(c,i)
+                    tbl.append(dict({'code': v, 'codelen':i, 'value':j}))
+                    c+=1
+            c<<=1
+        return tbl
+
+    def huf_rd(tbl, itr):
+        """Reads value from stream itr using huffman table tbl."""
+        for i in tbl:
+            if itr.send((i['codelen'],'peek'))==i['code']:
+                break
+        else:
+            return -1
+        # throw away the hit
+        v = i['value']
+        itr.send((i['codelen'],'read'))
+        if v>=2:
+            v-=1
+            w= itr.send((v, 'read'))
+            v = (1<<v) | w
+        return v
+
+
+    def dec0(data, size=None):
+        """Uncompressed data within wrapper."""
+        out = bytearray()
+        if not size:
+            size = len(data)
+        out.extend(data[0:size])
+        return out
+
+    def dec1(data, size, key=0):
+        """Huffman + LZ77 scheme
+        Accepts an iterable for the bitstream consisting of the
+	compressed data after the header.
+	Key is used for decrypting when applicable."""
+
+        def _grab(itr, bits=0, mode='read'):
+            """Returns a value equal to the next num bits in data stream,
+            accounting for the fool-stupid way they pull values from a bitstream.
+
+            Iterates stream data using either 'big' or 'little' endian order.
+            Two possible mode:
+                'read', which returns a value and advances bitstream
+                'peek' which just masks against current value
+            """
+            i, c, b = 0, 0, 0
+            while True:
+                v = next(itr,0)
+                v|= next(itr,0)<<8
+                v<<=c
+                b|=v     # bitfield | new bits<<count
+                c+=16    # bitcount+=16
+                i+=2
+                while c>=bits:
+                    m = (1<<bits)-1 # mask
+                    v = b&m         # value = bitfield & mask
+                    if mode!='peek':
+                        c-= bits        # count-= #bits
+                        b>>=bits        # bitfield without said bits
+                    bits, mode = yield v  # yield the value, retrieving next #bits
+
+        # Initialize the stream and throw away the first two bits.
+        d = _stream(data)
+        k = _updatekey(key)
+        itr = _grab(d, bits=2)
+        next(itr)
+        out = bytearray()
+
+        while size:
+            b = huf_in(itr, 5, 4)
+            if b:   raws = b
+            b = huf_in(itr, 5, 4)
+            if b:   dist = b
+            b = huf_in(itr, 5, 4)
+            if b:   lens = b
+            cnt = itr.send((16,'read'))
+
+            while True:
+                l = huf_rd(raws, itr)
+                if l<0:
+                    break
+                if l:
+                    size -= l
+                    key = next(k)
+                    while l:
+                        l-=1
+                        # should really just be a byte out; presumes magically no masking required
+                        out.append(next(d)^key)
+                cnt-=1
+                if not cnt:
+                    break
+                p = huf_rd(dist, itr) + 1
+                l = huf_rd(lens, itr) + 2
+                for i in range(l):
+                    v = out[len(out)-p]
+                    out.append(v)
+                size-=l
+        return out
+
+
+    def dec2(data, size, out = None, key=0):
+        """LZ77 scheme alone.
+        Accepts an iterable for the bitstream,
+            and output to this point if applicable."""
+        def _fetch(itr, bits=0, mode='read'):
+            c, b = 0, 0
+            while True:
+                m = (1<<c)-1
+                b&=m
+                b<<=8
+                b|= next(itr)
+                c+=8
+                while c>=bits:
+                    #m = 1<<(bits-1)
+                    v = b>>(c-bits)
+                    #v&=m
+                    v = _mirror(v,bits)
+                    if mode!='peek':
+                        c-= bits        # count-= #bits
+                    bits, mode = yield v
+
+        # initialize the stream; first two bits are discarded
+        d = _stream(data)
+        b = _fetch(d, 2)
+        k = _updatekey(key)
+        next(b)
+        # Initialize out if not present.
+        if not out:
+            out = bytearray()
+
+        while size:
+            if b.send((1, 'read')):
+                back, num = 0, 0
+                if b.send((1, 'read')):
+                    if b.send((1, 'read')):
+                        if b.send((1, 'read')):
+                            # 1.111.*L.-B-.*D   if L: copy L+8 bytes from D+1 in bank B
+                            num = next(d) + 8
+                            if num==8:
+                                if b.send((1, 'read')): continue
+                                else:                   break
+                        else:
+                            # 1.110.-B-.*D  copy 3 bytes from D+1 in bank B
+                            num = 3
+                    else:
+                        # 1.10.*D   copy 2 bytes from D+1
+                        back, num = 1, 2
+                else:
+                    # fetch length value
+                    num = b.send((2, 'read'))
+                    if num==2:
+                        num+=b.send((1, 'read'))
+                    elif num==3:
+                        if b.send((1, 'read')):
+                            # 1.0.111.nnnn  write next (n+3) words
+                            num+= _mirror(b.send((4, 'read')),4)
+                            num<<=2
+                            key = next(k)
+                            for i in range(num):
+                                out.append(next(d)^key)
+                            size-=num
+                            continue
+                        # 1.0.110   length of 8
+                        num+=1
+                    # 1.0.-L-.-B-.*D    copy length L from D+1 in bank B
+                    num+=4
+                # fetch bank
+                if not back:
+                    if b.send((1, 'read')):
+                        back = b.send((2, 'read'))
+                        if back==0:
+                            back = 2 + b.send((1, 'read'))
+                        elif back>1:
+                            if b.send((2, 'peek')) & 2:
+                                back<<=1
+                                back|= (b.send((2, 'read')) & 1)
+                            else:
+                                back<<=2
+                                b.send((3, 'peek'))
+                                v=b.send((1, 'read'))<<1
+                                b.send((1, 'read'))
+                                v|=b.send((1, 'read'))
+                                back+=v
+                        back<<=8
+                    back+=1
+                # Copy num bytes from byte+offset
+                back+= next(d)
+                for i in range(num):
+                    v = out[len(out)-back]
+                    out.append(v)
+                    size-=1
+            else:
+                # push single byte
+                out.append(next(d) ^ next(k))
+                size-=1
+        return out

@@ -152,11 +152,23 @@ namespace OpenDK
 		tex = new Texture();
 		tex->load("./bin/textures/placeholder.png");
 
+		Texture tex2;
+		tex2.load("./bin/textures/block0.bmp");
+
 		// 'tis just a test
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		SlabFile slb;
+		slb.load("./bin/levels/MAP00001.SLB");
+		slb.printMap();
+
+		// scale, rotate, translate (note: glm operations should be in reverse!)
+
+		//modelMatrix = glm::rotate(modelMatrix, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
-		projectionMatrix = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
-		//projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(35.264f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//projectionMatrix = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
+		projectionMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, 0.01f, 100.0f); // LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
 	}
 
 	void DummyRenderer::render()
@@ -164,11 +176,13 @@ namespace OpenDK
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		sp->use();
 
+		/*
 		sf::Time elapsed = clock.restart();
 		float elapsedSeconds = elapsed.asSeconds();
 
 		modelMatrix = glm::rotate(modelMatrix, std::sin(elapsedSeconds), glm::vec3(0.0f, 1.0f, 0.0f));
 		modelMatrix = glm::rotate(modelMatrix, std::sin(elapsedSeconds), glm::vec3(1.0f, 0.0f, 0.0f));
+		*/
 
 		// Pass them to the shaders
         glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"),       1, GL_FALSE, glm::value_ptr(modelMatrix));

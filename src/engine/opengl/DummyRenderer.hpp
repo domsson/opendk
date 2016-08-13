@@ -16,6 +16,8 @@
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
 
+#include "../SlabFile.hpp"
+
 namespace OpenDK
 {
 

@@ -68,7 +68,7 @@ namespace OpenDK
 
 		if (linkStatus != GL_TRUE)
 		{
-			std::cerr << typeid(this).name() << ": Failed to link shader program. Log:" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Failed to link shader program. Log:" << std::endl;
 			std::cerr << infoLog << std::endl;
 			return false;
 		}

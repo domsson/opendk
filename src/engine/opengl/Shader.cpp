@@ -32,15 +32,15 @@ namespace OpenDK
 		file.open(filePath);
 		if (!file.is_open())
 		{
-			std::cerr << typeid(this).name() << ": Failed to open Shader file " << filePath << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Failed to open Shader file " << filePath << std::endl;
 			return false;
 		}
-		
+
 		fileStream << file.rdbuf();
 		file.close();
 		fileContents = fileStream.str();
 		shaderSource = fileContents.c_str();
-	   
+
 		generateId();
 		glShaderSource(id, 1, &shaderSource, 0);
 		return true;
@@ -58,7 +58,7 @@ namespace OpenDK
 		if (compileStatus != GL_TRUE)
 		{
 			glGetShaderInfoLog(id, logLength, 0, infoLog);
-			std::cerr << typeid(this).name() << ": Shader compilation failed. Log:" << std::endl;
+			std::cerr << typeid(this).name() << ": [ERR] Shader compilation failed. Log:" << std::endl;
 			std::cerr << infoLog << std::endl;
 			return false;
 		}

@@ -7,3 +7,7 @@ gcc -o dernc dernc.o
 
 gcc -c xgfx.c
 gcc -o xgfx xgfx.o
+
+# terrain
+
+(same as above, stupid)

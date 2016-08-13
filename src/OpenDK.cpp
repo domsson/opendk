@@ -49,6 +49,7 @@ namespace OpenDK
 
 	void OpenDK::initGL()
 	{
+		glViewport(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glEnable(GL_DEPTH_TEST);	// Do not render hidden geometry
 		glEnable(GL_CULL_FACE);		// Do not render back sides
@@ -106,7 +107,7 @@ namespace OpenDK
 
 	void OpenDK::render()
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		renderer.render();
 

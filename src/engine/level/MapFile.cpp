@@ -103,4 +103,9 @@ namespace OpenDK
 		return (y * mapWidth + x);
 	}
 
+	int MapFile::colPos(int x, int y) const
+	{
+		return (y * (mapWidth * 3 + 1) + x);
+	}
+
 }

@@ -55,7 +55,7 @@ namespace OpenDK
 		 * Prints a simple representation of the map related file
 		 * (map layout) to the console.
 		 */
-		virtual void printMap() const = 0;
+		virtual void printMap() const;
 
 		/**
 		 * @return The width of the loaded map layout or -1 if none loaded yet
@@ -98,6 +98,11 @@ namespace OpenDK
 		 * @return The position (index within mapLayout) of the tile at x,y
 		 */
 		int pos(int x, int y) const;
+
+		/**
+		 * @return The index position for the column at x,y within the file
+		 */
+		int colPos(int x, int y) const;
 
 	};
 

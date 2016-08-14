@@ -56,11 +56,6 @@ namespace OpenDK
 
 	private:
 
-		/**
-		 * @return The index position for the column at x,y within the OWN file
-		 */
-		int ownPos(int x, int y) const;
-
 	};
 
 }

@@ -43,7 +43,7 @@ namespace OpenDK
 		{
 			for (int x = 1; x < mapWidth * 3; x += 3)
 			{
-				is.seekg(ownPos(x, y));
+				is.seekg(colPos(x, y));
 				is.get(mapLayout[i++]);
 			}
 		}
@@ -85,11 +85,6 @@ namespace OpenDK
 	TileOwner OwnerFile::getTileOwner(int i) const
 	{
 		return static_cast<TileOwner>(getTileValue(i));
-	}
-
-	int OwnerFile::ownPos(int x, int y) const
-	{
-		return (y * (mapWidth * 3 + 1) + x);
 	}
 
 }

@@ -3,24 +3,16 @@
 namespace OpenDK
 {
 
-	const int OwnerFile::DEFAULT_MAP_WIDTH  = 85;
-	const int OwnerFile::DEFAULT_MAP_HEIGHT = 85;
-
 	OwnerFile::OwnerFile()
-	: mapLayout(nullptr), mapWidth(DEFAULT_MAP_WIDTH), mapHeight(DEFAULT_MAP_HEIGHT)
+	: MapFile()
 	{
 		// TODO
 	}
 
 	OwnerFile::OwnerFile(const std::string& filePath)
-	: mapLayout(nullptr), mapWidth(DEFAULT_MAP_WIDTH), mapHeight(DEFAULT_MAP_HEIGHT)
+	: MapFile()
 	{
 		load(filePath);
-	}
-
-	OwnerFile::~OwnerFile()
-	{
-		delete[] mapLayout;
 	}
 
 	bool OwnerFile::load(const std::string& filePath)
@@ -55,6 +47,8 @@ namespace OpenDK
 				is.get(mapLayout[i++]);
 			}
 		}
+
+		is.close();
 		return true;
 	}
 
@@ -80,51 +74,17 @@ namespace OpenDK
 
 	void OwnerFile::printMap() const
 	{
-		if (mapLayout == nullptr)
-		{
-			std::cerr << typeid(this).name() << ": [WRN] Can not print the map layout "
-					<< "without having successfully read an OWN file first" << std::endl;
-			return;
-		}
-
-		for (int y = 0; y < mapHeight; ++y)
-		{
-			std::cout << std::endl;
-
-			for (int x = 0; x < mapWidth; ++x)
-			{
-				char c = mapLayout[pos(x, y)];
-				if (c == 0)
-				{
-					std::cout << std::setw(2) << "  ";
-				}
-				else
-				{
-					std::cout << std::setw(2) << +c;
-				}
-			}
-		}
-		std::cout << std::endl;
-	}
-
-	int OwnerFile::getMapHeight() const
-	{
-		return (mapLayout == nullptr) ? -1 : mapHeight;
-	}
-
-	int OwnerFile::getMapWidth() const
-	{
-		return (mapLayout == nullptr) ? -1 : mapWidth;
+		MapFile::printMap();
 	}
 
 	TileOwner OwnerFile::getTileOwner(int x, int y) const
 	{
-		return (mapLayout == nullptr) ? TileOwner::PLAYER_UNKNOWN : static_cast<TileOwner>(mapLayout[pos(x, y)]);
+		return static_cast<TileOwner>(getTileValue(x, y));
 	}
 
-	int OwnerFile::pos(int x, int y) const
+	TileOwner OwnerFile::getTileOwner(int i) const
 	{
-		return (y * mapWidth + x);
+		return static_cast<TileOwner>(getTileValue(i));
 	}
 
 	int OwnerFile::ownPos(int x, int y) const

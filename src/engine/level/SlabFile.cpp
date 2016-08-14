@@ -3,24 +3,16 @@
 namespace OpenDK
 {
 
-	const int SlabFile::DEFAULT_MAP_WIDTH  = 85;
-	const int SlabFile::DEFAULT_MAP_HEIGHT = 85;
-
 	SlabFile::SlabFile()
-	: mapLayout(nullptr), mapWidth(DEFAULT_MAP_WIDTH), mapHeight(DEFAULT_MAP_HEIGHT)
+	: MapFile()
 	{
-		// TODO
+		// Nothing to do
 	}
 
 	SlabFile::SlabFile(const std::string& filePath)
-	: mapLayout(nullptr), mapWidth(DEFAULT_MAP_WIDTH), mapHeight(DEFAULT_MAP_HEIGHT)
+	: MapFile()
 	{
 		load(filePath);
-	}
-
-	SlabFile::~SlabFile()
-	{
-		delete[] mapLayout;
 	}
 
 	bool SlabFile::load(const std::string& filePath)
@@ -52,6 +44,8 @@ namespace OpenDK
 			is.seekg (i * 2); // start from the beginning
 			is.get(mapLayout[i++]);
 		}
+		is.close();
+
 		return true;
 	}
 
@@ -77,51 +71,17 @@ namespace OpenDK
 
 	void SlabFile::printMap() const
 	{
-		if (mapLayout == nullptr)
-		{
-			std::cerr << typeid(this).name() << ": [WRN] Can not print the map layout "
-					<< "without having successfully read a SLB file first" << std::endl;
-			return;
-		}
-
-		for (int y = 0; y < mapHeight; ++y)
-		{
-			std::cout << std::endl;
-
-			for (int x = 0; x < mapWidth; ++x)
-			{
-				char c = mapLayout[pos(x, y)];
-				if (c == 0)
-				{
-					std::cout << std::setw(2) << "  ";
-				}
-				else
-				{
-					std::cout << std::setw(2) << +c;
-				}
-			}
-		}
-		std::cout << std::endl;
-	}
-
-	int SlabFile::getMapHeight() const
-	{
-		return (mapLayout == nullptr) ? -1 : mapHeight;
-	}
-
-	int SlabFile::getMapWidth() const
-	{
-		return (mapLayout == nullptr) ? -1 : mapWidth;
+		MapFile::printMap();
 	}
 
 	char SlabFile::getTileType(int x, int y) const
 	{
-		return (mapLayout == nullptr) ? -1 : mapLayout[pos(x, y)];
+		return getTileValue(x, y);
 	}
 
-	int SlabFile::pos(int x, int y) const
+	char SlabFile::getTileType(int i) const
 	{
-		return (y * mapWidth + x);
+		return getTileValue(i);
 	}
 
 }

@@ -162,7 +162,7 @@ namespace OpenDK
 		slb.printMap();
 		OwnerFile own;
 		own.load("./bin/levels/MAP00001.OWN");
-		//own.printMap();
+		own.printMap();
 
 		// scale, rotate, translate (note: glm operations should be in reverse!)
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <iostream>     // std::cout
-#include <fstream>      // std::ifstream
+#include <iostream>		// std::cout
+#include <fstream>		// std::ifstream
 #include <iomanip>		// std::setw()
 #include <typeinfo>
 

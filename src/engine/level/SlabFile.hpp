@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MapFile.hpp"
+#include "TileType.hpp"
 
 namespace OpenDK
 {
@@ -51,12 +52,12 @@ namespace OpenDK
 		/**
 		 * @return The byte value (tile type) of the tile at position x,y or -1
 		 */
-		char getTileType(int x, int y) const;
+		TileType getTileType(int x, int y) const;
 
 		/**
 		 * @return The byte value (tile type) of the tile at index i or -1
 		 */
-		char getTileType(int i) const;
+		TileType getTileType(int i) const;
 
 	private:
 

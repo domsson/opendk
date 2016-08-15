@@ -5,11 +5,17 @@ namespace OpenDK
 
 	enum TileType
 	{
+		TYPE_UNDEFINED	= -1, // not present in the original game
 		ROCK			= 0,
 		GOLD			= 1,
 		EARTH			= 2,
 		EARTH_TORCH		= 3,
 		WALL			= 4,	// 5, 6, 7, 8, 9
+		WALL_2			= 5,
+		WALL_3			= 6,
+		WALL_4			= 7,
+		WALL_5			= 8,
+		WALL_6			= 9,
 		PATH			= 10,	// unclaimed path
 		LAND			= 11, 	// claimed land
 		LAVA			= 12,

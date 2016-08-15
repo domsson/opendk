@@ -55,7 +55,8 @@ namespace OpenDK
 		glEnable(GL_CULL_FACE);		// Do not render back sides
 		glCullFace(GL_BACK);		// cull back face (default)
 		glFrontFace(GL_CCW);		// GL_CCW for counter clock-wise (default)
-		renderer.initDummyData();
+		//renderer.initDummyData();
+		mapRenderer.initDummyData();
 	}
 
 	void OpenDK::run()
@@ -109,7 +110,8 @@ namespace OpenDK
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		renderer.render();
+		//renderer.render();
+		mapRenderer.render();
 
         window.display();
 	}

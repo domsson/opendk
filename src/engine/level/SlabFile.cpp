@@ -74,14 +74,14 @@ namespace OpenDK
 		MapFile::printMap();
 	}
 
-	char SlabFile::getTileType(int x, int y) const
+	TileType SlabFile::getTileType(int x, int y) const
 	{
-		return getTileValue(x, y);
+		return static_cast<TileType>(getTileValue(x, y));
 	}
 
-	char SlabFile::getTileType(int i) const
+	TileType SlabFile::getTileType(int i) const
 	{
-		return getTileValue(i);
+		return static_cast<TileType>(getTileValue(i));
 	}
 
 }

@@ -1,6 +1,9 @@
 #pragma once
 
+#include "TileType.hpp"
 #include "TileOwner.hpp"
+#include "Column.hpp"
+#include "CubeType.hpp"
 
 namespace OpenDK
 {
@@ -10,14 +13,20 @@ namespace OpenDK
 	public:
 
 		Tile();
+		Tile(TileType type);
 
-		TileOwner getOwner() const;
 		TileType getType() const;
+		TileOwner getOwner() const;
+
+		const Column& getColumn(int x, int y) const;
 
 	private:
 
-		TileOwner owner;
 		TileType type;
+		TileOwner owner;
+
+		Column columns[9];
+		void generateColumns();
 
 	};
 

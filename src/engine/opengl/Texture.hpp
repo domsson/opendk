@@ -26,6 +26,12 @@ namespace OpenDK
 		 */
 		bool load(const std::string& filePath, bool hasAlpha = true);
 
+		unsigned int getWidth() const;
+
+		unsigned int getHeight() const;
+
+		bool hasAlpha() const;
+
 		/**
 		 * Bind this Texture in the OpenGL state machine
 		 * so it can be used, for example for rendering.
@@ -45,6 +51,10 @@ namespace OpenDK
 
 	private:
 		GLuint id;
+
+		unsigned int width;
+		unsigned int height;
+		bool alpha;
 
 		void generateId();
 	};

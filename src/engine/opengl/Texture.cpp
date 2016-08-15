@@ -4,7 +4,7 @@ namespace OpenDK
 {
 
 	Texture::Texture()
-	: id(0)
+	: id(0), width(0), height(0)
 	{
 		// Nothing
 	}
@@ -18,14 +18,18 @@ namespace OpenDK
 			return false;
 		}
 
+		width  = image.getSize().x;
+		height = image.getSize().y;
+		alpha  = hasAlpha;
+
 		generateId();
 		bind();
 		glTexImage2D(
 			GL_TEXTURE_2D,
 			0,
-			hasAlpha ? GL_RGBA : GL_RGB,
-			image.getSize().x,
-			image.getSize().y,
+			alpha ? GL_RGBA : GL_RGB,
+			width,
+			height,
 			0,
 			GL_RGBA,
 			GL_UNSIGNED_INT_8_8_8_8_REV,
@@ -35,6 +39,21 @@ namespace OpenDK
 		unbind();
 
 		return true;
+	}
+
+	unsigned int Texture::getWidth() const
+	{
+		return width;
+	}
+
+	unsigned int Texture::getHeight() const
+	{
+		return height;
+	}
+
+	bool Texture::hasAlpha() const
+	{
+		return alpha;
 	}
 
 	void Texture::bind() const

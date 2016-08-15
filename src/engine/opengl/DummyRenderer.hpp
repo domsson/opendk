@@ -18,6 +18,8 @@
 
 #include "../level/SlabFile.hpp"
 #include "../level/OwnerFile.hpp"
+#include "../level/ColumnFile.hpp"
+#include "../level/ColumnDataFile.hpp"
 
 namespace OpenDK
 {

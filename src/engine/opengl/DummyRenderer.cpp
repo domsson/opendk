@@ -159,7 +159,8 @@ namespace OpenDK
 
 		SlabFile slb;
 		slb.load("./bin/levels/MAP00001.SLB");
-		slb.printMap();
+		//slb.printMap();
+
 		OwnerFile own;
 		own.load("./bin/levels/MAP00001.OWN");
 		//own.printMap();

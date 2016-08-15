@@ -39,9 +39,9 @@ namespace OpenDK
 		mapLayout = new char [mapWidth * mapHeight];
 
 		int i = 0;
-		for (int y = 1; y < mapHeight * 3; y += 3)
+		for (int y = 0; y < mapHeight * 3; y += 3)
 		{
-			for (int x = 1; x < mapWidth * 3; x += 3)
+			for (int x = 0; x < mapWidth * 3; x += 3)
 			{
 				is.seekg(colPos(x, y));
 				is.get(mapLayout[i++]);

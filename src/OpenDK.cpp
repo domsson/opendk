@@ -105,6 +105,7 @@ namespace OpenDK
 	{
 		float camOffsetX = 0.0f;
 		float camOffsetY = 0.0f;
+		float zoomChange = 0.0f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -122,8 +123,17 @@ namespace OpenDK
 		{
 			camOffsetY =  0.1f;
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+		{
+			zoomChange =  0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+		{
+			zoomChange = -0.1f;
+		}
 
 		mapRenderer.moveCam(camOffsetX, camOffsetY);
+		mapRenderer.zoomCam(zoomChange);
 	}
 
 	void OpenDK::render()

@@ -4,7 +4,9 @@ namespace OpenDK
 {
 
 	Camera::Camera()
-	: position(glm::vec3(0.0f, 0.0f, -3.0f)), rotation(glm::vec3(45.0f, 35.265f, 0.0f))
+	: position(glm::vec3(0.0f, 0.0f, -3.0f)),
+	  rotation(glm::vec3(45.0f, 35.265f, 0.0f)),
+	  zoom(1.0f)
 	{
 		initViewMatrix();
 		initProjectionMatrix();
@@ -48,6 +50,16 @@ namespace OpenDK
 		this->rotation.z = rotation.z;
 	}
 
+	void Camera::setZoom(float zoom)
+	{
+		this->zoom = (zoom <= 0) ? 0.1f : zoom;
+	}
+
+	float Camera::getZoom() const
+	{
+		return zoom;
+	}
+
 	const glm::mat4& Camera::getViewMatrix() const
 	{
 		return viewMatrix;
@@ -75,13 +87,13 @@ namespace OpenDK
 
 	void Camera::initProjectionMatrix()
 	{
-		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
-		projectionMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, 0.01f, 100.0f);
+		updateProjectionMatrix();
 	}
 
 	void Camera::update()
 	{
 		updateViewMatrix();
+		updateProjectionMatrix();
 	}
 
 	void Camera::updateViewMatrix()
@@ -95,6 +107,13 @@ namespace OpenDK
 		//viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
 		//viewMatrix = glm::rotate(viewMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//viewMatrix = glm::rotate(viewMatrix, glm::radians(35.264f), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	void Camera::updateProjectionMatrix()
+	{
+		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
+		projectionMatrix = glm::ortho(-4.0f * zoom, 4.0f * zoom, -3.0f * zoom, 3.0f * zoom, 0.01f, 100.0f);
+		// glOrtho( -width/2*zoom, width/2*zoom, -height/2*zoom, height/2*zoom, -1, 1 );
 	}
 
 }

@@ -15,10 +15,15 @@ namespace OpenDK
 		delete map;
 	}
 
-	void MapRenderer::moveCam(float offsetX, float offsetY)
+	void MapRenderer::moveCam(float offsetX, float offsetY, float offsetZ)
 	{
 		glm::vec3 pos = camera.getPosition();
-		camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z));
+		camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z + offsetZ));
+	}
+
+	void MapRenderer::zoomCam(float zoomChange)
+	{
+		camera.setZoom(camera.getZoom() + zoomChange);
 	}
 
 	void MapRenderer::initDummyData()

@@ -35,7 +35,8 @@ namespace OpenDK
 		void render();
 
 		// TODO remove this later, just dirty coding for now
-		void moveCam(float offsetX, float offsetY);
+		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
+		void zoomCam(float zoomChange);
 
 	private:
 		ShaderProgram* sp;

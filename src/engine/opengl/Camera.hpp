@@ -33,12 +33,18 @@ namespace OpenDK
 
 		void setRotation(const glm::vec3& rotation);
 
+		void setZoom(float zoom);
+
+		float getZoom() const;
+
 		void update();
 
 	private:
 
 		glm::vec3 position;
 		glm::vec3 rotation;
+
+		float zoom;
 
 		glm::mat4 viewMatrix;
 		glm::mat4 projectionMatrix;
@@ -48,6 +54,8 @@ namespace OpenDK
 		void initProjectionMatrix();
 
 		void updateViewMatrix();
+
+		void updateProjectionMatrix();
 
 	};
 

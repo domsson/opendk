@@ -1,13 +1,13 @@
 #version 130
 
-in vec3 ourColor;
-in vec2 TexCoord;
+in vec3 pass_Color;
+in vec2 pass_Unwrap;
 
-out vec4 color;
+out vec4 out_Color;
 
-uniform sampler2D ourTexture;
+uniform sampler2D tex;
 
 void main()
 {
-    color = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0f);
+    out_Color = texture(tex, pass_Unwrap) * vec4(pass_Color, 1.0f);
 }

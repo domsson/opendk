@@ -16,7 +16,7 @@ namespace OpenDK
 
 		Map::~Map()
 		{
-			// this throws a sigfault... wtf?
+			// this (still) throws a sigfault... wtf?
 			if (tiles == nullptr)
 			{
 				delete tiles;

@@ -69,8 +69,14 @@ namespace OpenDK
 		float u_1 = (float) (s + SPRITE_WIDTH) / (float) SPRITESHEET_WIDTH;
 		float v_1 = (float) (t + SPRITE_HEIGHT) / (float) SPRITESHEET_HEIGHT;
 
-		std::cout<<"u_0="<<u_0<<", u_1="<<u_1<<", v_0="<<v_0<<", v_1="<<v_1<<std::endl;
+		texCoords[0] = u_0;
+		texCoords[1] = v_0;
+		texCoords[2] = u_1;
+		texCoords[3] = v_1;
 
+		//std::cout<<"u_0="<<u_0<<", u_1="<<u_1<<", v_0="<<v_0<<", v_1="<<v_1<<std::endl;
+
+		/*
 		GLfloat unwrap[48];
 
 		for (int i = 0; i < 48; i += 8)
@@ -84,6 +90,46 @@ namespace OpenDK
 			unwrap[i+6] = u_0;
 			unwrap[i+7] = v_0;
 		}
+		*/
+
+		/*
+		 	0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+		*/
+
+		GLfloat unwrap[] = {
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+
+			0.0f, 1.0f,	// 0: bottom left front
+			1.0f, 1.0f,	// 1: bottom right front
+			1.0f, 0.0f,	// 2: top right front
+			0.0f, 0.0f,	// 3: top left front
+		};
 
 		GLuint indices[] = {
 			 0,  1,  2,  2,  3,  0,	// Front side
@@ -106,7 +152,12 @@ namespace OpenDK
 		vao.addVBO(vboUvw, ShaderAttribute::TEXTURE);
 		vao.setIBO(ibo);
 
-		std::cout << "done." << std::endl;
+		//std::cout << "done." << std::endl;
+	}
+
+	const GLfloat* CubeGeometry::getTexCoords() const
+	{
+		return texCoords;
 	}
 
 	const VertexArrayObject& CubeGeometry::getVAO() const

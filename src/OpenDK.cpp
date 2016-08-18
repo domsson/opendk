@@ -103,7 +103,27 @@ namespace OpenDK
 
 	void OpenDK::update()
 	{
-		// Nothing yet, how sad
+		float camOffsetX = 0.0f;
+		float camOffsetY = 0.0f;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			camOffsetX =  0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			camOffsetX = -0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			camOffsetY = -0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			camOffsetY =  0.1f;
+		}
+
+		mapRenderer.moveCam(camOffsetX, camOffsetY);
 	}
 
 	void OpenDK::render()

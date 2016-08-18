@@ -13,6 +13,7 @@
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
+#include "Camera.hpp"
 
 #include "../level/Map.hpp"
 #include "../level/SlabFile.hpp"
@@ -33,6 +34,9 @@ namespace OpenDK
 		void initDummyData();
 		void render();
 
+		// TODO remove this later, just dirty coding for now
+		void moveCam(float offsetX, float offsetY);
+
 	private:
 		ShaderProgram* sp;
 		Texture* tex;
@@ -40,9 +44,9 @@ namespace OpenDK
 
 		sf::Clock clock;
 
+		Camera camera;
+
 		glm::mat4 modelMatrix;
-		glm::mat4 viewMatrix;
-		glm::mat4 projectionMatrix;
 	};
 
 }

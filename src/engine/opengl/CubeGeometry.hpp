@@ -25,9 +25,12 @@ namespace OpenDK
 
 		const VertexArrayObject& getVAO() const;
 
+		const GLfloat* getTexCoords() const;
+
 	private:
 
 		VertexArrayObject vao;
+		GLfloat texCoords[4];
 	};
 
 }

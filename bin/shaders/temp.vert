@@ -15,15 +15,11 @@ out vec2 pass_Unwrap;
 
 void main()
 {
-    //gl_Position = vec4(position, 1.0f);
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0f);
     pass_Color = in_Color;
 
-	pass_Unwrap.x = (in_Unwrap.x == 0.0f) ? uvOffsets[0] : uvOffsets[2];
-	pass_Unwrap.y = (in_Unwrap.y == 0.0f) ? uvOffsets[1] : uvOffsets[3];
+	//pass_Unwrap.x = (in_Unwrap.x == 0.0f) ? uvOffsets[0] : uvOffsets[2];
+	//pass_Unwrap.y = (in_Unwrap.y == 0.0f) ? uvOffsets[1] : uvOffsets[3];
 
-	//pass_Unwrap.x = (in_Unwrap.x == 0.0f) ? 0.0 : 0.125;
-	//pass_Unwrap.y = (in_Unwrap.y == 0.0f) ? 0.205882 : 0.220588;
-
-	//TexCoord = texCoord;
+	pass_Unwrap = in_Unwrap;
 }

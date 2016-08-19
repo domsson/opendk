@@ -41,13 +41,20 @@ namespace OpenDK
 	private:
 		ShaderProgram* sp;
 		Texture* tex;
+		Texture* atlas;
 		Map* map;
+
+		SlabFile slb;
 
 		sf::Clock clock;
 
 		Camera camera;
 
 		glm::mat4 modelMatrix;
+
+		void renderCube(const Cube& cube, int x, int y);
+		CubeType getSuitableCubeType(TileType tileType) const;
+
 	};
 
 }

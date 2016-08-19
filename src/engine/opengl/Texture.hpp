@@ -26,11 +26,15 @@ namespace OpenDK
 		 */
 		bool load(const std::string& filePath, bool hasAlpha = true);
 
+		bool loadAtlas(const std::string& filePath, int spriteWidth, int spriteHeight, bool hasAlpha = true);
+
 		unsigned int getWidth() const;
 
 		unsigned int getHeight() const;
 
 		bool hasAlpha() const;
+
+		bool isAtlas() const;
 
 		/**
 		 * Bind this Texture in the OpenGL state machine
@@ -55,6 +59,10 @@ namespace OpenDK
 		unsigned int width;
 		unsigned int height;
 		bool alpha;
+
+		bool atlas;
+		unsigned int spriteWidth;
+		unsigned int spriteHeight;
 
 		void generateId();
 	};

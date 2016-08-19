@@ -55,9 +55,8 @@ namespace OpenDK
 
 		glm::mat4 modelMatrix;
 
-		void renderCube(const Cube& cube, int x, int y);
 		void renderBlock(const VertexArrayObject& vao, int x, int y);
-		CubeType getSuitableCubeType(TileType tileType) const;
+		int getSuitableSprite(TileType tileType) const;
 
 	};
 

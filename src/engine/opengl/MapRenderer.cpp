@@ -64,9 +64,11 @@ namespace OpenDK
 		VertexArrayObject vao = block->getVAO();
 		vao.bind();
 
-		for (int y = 0; y < 85; ++y)
+		//for (int y = 0; y < 85; ++y)
+		for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
 		{
-			for (int x = 0; x < 85; ++x)
+			//for (int x = 0; x < 85; ++x)
+			for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
 			{
 				renderBlock(vao, x, y);
 
@@ -86,43 +88,12 @@ namespace OpenDK
 
 	}
 
-	void MapRenderer::renderCube(const Cube& cube, int x, int y)
-	{
-		modelMatrix = glm::mat4();
-		// (x,y) is 2D, so y becomes z in 3D visualization: (x,y)->(x,0,y)
-		modelMatrix = glm::translate(modelMatrix, glm::vec3((float)x, 0.0f, (float)y));
-
-		const GLfloat* uvOffsets = cube.getGeometry().getTexCoords();
-		VertexArrayObject vao = cube.getGeometry().getVAO();
-
-		// Pass texture coords to shaders
-		glUniform4fv(sp->getUniformLocation("uvOffsets"), 1, uvOffsets);
-
-		// Pass matrices to shaders
-		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"),       1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),        1, GL_FALSE, camera.getViewMatrixPtr());
-		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"),  1, GL_FALSE, camera.getProjectionMatrixPtr());
-
-		vao.bind();
-		if (vao.hasIBO())
-		{
-			// NOTE: We might be able to use `glDrawRangeElements()` later on
-			// 		 in order to only draw the block's faces that are visible.
-			glDrawElements(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-		}
-		vao.unbind();
-	}
-
 	void MapRenderer::renderBlock(const VertexArrayObject& vao, int x, int y)
 	{
-		modelMatrix = glm::mat4();
-		modelMatrix = glm::translate(modelMatrix, glm::vec3((float)x, 0.0f, (float)y));
+		modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)y));
 
-		glUniform2i(sp->getUniformLocation("sprites"), 106, 117);
+		int sprite = getSuitableSprite(slb.getTileType(x, y));
+		glUniform2i(sp->getUniformLocation("sprites"), sprite, sprite);
 
 		// Pass matrices to shaders
 		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"),       1, GL_FALSE, glm::value_ptr(modelMatrix));
@@ -139,18 +110,18 @@ namespace OpenDK
 		}
 	}
 
-	CubeType MapRenderer::getSuitableCubeType(TileType tileType) const
+	int MapRenderer::getSuitableSprite(TileType tileType) const
 	{
 		switch (tileType)
 		{
 			case TileType::EARTH: // 2
-				return CubeType::EARTH_1;
+				return 27;
 				break;
 			case TileType::PATH: // 10
-				return CubeType::PATH_1;
+				return 30;
 				break;
 			case TileType::LAND: // 11
-				return CubeType::CLAIMED_NON_CENTRE;
+				return 176;
 				break;
 			case TileType::WALL:	// 4-9
 			case TileType::WALL_2:
@@ -158,15 +129,15 @@ namespace OpenDK
 			case TileType::WALL_4:
 			case TileType::WALL_5:
 			case TileType::WALL_6:
-				return CubeType::BRICK;
+				return 112;
 				break;
 			case TileType::DUNGEON_HEART:
-				return CubeType::HEART_PEDESTAL_CENTRE;
+				return 490;
 				break;
 			case TileType::ROCK: // 0
 			case TileType::TYPE_UNDEFINED:
 			default:
-				return CubeType::ROCK_1;
+				return 271;
 		}
 	}
 

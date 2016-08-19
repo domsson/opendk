@@ -38,13 +38,11 @@ namespace OpenDK
 		// TODO remove this later, just dirty coding for now
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
 		void zoomCam(float zoomChange);
+		void debugCamCoords() const;
 
 	private:
 		ShaderProgram* sp;
 		Texture* tex;
-		Texture* atlas;
-		Map* map;
-
 		BlockGeometry* block;
 
 		SlabFile slb;

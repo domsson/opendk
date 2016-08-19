@@ -99,7 +99,13 @@ namespace OpenDK
 				else if (event.type == sf::Event::KeyPressed)
 				{
 					if (event.key.code == sf::Keyboard::Escape)
-					running = false;
+					{
+						running = false;
+					}
+					if (event.key.code == sf::Keyboard::C)
+					{
+						mapRenderer.debugCamCoords();
+					}
 				}
 			}
 

@@ -3,18 +3,15 @@
 namespace OpenDK
 {
 	MapRenderer::MapRenderer()
-	: sp(nullptr), tex(nullptr), atlas(nullptr), map(nullptr), block(nullptr)
+	: sp(nullptr), tex(nullptr), block(nullptr)
 	{
 	}
 
 	MapRenderer::~MapRenderer()
 	{
 		tex->free();
-		atlas->free();
 		delete sp;
 		delete tex;
-		delete atlas;
-		delete map;
 		delete block;
 	}
 
@@ -29,6 +26,12 @@ namespace OpenDK
 		camera.setZoom(camera.getZoom() + zoomChange);
 	}
 
+	void MapRenderer::debugCamCoords() const
+	{
+		glm::vec3 camPos = camera.getPosition();
+		std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
+	}
+
 	void MapRenderer::initDummyData()
 	{
 		sp = new ShaderProgram();
@@ -40,14 +43,14 @@ namespace OpenDK
 		sp->link();
 
 		tex = new Texture();
-		tex->load("./bin/textures/block0.bmp");
-
-		atlas = new Texture();
-		atlas->loadAtlas("./bin/textures/block0.bmp", 32, 32);
+		tex->loadAtlas("./bin/textures/block0.bmp", 32, 32);
 
 		slb.load("./bin/levels/MAP00001.SLB");
 
 		block = new BlockGeometry();
+
+		camera.setPosition(-58.5f, 6.5f, 0.0f);
+		camera.setZoom(2.0f);
 
 		// scale, rotate, translate (note: glm operations should be in reverse!)
 	}
@@ -59,7 +62,7 @@ namespace OpenDK
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		sp->use();
 		//tex->bind();
-		atlas->bind();
+		tex->bind();
 
 		VertexArrayObject vao = block->getVAO();
 		vao.bind();

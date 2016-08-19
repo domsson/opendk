@@ -20,6 +20,7 @@
 #include "../level/OwnerFile.hpp"
 #include "../level/ColumnFile.hpp"
 #include "../level/ColumnDataFile.hpp"
+#include "BlockGeometry.hpp"
 
 namespace OpenDK
 {
@@ -53,6 +54,7 @@ namespace OpenDK
 		glm::mat4 modelMatrix;
 
 		void renderCube(const Cube& cube, int x, int y);
+		void renderBlock(const VertexArrayObject& vao, int x, int y);
 		CubeType getSuitableCubeType(TileType tileType) const;
 
 	};

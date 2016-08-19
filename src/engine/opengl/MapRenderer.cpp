@@ -58,7 +58,7 @@ namespace OpenDK
 		//tex->bind();
 		atlas->bind();
 
-
+/*
 		Cube c(CubeType::BRICK);
 		const GLfloat* uvOffsets = c.getGeometry().getTexCoords();
 		//std::cout << "offsets: u_0=" << uvOffsets[0] << " v_0=" << uvOffsets[1] << " u_1=" << uvOffsets[2] << " v_1=" << uvOffsets[3];
@@ -83,24 +83,33 @@ namespace OpenDK
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
 		vao.unbind();
+*/
+		//BlockGeometry block;
+		CubeGeometry block(0,0);
+		VertexArrayObject vao = block.getVAO();
+		vao.bind();
+		glDisable(GL_BLEND);
 
-/*
 		for (int y = 0; y < 85; ++y)
 		{
 			for (int x = 0; x < 85; ++x)
 			{
-				Cube cube(getSuitableCubeType(slb.getTileType(x, y)));
+				renderBlock(vao, x, y);
 
+				/*
+				//Cube cube(getSuitableCubeType(slb.getTileType(x, y)));
 				for (int r = 0; r < 3; ++r)
 				{
 					for (int c = 0; c < 3; ++c)
 					{
-						renderCube(cube, x+c, y+r);
+						//renderCube(cube, x+c, y+r);
+						//renderBlock(block, x+c, y+r);
 					}
 				}
+				*/
 			}
 		}
-*/
+		vao.unbind();
 
 		//modelMatrix = glm::translate(modelMatrix, glm::vec3(x, y, 0.0f));
 	}
@@ -108,7 +117,8 @@ namespace OpenDK
 	void MapRenderer::renderCube(const Cube& cube, int x, int y)
 	{
 		modelMatrix = glm::mat4();
-		modelMatrix = glm::translate(modelMatrix, glm::vec3((float)x, (float)y, 0.0f));
+		// (x,y) is 2D, so y becomes z in 3D visualization: (x,y)->(x,0,y)
+		modelMatrix = glm::translate(modelMatrix, glm::vec3((float)x, 0.0f, (float)y));
 
 		const GLfloat* uvOffsets = cube.getGeometry().getTexCoords();
 		VertexArrayObject vao = cube.getGeometry().getVAO();
@@ -131,6 +141,33 @@ namespace OpenDK
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
 		vao.unbind();
+	}
+
+	void MapRenderer::renderBlock(const VertexArrayObject& vao, int x, int y)
+	{
+		modelMatrix = glm::mat4();
+		// (x,y) is 2D, so y becomes z in 3D visualization: (x,y)->(x,0,y)
+		modelMatrix = glm::translate(modelMatrix, glm::vec3((float)x, 0.0f, (float)y));
+
+		// Pass texture coords to shaders
+		const GLuint* spriteIndices = new GLuint[2] {1, 16};
+		glUniform2uiv(sp->getUniformLocation("spriteIndices"), 1, spriteIndices);
+
+		// Pass matrices to shaders
+		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"),       1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),        1, GL_FALSE, camera.getViewMatrixPtr());
+		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"),  1, GL_FALSE, camera.getProjectionMatrixPtr());
+
+		//vao.bind();
+		if (vao.hasIBO())
+		{
+			glDrawElements(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0);
+		}
+		else
+		{
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+		}
+		//vao.unbind();
 	}
 
 	CubeType MapRenderer::getSuitableCubeType(TileType tileType) const

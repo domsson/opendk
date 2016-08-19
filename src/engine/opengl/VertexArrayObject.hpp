@@ -43,7 +43,7 @@ namespace OpenDK
 		 * Get the IndexBufferObject associated with this VertexArrayObject.
 		 * @return The IBO bound to this VAO or nullptr
 		 */
-		IndexBufferObject* getIBO();
+		const IndexBufferObject* getIBO() const;
 
 		bool hasIBO() const;
 

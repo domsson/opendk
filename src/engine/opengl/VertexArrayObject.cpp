@@ -55,7 +55,7 @@ namespace OpenDK
 		ibo.unbind();
 	}
 
-	IndexBufferObject* VertexArrayObject::getIBO()
+	const IndexBufferObject* VertexArrayObject::getIBO() const
 	{
 		if (ibo.getId() == 0)
 		{

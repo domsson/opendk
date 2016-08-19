@@ -30,7 +30,8 @@ namespace OpenDK
 
 	void OpenDK::initWindow()
 	{
-		window.create(sf::VideoMode(width, height), title, sf::Style::Close);
+		sf::ContextSettings context(2, 0, 0, 3, 2);
+		window.create(sf::VideoMode(width, height), title, sf::Style::Close, context);
 		window.setMouseCursorVisible(false);
 		if (iconLoaded)
 		{
@@ -51,6 +52,7 @@ namespace OpenDK
 	{
 		glViewport(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);	// Do not render hidden geometry
 		glEnable(GL_CULL_FACE);		// Do not render back sides
 		glCullFace(GL_BACK);		// cull back face (default)

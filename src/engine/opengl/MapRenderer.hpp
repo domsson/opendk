@@ -45,6 +45,8 @@ namespace OpenDK
 		Texture* atlas;
 		Map* map;
 
+		BlockGeometry* block;
+
 		SlabFile slb;
 
 		sf::Clock clock;

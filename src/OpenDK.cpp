@@ -37,6 +37,12 @@ namespace OpenDK
 		{
 			window.setIcon(gameIcon.getSize().x, gameIcon.getSize().y, gameIcon.getPixelsPtr());
 		}
+
+		sf::ContextSettings settings = window.getSettings();
+		std::cout << "depth bits:" << settings.depthBits << std::endl;
+		std::cout << "stencil bits:" << settings.stencilBits << std::endl;
+		std::cout << "antialiasing level:" << settings.antialiasingLevel << std::endl;
+		std::cout << "version:" << settings.majorVersion << "." << settings.minorVersion << std::endl;
 	}
 
 	void OpenDK::initGLEW()
@@ -127,11 +133,11 @@ namespace OpenDK
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
 		{
-			zoomChange =  0.1f;
+			zoomChange = -0.1f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
 		{
-			zoomChange = -0.1f;
+			zoomChange =  0.1f;
 		}
 
 		mapRenderer.moveCam(camOffsetX, camOffsetY);

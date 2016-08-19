@@ -85,7 +85,6 @@ namespace OpenDK
 			GL_UNSIGNED_INT_8_8_8_8_REV,
 			NULL
 		);
-		glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
 		if (glGetError() != GL_NO_ERROR)
 		{
@@ -129,10 +128,10 @@ namespace OpenDK
 					GL_UNSIGNED_INT_8_8_8_8_REV,
 					image.getPixelsPtr() + (y * spriteHeight * width + x * spriteWidth) * 4
 				);
-
-				//glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 			}
 		}
+
+		glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
 		if (glGetError() != GL_NO_ERROR)
 		{

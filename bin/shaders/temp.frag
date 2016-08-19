@@ -11,6 +11,5 @@ uniform sampler2DArray atlas;
 void main()
 {
     //out_Color = texture(tex, pass_Unwrap) * vec4(pass_Color, 1.0f);
-    //out_Color = texture(atlas, vec3(pass_Unwrap, 1.0f)) * vec4(pass_Color, 1.0f);
-    out_Color = texture(atlas, vec3(pass_Unwrap, 1)) * vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    out_Color = texture(atlas, vec3(pass_Unwrap, 1)) * vec4(pass_Color, 1.0f);
 }

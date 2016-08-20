@@ -22,6 +22,12 @@ namespace OpenDK
 			 0.5f,  0.5f, -0.5f,	// 18 (=6)
 			-0.5f,  0.5f, -0.5f,	// 19 (=10)
 
+			// BOTTOM
+			-0.5f, -0.5f, -0.5f,	// 20 (=9)
+			 0.5f, -0.5f, -0.5f,	// 21 (=5)
+			 0.5f, -0.5f,  0.5f,	// 22 (=1)
+			-0.5f, -0.5f,  0.5f,		// 23 (=0)
+
 			// FRONT
 			-0.5f, -0.5f,  0.5f,	// 0: bottom left front
 			 0.5f, -0.5f,  0.5f,	// 1: bottom right front
@@ -45,19 +51,11 @@ namespace OpenDK
 			-0.5f, -0.5f,  0.5f,	// 13 (=0)
 			-0.5f,  0.5f,  0.5f,	// 14 (=3)
 			-0.5f,  0.5f, -0.5f		// 15 (=10)
-
-			/*
-			// BOTTOM
-			-0.5f, -0.5f, -0.5f,	// 20 (=9)
-			 0.5f, -0.5f, -0.5f,	// 21 (=5)
-			 0.5f, -0.5f,  0.5f,	// 22 (=1)
-			-0.5f, -0.5f,  0.5f		// 23 (=0)
-			*/
 		};
 
-		GLubyte colors[60];
+		GLubyte colors[sizeof(vertices)];
 
-		for (int i = 0; i < 60; ++i)
+		for (size_t i = 0; i < sizeof(vertices); ++i)
 		{
 			colors[i] = 255;
 		}
@@ -86,23 +84,21 @@ namespace OpenDK
 			0.0f, 1.0f,	// 0: bottom left front
 			1.0f, 1.0f,	// 1: bottom right front
 			1.0f, 0.0f,	// 2: top right front
-			0.0f, 0.0f	// 3: top left front
+			0.0f, 0.0f,	// 3: top left front
 
-			/*
 			0.0f, 1.0f,	// 0: bottom left front
 			1.0f, 1.0f,	// 1: bottom right front
 			1.0f, 0.0f,	// 2: top right front
 			0.0f, 0.0f	// 3: top left front
-			*/
 		};
 
 		GLuint indices[] = {
 			 0,  1,  2,  2,  3,  0,	// Top side
-			 4,  5,  6,  6,  7,  4,	// Front side
-			 8,  9, 10, 10, 11,  8,	// Right side
-			12, 13, 14, 14, 15, 12, // Back side
-			16, 17, 18, 18, 19, 16,	// Left side
-			// 20, 21, 22, 22, 23, 20	// Bottom side
+			 4,  5,  6,  6,  7,  4,	// Bottom side
+			 8,  9, 10, 10, 11,  8,	// Front side
+			12, 13, 14, 14, 15, 12, // Right side
+			16, 17, 18, 18, 19, 16,	// Back side
+			20, 21, 22, 22, 23, 20	// Left side
 		};
 
 		vboPos.setData(vertices, sizeof(vertices));

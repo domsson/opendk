@@ -20,5 +20,5 @@ void main()
     pass_Color = in_Color;
 
 	pass_Unwrap = in_Unwrap;
-	pass_Sprite = gl_VertexID < 4 ? sprites[0] : sprites[1];
+	pass_Sprite = gl_VertexID < 8 ? sprites[0] : sprites[1];
 }

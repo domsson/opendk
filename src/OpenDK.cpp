@@ -10,7 +10,7 @@ namespace OpenDK
 	static const int INITIAL_HEIGHT = 600;
 	static const std::string GAME_ICON = "icon.png";
 
-	static const int TARGET_FPS = 60;
+	static const int TARGET_FPS = 40;
 	static const float SECONDS_PER_FRAME = 1.0 / TARGET_FPS;
 
 	OpenDK::OpenDK()

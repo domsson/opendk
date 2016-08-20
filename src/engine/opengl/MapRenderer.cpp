@@ -35,8 +35,8 @@ namespace OpenDK
 	void MapRenderer::initDummyData()
 	{
 		sp = new ShaderProgram();
-		sp->addShader("./bin/shaders/temp.vert", GL_VERTEX_SHADER);
-		sp->addShader("./bin/shaders/temp.frag", GL_FRAGMENT_SHADER);
+		sp->addShader("./bin/shaders/block.vert", GL_VERTEX_SHADER);
+		sp->addShader("./bin/shaders/block.frag", GL_FRAGMENT_SHADER);
 		sp->bindAttribute(ShaderAttribute::POSITION, "in_Position");
 		sp->bindAttribute(ShaderAttribute::COLOR, "in_Color");
 		sp->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
@@ -49,7 +49,8 @@ namespace OpenDK
 
 		block = new BlockGeometry();
 
-		camera.setPosition(-58.5f, 6.5f, 0.0f);
+		//camera.setPosition(-58.5f, 6.5f, 0.0f);
+		camera.setPosition(-175.0f, 20.f, 0.0f);
 		camera.setZoom(2.0f);
 
 		// scale, rotate, translate (note: glm operations should be in reverse!)
@@ -73,17 +74,15 @@ namespace OpenDK
 			//for (int x = 0; x < 85; ++x)
 			for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
 			{
-				renderBlock(vao, x, y);
+				//renderBlock(vao, x, y);
 
-				/*
 				for (int r = 0; r < 3; ++r)
 				{
 					for (int c = 0; c < 3; ++c)
 					{
-						renderBlock(vao, (x*3)+c, (y*3)+r);
+						renderBlock(vao, x, y, c, r);
 					}
 				}
-				*/
 
 			}
 		}
@@ -91,11 +90,11 @@ namespace OpenDK
 
 	}
 
-	void MapRenderer::renderBlock(const VertexArrayObject& vao, int x, int y)
+	void MapRenderer::renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY)
 	{
-		modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)y));
+		modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)tileX*3+blockX, 0.0f, (float)tileY*3+blockY));
 
-		int sprite = getSuitableSprite(slb.getTileType(x, y));
+		int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
 		glUniform2i(sp->getUniformLocation("sprites"), sprite, sprite);
 
 		// Pass matrices to shaders

@@ -53,7 +53,7 @@ namespace OpenDK
 
 		glm::mat4 modelMatrix;
 
-		void renderBlock(const VertexArrayObject& vao, int x, int y);
+		void renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY);
 		int getSuitableSprite(TileType tileType) const;
 
 	};

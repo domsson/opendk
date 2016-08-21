@@ -4,22 +4,24 @@ namespace OpenDK
 {
 
 		const size_t ColumnFile::EXPECTED_FILE_SIZE = 49160;
-		const size_t ColumnFile::COL_ENTRY_SIZE = 24;
+		const size_t ColumnFile::HEADER_SIZE = 8;
+		const size_t ColumnFile::CHUNK_SIZE = 24;
+		const size_t ColumnFile::ENTRY_SIZE = 2;
 
 		ColumnFile::ColumnFile()
-		: columnData(nullptr), numColumns(-1)
+		: data(nullptr), size(0)
 		{
 		}
 
 		ColumnFile::ColumnFile(const std::string& filePath)
-		: columnData(nullptr), numColumns(-1)
+		: data(nullptr), size(0)
 		{
 			load(filePath);
 		}
 
 		ColumnFile::~ColumnFile()
 		{
-			delete[] columnData;
+			delete[] data;
 		}
 
 		bool ColumnFile::load(const std::string& filePath)
@@ -42,23 +44,19 @@ namespace OpenDK
 				return false;
 			}
 
-			columnData = new char [length - 8];
+			size = length - HEADER_SIZE;
+			data = new char [size];
 
-			/*
-			char numEntries[2];
-			is.seekg(1);
-			is.read(numEntries, 2); // 0=08 1=00
-
-			numColumns = 0x0000; // init to all zeroes
-			numColumns = numColumns | (numEntries[0] << 8); // 0: 08, after shift: [08] 00
-			numColumns = numColumns | (numEntries[1] << 0); // 1: 00, after shift:  00 [00]
-			*/
-
-			is.seekg(7);
-			is.read(columnData, length - 8);
+			is.seekg(HEADER_SIZE - 1);
+			is.read(data, size);
 			is.close();
 
 			return true;
+		}
+
+		size_t ColumnFile::getSize() const
+		{
+			return size;
 		}
 
 		std::int16_t ColumnFile::getCubeType(int columnIndex, int height) const
@@ -69,21 +67,38 @@ namespace OpenDK
 						<< "given height value is invalid - should be in the range 0..7" << std::endl;
 				return -1;
 			}
-			int offset = 8 + (columnIndex * COL_ENTRY_SIZE) + (height * 2);
 
-			// TODO I really don't get why it is this way round...
+			// 8 because the actual cube data starts after 8 bytes into a chunk
+			size_t offset = 8 + (columnIndex * CHUNK_SIZE) + (height * ENTRY_SIZE);
+
+			if (offset + ENTRY_SIZE > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get cube type, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			// TODO
+			// I really don't get why it is this way round...
 			// This is "extracting" little endian data.
 			// And while the files do seem to be little endian,
 			// my architecture is as well! So what the hell...
 			std::int16_t columnType = 0x0000;
-			columnType = columnType | (columnData[offset+0] << 8);
-			columnType = columnType | (columnData[offset+1] << 0);
+			size_t shift = (ENTRY_SIZE - 1) * 8;
 
-			// The following two work nicely... but don't swap the byte order.
+			for (size_t byte = 0; byte < ENTRY_SIZE; ++byte)
+			{
+				columnType |= (data[offset + byte] << shift);
+				shift -= 8;
+			}
 
+			// The following two work nicely, but they don't swap the byte order.
+
+			// 1: Using memcpy
 			//std::int16_t columnType;
 			//std::memcpy(&columnType, columnData + offset, 2);
 
+			// 2: Using cast and pointers
 			//std::int16_t columnType = *(reinterpret_cast<std::int16_t *>(columnData + offset));
 
 			return columnType;

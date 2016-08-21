@@ -16,7 +16,9 @@ namespace OpenDK
 	public:
 
 		static const size_t EXPECTED_FILE_SIZE;
-		static const size_t COL_ENTRY_SIZE;
+		static const size_t HEADER_SIZE;
+		static const size_t CHUNK_SIZE;
+		static const size_t ENTRY_SIZE;
 
 		ColumnFile();
 
@@ -26,14 +28,15 @@ namespace OpenDK
 
 		bool load(const std::string& filePath);
 
+		size_t getSize() const;
+
 		// height: 0-7, 0 being the floor
 		std::int16_t getCubeType(int columnIndex, int height) const;
 
 	private:
 
-		char* columnData;
-
-		std::int16_t numColumns;
+		char* data;
+		size_t size;
 
 	/* // From KeeperFX
 		struct Column { // sizeof=0x18

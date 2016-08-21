@@ -33,6 +33,10 @@ namespace OpenDK
 		// height: 0-7, 0 being the floor
 		std::int16_t getCubeType(int columnIndex, int height) const;
 
+		bool cubeIsSolid(int columnIndex, int height) const;
+
+		std::int16_t getBaseBlockType(int columnIndex) const;
+
 	private:
 
 		char* data;

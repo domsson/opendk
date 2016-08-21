@@ -47,7 +47,7 @@ namespace OpenDK
 			size = length - HEADER_SIZE;
 			data = new char [size];
 
-			is.seekg(HEADER_SIZE - 1);
+			is.seekg(HEADER_SIZE);
 			is.read(data, size);
 			is.close();
 
@@ -69,7 +69,7 @@ namespace OpenDK
 			}
 
 			// 8 because the actual cube data starts after 8 bytes into a chunk
-			size_t offset = 8 + (columnIndex * CHUNK_SIZE) + (height * ENTRY_SIZE);
+			size_t offset = (columnIndex * CHUNK_SIZE) + 8 + (height * ENTRY_SIZE);
 
 			if (offset + ENTRY_SIZE > size)
 			{
@@ -77,30 +77,44 @@ namespace OpenDK
 						<< "given column index is out of range: " << columnIndex << std::endl;
 				return -1;
 			}
+			// Variant 1: Using cast and pointers
+			std::int16_t columnType = *(reinterpret_cast<std::int16_t *>(data + offset));
 
-			// TODO
-			// I really don't get why it is this way round...
-			// This is "extracting" little endian data.
-			// And while the files do seem to be little endian,
-			// my architecture is as well! So what the hell...
-			std::int16_t columnType = 0x0000;
-			size_t shift = (ENTRY_SIZE - 1) * 8;
-
-			for (size_t byte = 0; byte < ENTRY_SIZE; ++byte)
-			{
-				columnType |= (data[offset + byte] << shift);
-				shift -= 8;
-			}
-
-			// The following two work nicely, but they don't swap the byte order.
-
-			// 1: Using memcpy
+			// Variant 2: Using memcpy
 			//std::int16_t columnType;
 			//std::memcpy(&columnType, columnData + offset, 2);
 
-			// 2: Using cast and pointers
-			//std::int16_t columnType = *(reinterpret_cast<std::int16_t *>(columnData + offset));
-
 			return columnType;
 		}
+
+		bool ColumnFile::cubeIsSolid(int columnIndex, int height) const
+		{
+			if (height < 0 || height > 7)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get cube solidness, "
+						<< "given height value is invalid - should be in the range 0..7" << std::endl;
+				return -1;
+			}
+
+			size_t offset = (columnIndex * CHUNK_SIZE) + 3;
+
+			if (offset + 1 > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get cube solidness, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			std::int8_t solidMask = data[offset];
+			std::int8_t bitMask = 0x01 << height;
+			return (solidMask & bitMask) > 0;
+		}
+
+		std::int16_t ColumnFile::getBaseBlockType(int columnIndex) const
+		{
+			// TODO
+			return 1;
+		}
+
+
 }

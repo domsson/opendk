@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>		// std::memcpy
 #include <string>
 #include <iostream>		// std::cout
 #include <fstream>		// std::ifstream
@@ -33,6 +34,17 @@ namespace OpenDK
 		char* columnData;
 
 		std::int16_t numColumns;
+
+	/* // From KeeperFX
+		struct Column { // sizeof=0x18
+			short use;
+			unsigned char bitfields;
+			unsigned short solidmask;
+			unsigned short baseblock;
+			unsigned char orient;
+			unsigned short cubes[COLUMN_STACK_HEIGHT];
+		};
+	*/
 
 	};
 

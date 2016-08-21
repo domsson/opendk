@@ -44,6 +44,7 @@ namespace OpenDK
 
 			columnData = new char [length - 8];
 
+			/*
 			char numEntries[2];
 			is.seekg(1);
 			is.read(numEntries, 2); // 0=08 1=00
@@ -51,6 +52,7 @@ namespace OpenDK
 			numColumns = 0x0000; // init to all zeroes
 			numColumns = numColumns | (numEntries[0] << 8); // 0: 08, after shift: [08] 00
 			numColumns = numColumns | (numEntries[1] << 0); // 1: 00, after shift:  00 [00]
+			*/
 
 			is.seekg(7);
 			is.read(columnData, length - 8);
@@ -67,11 +69,22 @@ namespace OpenDK
 						<< "given height value is invalid - should be in the range 0..7" << std::endl;
 				return -1;
 			}
-			int offset = (columnIndex * COL_ENTRY_SIZE) + 8 + height;
+			int offset = 8 + (columnIndex * COL_ENTRY_SIZE) + (height * 2);
 
+			// TODO I really don't get why it is this way round...
+			// This is "extracting" little endian data.
+			// And while the files do seem to be little endian,
+			// my architecture is as well! So what the hell...
 			std::int16_t columnType = 0x0000;
 			columnType = columnType | (columnData[offset+0] << 8);
 			columnType = columnType | (columnData[offset+1] << 0);
+
+			// The following two work nicely... but don't swap the byte order.
+
+			//std::int16_t columnType;
+			//std::memcpy(&columnType, columnData + offset, 2);
+
+			//std::int16_t columnType = *(reinterpret_cast<std::int16_t *>(columnData + offset));
 
 			return columnType;
 		}

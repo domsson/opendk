@@ -17,9 +17,12 @@
 
 #include "../level/Map.hpp"
 #include "../level/SlabFile.hpp"
+#include "../level/CubeDataFile.hpp"
+#include "../level/ColumnFile.hpp"
 #include "../level/OwnerFile.hpp"
 #include "../level/ColumnFile.hpp"
 #include "../level/ColumnDataFile.hpp"
+#include "../level/CubeSide.hpp"
 #include "BlockGeometry.hpp"
 
 namespace OpenDK
@@ -46,6 +49,9 @@ namespace OpenDK
 		BlockGeometry* block;
 
 		SlabFile slb;
+		ColumnFile clm;
+		ColumnDataFile dat;
+		CubeDataFile cbd;
 
 		sf::Clock clock;
 
@@ -54,6 +60,7 @@ namespace OpenDK
 		glm::mat4 modelMatrix;
 
 		void renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY);
+		void renderCube(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex);
 		int getSuitableSprite(TileType tileType) const;
 
 	};

@@ -77,14 +77,14 @@ namespace OpenDK
 						<< "given column index is out of range: " << columnIndex << std::endl;
 				return -1;
 			}
+
 			// Variant 1: Using cast and pointers
-			std::int16_t columnType = *(reinterpret_cast<std::int16_t *>(data + offset));
+			// http://stackoverflow.com/questions/544928/reading-integer-size-bytes-from-a-char-array
+			return *(reinterpret_cast<std::int16_t *>(data + offset));
 
 			// Variant 2: Using memcpy
 			//std::int16_t columnType;
 			//std::memcpy(&columnType, columnData + offset, 2);
-
-			return columnType;
 		}
 
 		bool ColumnFile::cubeIsSolid(int columnIndex, int height) const
@@ -105,16 +105,55 @@ namespace OpenDK
 				return -1;
 			}
 
+			/*
 			std::int8_t solidMask = data[offset];
 			std::int8_t bitMask = 0x01 << height;
 			return (solidMask & bitMask) > 0;
+			*/
+			return (data[offset] & (0x01 << height)) > 0;
 		}
 
 		std::int16_t ColumnFile::getBaseBlockType(int columnIndex) const
 		{
-			// TODO
-			return 1;
+			size_t offset = (columnIndex * CHUNK_SIZE) + 5;
+
+			if (offset + 1 > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get base block type, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			return *(reinterpret_cast<std::int16_t *>(data + offset));
 		}
 
+
+		bool ColumnFile::columnIsPermanent(int columnIndex) const
+		{
+			size_t offset = (columnIndex * CHUNK_SIZE) + 2;
+
+			if (offset + 1 > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get column permanency, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			return (data[offset] & 0x80) > 0;
+		}
+
+		std::int8_t ColumnFile::getColumnHeight(int columnIndex) const
+		{
+			size_t offset = (columnIndex * CHUNK_SIZE) + 2;
+
+			if (offset + 1 > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get column height, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			return data[offset] & 0x0F;
+		}
 
 }

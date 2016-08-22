@@ -36,6 +36,7 @@ namespace OpenDK
 			return false;
 		}
 
+/*
 		mapLayout = new char [(mapWidth * 3) * (mapHeight * 3)];
 
 		int i = 0;
@@ -59,8 +60,16 @@ namespace OpenDK
 				}
 			}
 		}
+*/
 
+		// TODO - again, would be nicer to skip the superflous bytes at the
+		// end of every row and column, as we did with other map files.
+		// i tried that above and failed, no time to look into it now.
+		mapLayout = new char[length];
+
+		is.read(mapLayout, length);
 		is.close();
+
 		return true;
 	}
 
@@ -86,7 +95,9 @@ namespace OpenDK
 
 	int ColumnDataFile::colDatPos(int x, int y) const
 	{
-		return (y * (mapWidth * 3 * 2 + 1) + x);
+		// return (y * (mapWidth * 3 * 2 + 2) + x);
+		// TODO IMPORTANT - is this correct? x*2 ???
+		return (y * (mapWidth * 3 * 2 + 2) + x * 2);
 	}
 
 	int ColumnDataFile::colDatBufferPos(int x, int y) const
@@ -110,19 +121,20 @@ namespace OpenDK
 			return -1;
 		}
 
+/*
 		int i = colDatBufferPos(tileX + colX, tileY + colY);
 		std::cout << "index: " << i << std::endl;
 		std::cout << "val 1: " << std::hex << (std::int16_t)mapLayout[i] << std::endl;
 		std::cout << "val 2: " << std::hex << (std::int16_t)mapLayout[i+1] << std::endl;
 		std::int16_t value = 0x0000;
-		/*
-			numColumns = 0x0000; // init to all zeroes
-			numColumns = numColumns | (numEntries[0] << 8); // 0: 08, after shift: [08] 00
-			numColumns = numColumns | (numEntries[1] << 0); // 1: 00, after shift:  00 [00]
-		 */
 		value = value | (mapLayout[i+i] << 8);
 		value = value | (mapLayout[i+0] << 0);
 		return std::abs(value);
+		*/
+
+		int offset = colDatPos(tileX + colX, tileY + colY);
+		std::int16_t columnIndex = *(reinterpret_cast<std::int16_t *>(mapLayout + offset));
+		return std::abs(columnIndex);
 	}
 
 	/*

@@ -37,6 +37,10 @@ namespace OpenDK
 
 		std::int16_t getBaseBlockType(int columnIndex) const;
 
+		bool columnIsPermanent(int columnIndex) const;
+
+		std::int8_t getColumnHeight(int columnIndex) const;
+
 	private:
 
 		char* data;

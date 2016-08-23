@@ -132,7 +132,7 @@ namespace OpenDK
 		return std::abs(value);
 		*/
 
-		int offset = colDatPos(tileX + colX, tileY + colY);
+		int offset = colDatPos(tileX * 3 + colX, tileY * 3 + colY);
 		std::int16_t columnIndex = *(reinterpret_cast<std::int16_t *>(mapLayout + offset));
 		return std::abs(columnIndex);
 	}

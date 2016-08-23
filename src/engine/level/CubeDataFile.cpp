@@ -4,7 +4,8 @@ namespace OpenDK
 {
 
 		const size_t CubeDataFile::EXPECTED_FILE_SIZE = 9220;
-		const size_t CubeDataFile::HEADER_SIZE = 22;
+		//const size_t CubeDataFile::HEADER_SIZE = 22;
+		const size_t CubeDataFile::HEADER_SIZE = 4;
 		const size_t CubeDataFile::CHUNK_SIZE = 18;
 		const size_t CubeDataFile::ENTRY_SIZE = 2;
 

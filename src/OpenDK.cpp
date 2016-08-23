@@ -106,6 +106,26 @@ namespace OpenDK
 					{
 						mapRenderer.debugCamCoords();
 					}
+					if (event.key.code == sf::Keyboard::D)
+					{
+						mapRenderer.debugDAT();
+					}
+					if (event.key.code == sf::Keyboard::F)
+					{
+						mapRenderer.debugCol();
+					}
+					if (event.key.code == sf::Keyboard::N)
+					{
+						mapRenderer.prevCol();
+					}
+					if (event.key.code == sf::Keyboard::M)
+					{
+						mapRenderer.nextCol();
+					}
+					if (event.key.code == sf::Keyboard::T)
+					{
+						mapRenderer.switchMode();
+					}
 				}
 			}
 

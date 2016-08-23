@@ -2,8 +2,9 @@
 
 namespace OpenDK
 {
+
 	MapRenderer::MapRenderer()
-	: sp(nullptr), tex(nullptr), block(nullptr)
+	: sp(nullptr), tex(nullptr), block(nullptr), col(488), singleColMode(false)
 	{
 	}
 
@@ -51,6 +52,7 @@ namespace OpenDK
 
 		//camera.setPosition(-58.5f, 6.5f, 0.0f);
 		camera.setPosition(-175.0f, 20.f, 0.0f);
+		//camera.setPosition(-400.0f, 60.f, 0.0f);
 		camera.setZoom(2.0f);
 
 		slb.load("./bin/levels/MAP00001.SLB");
@@ -62,28 +64,105 @@ namespace OpenDK
 
 		// scale, rotate, translate (note: glm operations should be in reverse!)
 
-		/*
-		for (int y = 0; y < 3; ++y)
-		{
-			for (int x = 0; x < 3; ++x)
-			{
-				std::int16_t colIndex = dat.getColumnIndex(39, 42, x, y);
-				std::cout << "column index  = " << std::dec << colIndex << std::endl;
-				std::int8_t colHeight = clm.getColumnHeight(colIndex);
-				std::cout << "column height = " << std::dec << static_cast<std::int16_t>(colHeight) << std::endl;
-				bool isPermanent = clm.columnIsPermanent(colIndex);
-				std::cout << "column perm.  = " << (isPermanent ? "y" : "n") << std::endl;
+/*
+		bool spritesUsed[544];
 
-				for (int h = 0; h < 8; ++h)
+		for (int c = 0; c < 511; ++c)
+		{
+			for (int s = 0; s < 6; ++s)
+			{
+				int sprite = cbd.getCubeSprite(c, s);
+				if (sprite < 544)
 				{
-					std::int16_t cubeType = clm.getCubeType(colIndex, h);
-					std::cout << "cube type  = " << std::dec << cubeType << std::endl;
-					bool isSolid = clm.cubeIsSolid(colIndex, h);
-					std::cout << "cube solid = " << (isSolid ? "y" : "n")  << std::endl;
+					spritesUsed[sprite] = true;
 				}
 			}
 		}
-		*/
+
+		std::cout << "UNUSED SPRITE INDICES: \n";
+
+		int unusedCount = 0;
+
+		for (int i = 0; i < 544; ++i)
+		{
+			if (spritesUsed[i] == false)
+			{
+				std::cout << i << ", ";
+				++unusedCount;
+			}
+		}
+
+		std::cout << "\nThat's a total of " << unusedCount << " unused." << std::endl;
+*/
+
+	}
+
+	void MapRenderer::nextCol()
+	{
+		++col;
+		if (col > 2047) { col = 2047; }
+		std::cout << "col=" << std::setw(4) << col;
+
+		if (clm.columnIsPermanent(col))
+		{
+			std::cout << " (perm)";
+		}
+		std::cout << " (" << clm.getColumnUses(col) << " uses)" << std::endl;
+	}
+
+	void MapRenderer::prevCol()
+	{
+		--col;
+		if (col < 0) { col = 0; }
+		std::cout << "col=" << std::setw(4) << col;
+
+		if (clm.columnIsPermanent(col))
+		{
+			std::cout << " (perm)";
+		}
+		std::cout << " (" << clm.getColumnUses(col) << " uses)" << std::endl;
+	}
+
+	void MapRenderer::debugDAT() const
+	{
+		for (int y = 0; y < 85; ++y) // for now, just a fifth of the map
+		{
+			for (int x = 0; x < 85; ++x)
+			{
+				for (int r = 0; r < 3; ++r)
+				{
+					for (int c = 0; c < 3; ++c)
+					{
+						std::int16_t colIndex = dat.getColumnIndex(x, y, c, r);
+						std::cout << "x=" << x << " y=" << y
+							<< " c=" << c << " r=" << r
+							<< " -> " << colIndex << std::endl;
+					}
+				}
+			}
+		}
+	}
+
+	void MapRenderer::debugCol() const
+	{
+		for (int h = 0; h < 8; ++h)
+		{
+			std::cout << "cube " << h << ": ";
+			std::int16_t cubeIndex = clm.getCubeType(col, h);
+			std::cout << std::setw(3) << cubeIndex << ":";
+			std::cout << " T=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP);
+			std::cout << " B=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM);
+			std::cout << " F=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_FRONT);
+			std::cout << " R=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_RIGHT);
+			std::cout << " B=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK);
+			std::cout << " L=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT);
+			std::cout << std::endl;
+		}
+	}
+
+	void MapRenderer::switchMode()
+	{
+		singleColMode = !singleColMode;
 	}
 
 	void MapRenderer::render()
@@ -101,40 +180,60 @@ namespace OpenDK
 		VertexArrayObject vao = block->getVAO();
 		vao.bind();
 
-		//for (int y = 0; y < 85; ++y)
-		for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
+
+		if (singleColMode)
 		{
-			//for (int x = 0; x < 85; ++x)
-			for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
+			for (int h = 0; h < 8; ++h)
 			{
-				//renderBlock(vao, x, y);
-
-				for (int r = 0; r < 3; ++r)
+				if (!clm.cubeIsSolid(col, h))
 				{
-					for (int c = 0; c < 3; ++c)
+					continue;
+				}
+				std::int16_t cubeType = clm.getCubeType(col, h);
+				if (cubeType == 0)
+				{
+					continue;
+				}
+				renderCube(vao, 42, 42, 1, 1, h, cubeType);
+			}
+		}
+		else
+		{
+			//for (int y = 0; y < 85; ++y)
+			for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
+			{
+				//for (int x = 0; x < 85; ++x)
+				for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
+				{
+					//renderBlock(vao, x, y);
+
+					for (int r = 0; r < 3; ++r)
 					{
-						//renderBlock(vao, x, y, c, r);
-
-						std::int16_t colIndex = dat.getColumnIndex(x, y, c, r);
-
-						//for (int h = 0; h < 8; ++h)
-						for (int h = 0; h < 1; ++h)
+						for (int c = 0; c < 3; ++c)
 						{
-							if (!clm.cubeIsSolid(colIndex, h))
+							//renderBlock(vao, x, y, c, r);
+
+							std::int16_t colIndex = dat.getColumnIndex(x, y, c, r);
+
+							for (int h = 0; h < 8; ++h)
 							{
-								continue;
+								if (!clm.cubeIsSolid(colIndex, h))
+								{
+									continue;
+								}
+								std::int16_t cubeType = clm.getCubeType(colIndex, h);
+								if (cubeType == 0)
+								{
+									continue;
+								}
+								renderCube(vao, x, y, c, r, h, cubeType);
 							}
-							std::int16_t cubeType = clm.getCubeType(colIndex, h);
-							if (cubeType == 0)
-							{
-								continue;
-							}
-							renderCube(vao, x, y, c, r, h, cubeType);
 						}
 					}
 				}
 			}
 		}
+
 		vao.unbind();
 
 	}
@@ -175,6 +274,7 @@ namespace OpenDK
 
 		// For "cube.vert" shader
 		//int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
+
 		GLint sides[6] = {
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP),
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM),
@@ -183,6 +283,22 @@ namespace OpenDK
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK),
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT)
 		};
+		/*
+		if (tileX == 43 && tileY == 40 && cubeX == 0 && cubeY == 2) // col #488
+		{
+			sides[0] = 1;
+		}
+		*/
+		/*
+		GLint sides[6] = {
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP),
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM),
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_RIGHT), //
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_FRONT), //
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT), //
+			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK) //
+		};
+		*/
 		glUniform1iv(sp->getUniformLocation("sides"), 6, sides);	// +3% cpu
 
 		// Pass matrices to shaders

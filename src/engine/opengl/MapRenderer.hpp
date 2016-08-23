@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+//#include <iomanip>		// setw
 
 #include <GL/glew.h>
 #include <SFML/System.hpp>
@@ -42,6 +43,11 @@ namespace OpenDK
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
 		void zoomCam(float zoomChange);
 		void debugCamCoords() const;
+		void nextCol();
+		void prevCol();
+		void debugDAT() const;
+		void debugCol() const;
+		void switchMode();
 
 	private:
 		ShaderProgram* sp;
@@ -53,14 +59,19 @@ namespace OpenDK
 		ColumnDataFile dat;
 		CubeDataFile cbd;
 
+		std::int16_t col;
+
 		sf::Clock clock;
 
 		Camera camera;
+
+		bool singleColMode;
 
 		glm::mat4 modelMatrix;
 
 		void renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY);
 		void renderCube(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex);
+		void renderBaseBlock(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex);
 		int getSuitableSprite(TileType tileType) const;
 
 	};

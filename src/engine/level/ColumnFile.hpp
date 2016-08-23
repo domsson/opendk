@@ -41,6 +41,8 @@ namespace OpenDK
 
 		std::int8_t getColumnHeight(int columnIndex) const;
 
+		std::int16_t getColumnUses(int columnIndex) const;
+
 	private:
 
 		char* data;

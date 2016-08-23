@@ -127,6 +127,19 @@ namespace OpenDK
 			return *(reinterpret_cast<std::int16_t *>(data + offset));
 		}
 
+		std::int16_t ColumnFile::getColumnUses(int columnIndex) const
+		{
+			size_t offset = (columnIndex * CHUNK_SIZE) + 0;
+
+			if (offset + 2 > size)
+			{
+				std::cerr << typeid(this).name() << ": [ERR] Can't get column uses, "
+						<< "given column index is out of range: " << columnIndex << std::endl;
+				return -1;
+			}
+
+			return *(reinterpret_cast<std::int16_t *>(data + offset));
+		}
 
 		bool ColumnFile::columnIsPermanent(int columnIndex) const
 		{

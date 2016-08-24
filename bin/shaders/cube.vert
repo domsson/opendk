@@ -15,7 +15,7 @@ out vec3 pass_Color;
 out vec2 pass_Unwrap;
 out float pass_Sprite;
 
-float getSprite() {
+int getSprite() {
 	if (gl_VertexID < 4)
 	{
 		return sides[0];

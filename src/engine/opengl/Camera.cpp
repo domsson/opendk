@@ -113,7 +113,8 @@ namespace OpenDK
 	{
 		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
 		//projectionMatrix = glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
-		projectionMatrix = glm::ortho(-4.0f * zoom, 4.0f * zoom, -3.0f * zoom, 3.0f * zoom, -100.0f, 100.0f);
+		//projectionMatrix = glm::ortho(-4.0f * zoom, 4.0f * zoom, -3.0f * zoom, 3.0f * zoom, -100.0f, 100.0f);
+		projectionMatrix = glm::ortho(-3.2f * zoom, 3.2f * zoom, -2.0f * zoom, 2.0f * zoom, -100.0f, 100.0f);
 		// glOrtho( -width/2*zoom, width/2*zoom, -height/2*zoom, height/2*zoom, -1, 1 );
 	}
 

@@ -1,8 +1,8 @@
-#version 130
+#version 140
 
 in vec3 pass_Color;
 in vec2 pass_Unwrap;
-in float pass_Sprite; // it crashes when using int or uint - wtf?
+flat in int pass_Sprite;
 
 uniform sampler2DArray atlas;
 

@@ -4,37 +4,6 @@ in vec3 in_Position;
 in vec3 in_Color;
 in vec2 in_Unwrap;
 
-//uniform ivec2 sprites;
-//uniform int sides[6];
-
-/*
-layout(std140) uniform columns
-{
-	// up to 2048 columns with 9 cubes each
-	// calc index: (column * 9) + cube
-    int indices[18432];
-};
-*/
-
-/*
-struct Sprite
-{
-    int back;
-    int right;
-    int front;
-    int left;
-    int top;
-    int bottom;
-};
-
-layout(std140) uniform cubes
-{
-	// 512 cubes with 6 sides each
-	// calc index: (cube * 6) + side
-	int sprites[3072];
-};
-*/
-
 uniform isamplerBuffer cubesBuffer;
 
 uniform int column; // the index of the column to draw
@@ -45,7 +14,7 @@ uniform mat4 projectionMatrix;
 
 out vec3 pass_Color;
 out vec2 pass_Unwrap;
-out float pass_Sprite;
+flat out int pass_Sprite; // `flat` for 'no interpolation'
 
 	/*
 	    // CubeSides face order:
@@ -64,52 +33,6 @@ out float pass_Sprite;
 		BACK
 		LEFT
 	*/
-	/*
-int getSprite() {
-
-
-
-	if (gl_VertexID < 4)
-	{
-		// TOP
-		//return sprites[column * 6 + 4];
-		return sprites[4];
-		//  0:000,  1:000,  2:002,  3:003,  4:005,  5:004,
-		//  6:008,  7:005,  8:007,  9:006, 10:005, 11:009,
-		// 12:009, 13:002, 14:00B, 15:00C, 16:005, 17:00D,
-		// AH! GOT IT! IT GOES TO EVERY 4th VALUE! WHY???
-
-		//  0:000,  1:003,  2:004,  3:005,  4:006
-		// Okay.. so with the struct, it jumps to every
-		// 8th value... WTF DUDE
-	}
-	if (gl_VertexID < 8)
-	{
-		// BOTTOM
-		return sprites[6];
-	}
-	if (gl_VertexID < 12)
-	{
-		// FRONT
-		return sprites[6];
-	}
-	if (gl_VertexID < 16)
-	{
-		// RIGHT
-		return sprites[6];
-	}
-	if (gl_VertexID < 20)
-	{
-		// BACK
-		return sprites[6];
-	}
-	if (gl_VertexID < 24)
-	{
-		// LEFT
-		return sprites[6];
-	}
-}
-*/
 
 int getSpriteFromTexBuffer()
 {
@@ -182,7 +105,5 @@ void main()
     pass_Color = in_Color;
 
 	pass_Unwrap = in_Unwrap;
-	//pass_Sprite = gl_VertexID < 8 ? sprites[0] : sprites[1];
-	//pass_Sprite = getSprite();
 	pass_Sprite = getSpriteFromTexBuffer();
 }

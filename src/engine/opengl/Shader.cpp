@@ -49,14 +49,14 @@ namespace OpenDK
 	bool Shader::compile()
 	{
 		glCompileShader(id);
-		GLint logLength;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
-
-		GLchar infoLog[logLength];
 		glGetShaderiv(id, GL_COMPILE_STATUS, &compileStatus);
 
 		if (compileStatus != GL_TRUE)
 		{
+			GLint logLength;
+			glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
+
+			GLchar infoLog[logLength];
 			glGetShaderInfoLog(id, logLength, 0, infoLog);
 			std::cerr << typeid(this).name() << ": [ERR] Shader compilation failed. Log:" << std::endl;
 			std::cerr << infoLog << std::endl;

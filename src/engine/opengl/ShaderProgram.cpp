@@ -59,15 +59,16 @@ namespace OpenDK
 	bool ShaderProgram::link(const bool deleteShaders)
 	{
 		glLinkProgram(id);
-
-		GLint logLength;
-		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength);
-
-		GLchar infoLog[logLength];
 		glGetProgramiv(id, GL_LINK_STATUS, &linkStatus);
 
 		if (linkStatus != GL_TRUE)
 		{
+			GLint logLength = 0;
+			glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength);
+
+			GLchar infoLog[logLength];
+			glGetProgramInfoLog(id, logLength, nullptr, infoLog);
+
 			std::cerr << typeid(this).name() << ": [ERR] Failed to link shader program. Log:" << std::endl;
 			std::cerr << infoLog << std::endl;
 			return false;

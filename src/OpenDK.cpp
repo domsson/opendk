@@ -30,7 +30,7 @@ namespace OpenDK
 
 	void OpenDK::initWindow()
 	{
-		sf::ContextSettings context(2, 0, 0, 3, 2);
+		sf::ContextSettings context(2, 0, 0, 3, 0);
 		window.create(sf::VideoMode(width, height), title, sf::Style::Close, context);
 		window.setMouseCursorVisible(false);
 		if (iconLoaded)

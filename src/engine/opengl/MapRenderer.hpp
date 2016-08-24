@@ -61,6 +61,8 @@ namespace OpenDK
 
 		std::int16_t col;
 
+		GLuint tboTex;
+
 		sf::Clock clock;
 
 		Camera camera;

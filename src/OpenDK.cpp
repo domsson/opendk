@@ -30,7 +30,7 @@ namespace OpenDK
 
 	void OpenDK::initWindow()
 	{
-		sf::ContextSettings context(2, 0, 0, 3, 0);
+		sf::ContextSettings context(2, 0, 0, 3, 1);
 		window.create(sf::VideoMode(width, height), title, sf::Style::Close, context);
 		window.setMouseCursorVisible(false);
 		if (iconLoaded)
@@ -39,10 +39,17 @@ namespace OpenDK
 		}
 
 		sf::ContextSettings settings = window.getSettings();
-		std::cout << "depth bits:" << settings.depthBits << std::endl;
-		std::cout << "stencil bits:" << settings.stencilBits << std::endl;
-		std::cout << "antialiasing level:" << settings.antialiasingLevel << std::endl;
-		std::cout << "version:" << settings.majorVersion << "." << settings.minorVersion << std::endl;
+		std::cout << "depth bits:   " << settings.depthBits << std::endl;
+		std::cout << "stencil bits: " << settings.stencilBits << std::endl;
+		std::cout << "antialiasing: " << settings.antialiasingLevel << std::endl;
+		std::cout << "gl version:   " << settings.majorVersion << "." << settings.minorVersion << std::endl;
+
+		GLint maxUniformSize;
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformSize);
+		GLint maxVertUniformBlocks;
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertUniformBlocks);
+		std::cout << "max uniform blocks for vertex shader: " << maxVertUniformBlocks << std::endl;
+		std::cout << "max uniform block size in bytes: " << maxUniformSize << std::endl;
 	}
 
 	void OpenDK::initGLEW()

@@ -36,15 +36,20 @@ namespace OpenDK
 	void MapRenderer::initDummyData()
 	{
 		sp = new ShaderProgram();
-		sp->addShader("./bin/shaders/cube.vert", GL_VERTEX_SHADER);
-		sp->addShader("./bin/shaders/cube.frag", GL_FRAGMENT_SHADER);
+		sp->addShader("./bin/shaders/column.vert", GL_VERTEX_SHADER);
+		sp->addShader("./bin/shaders/column.frag", GL_FRAGMENT_SHADER);
 		sp->bindAttribute(ShaderAttribute::POSITION, "in_Position");
 		sp->bindAttribute(ShaderAttribute::COLOR, "in_Color");
 		sp->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
 		sp->link();
+		sp->use();
 
 		tex = new Texture();
-		tex->loadAtlas("./bin/textures/block0.bmp", 32, 32);
+		tex->loadAtlas("./bin/textures/block0_.bmp", 32, 32);
+		glActiveTexture(GL_TEXTURE0);
+		tex->bind();
+		glUniform1i(sp->getUniformLocation("atlas"), 0);
+		tex->unbind();
 
 		slb.load("./bin/levels/MAP00001.SLB");
 
@@ -95,6 +100,79 @@ namespace OpenDK
 		std::cout << "\nThat's a total of " << unusedCount << " unused." << std::endl;
 */
 
+		GLshort cubesTBOData[3072];
+
+		for (size_t c = 0; c < 512; ++c)
+		{
+			for (size_t s = 0; s < 6; ++s)
+			{
+				cubesTBOData[c * 6 + s] = (GLshort) cbd.getCubeSprite(c, s);
+			}
+		}
+
+		GLuint tbo;
+		glGenBuffers(1, &tbo);
+		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(cubesTBOData), cubesTBOData, GL_STATIC_DRAW);
+
+		if (glGetError() != GL_NO_ERROR)
+		{
+			std::cerr << typeid(this).name() << ": [ERR] glBufferData() was not happy." << std::endl;
+		}
+
+		glGenTextures(1, &tboTex);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_R16I, tbo);
+
+		glUniform1i(sp->getUniformLocation("cubesBuffer"), 1);
+
+		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+		/*
+		// Minimum size of uniform buffer objects: 16384 bytes
+		// So let's not exceed that...
+		// http://learnopengl.com/#!Advanced-OpenGL/Advanced-GLSL
+		sp->use();
+
+		GLuint uboCubesIndex = glGetUniformBlockIndex(sp->getId(), "cubes");
+		glUniformBlockBinding(sp->getId(), uboCubesIndex, 0); // 0: binding point
+
+		GLuint uboCubes;
+		glGenBuffers(1, &uboCubes);
+		glBindBuffer(GL_UNIFORM_BUFFER, uboCubes);
+		glBufferData(GL_UNIFORM_BUFFER, 512 * 6 * sizeof(GLint), NULL, GL_STATIC_DRAW); // allocate memory
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboCubes); // 0: binding point
+
+		glBindBuffer(GL_UNIFORM_BUFFER, uboCubes);
+
+		for (size_t c = 0; c < 512; ++c)
+		{
+			for (size_t s = 0; s < 6; ++s)
+			{
+				GLint sprite = cbd.getCubeSprite(c, s);
+				//GLint sprite = 1;
+				glBufferSubData(GL_UNIFORM_BUFFER,
+								(c*6*sizeof(GLint)) + (s*sizeof(GLint)),
+								sizeof(GLint),
+								&sprite);
+
+				if (glGetError() != GL_NO_ERROR)
+				{
+					std::cerr << typeid(this).name() << ": [ERR] glBufferSubData() was not happy." << std::endl;
+				}
+
+				if (c==0 || c==1)
+				{
+					std::cout << "uploading cube#" << c << " side: " << sprite << std::endl;
+				}
+			}
+		}
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		*/
 	}
 
 	void MapRenderer::nextCol()
@@ -171,8 +249,12 @@ namespace OpenDK
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		sp->use();
-		//tex->bind();
+
+		glActiveTexture(GL_TEXTURE0);
 		tex->bind();
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
 
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());			// +4% cpu
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());	// +5% cpu
@@ -275,6 +357,7 @@ namespace OpenDK
 		// For "cube.vert" shader
 		//int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
 
+		/*
 		GLint sides[6] = {
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP),
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM),
@@ -283,23 +366,11 @@ namespace OpenDK
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK),
 			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT)
 		};
-		/*
-		if (tileX == 43 && tileY == 40 && cubeX == 0 && cubeY == 2) // col #488
-		{
-			sides[0] = 1;
-		}
-		*/
-		/*
-		GLint sides[6] = {
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_RIGHT), //
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_FRONT), //
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT), //
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK) //
-		};
-		*/
 		glUniform1iv(sp->getUniformLocation("sides"), 6, sides);	// +3% cpu
+		*/
+
+		// For "column.vert" shader
+		glUniform1i(sp->getUniformLocation("column"), cubeIndex);
 
 		// Pass matrices to shaders
 		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));	// +6% cpu

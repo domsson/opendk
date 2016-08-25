@@ -173,7 +173,7 @@ namespace OpenDK
 
 	void MapRenderer::debugDAT() const
 	{
-		for (int y = 0; y < 85; ++y) // for now, just a fifth of the map
+		for (int y = 0; y < 85; ++y)
 		{
 			for (int x = 0; x < 85; ++x)
 			{
@@ -264,12 +264,10 @@ namespace OpenDK
 		else
 		{
 			//for (int y = 0; y < 85; ++y)
-			for (int y = 0; y < 42; ++y)
-			//for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
+			for (int y = 30; y < 55; ++y) // for now, just part of the map
 			{
 				//for (int x = 0; x < 85; ++x)
-				for (int x = 0; x < 42; ++x)
-				//for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
+				for (int x = 30; x < 55; ++x) // for now, just part of the map
 				{
 					for (int r = 0; r < 3; ++r)
 					{

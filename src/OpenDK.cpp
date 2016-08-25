@@ -173,7 +173,7 @@ namespace OpenDK
 		{
 			zoomChange =  0.1f;
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 		{
 			camRotateY = -0.1f;
 		}

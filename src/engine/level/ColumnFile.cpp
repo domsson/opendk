@@ -152,7 +152,8 @@ namespace OpenDK
 				return -1;
 			}
 
-			return (data[offset] & 0x80) > 0;
+			//return (data[offset] & 0x80) > 0;
+			return (data[offset] & 0x01) > 0;
 		}
 
 		std::int8_t ColumnFile::getColumnHeight(int columnIndex) const
@@ -166,7 +167,7 @@ namespace OpenDK
 				return -1;
 			}
 
-			return data[offset] & 0x0F;
+			return (data[offset] & 0xF0) >> 4;
 		}
 
 }

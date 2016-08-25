@@ -5,7 +5,8 @@ namespace OpenDK
 
 	Camera::Camera()
 	: position(glm::vec3(0.0f, 0.0f, -3.0f)),
-	  rotation(glm::vec3(45.0f, 35.265f, 0.0f)),
+	  //rotation(glm::vec3(45.0f, 35.265f, 0.0f)),
+	  rotation(glm::vec3(45.0f, 45.0f, 0.0f)),
 	  zoom(1.0f)
 	{
 		initViewMatrix();
@@ -101,12 +102,13 @@ namespace OpenDK
 		// TODO - figure out if we can avoid re-creating the matrix over and over
 		viewMatrix = glm::mat4();
 		viewMatrix = glm::translate(viewMatrix, position);
+
+		viewMatrix = glm::inverse(viewMatrix);
+
+		//viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		//viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
-		//viewMatrix = glm::rotate(viewMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//viewMatrix = glm::rotate(viewMatrix, glm::radians(35.264f), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	void Camera::updateProjectionMatrix()

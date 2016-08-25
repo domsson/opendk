@@ -4,9 +4,8 @@ in vec3 in_Position;
 in vec3 in_Color;
 in vec2 in_Unwrap;
 
-uniform isamplerBuffer cubesBuffer;
-
-uniform int column; // the index of the column to draw
+uniform isamplerBuffer cubes;
+uniform mat4 columnInfo;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -16,55 +15,55 @@ out vec3 pass_Color;
 out vec2 pass_Unwrap;
 flat out int pass_Sprite; // `flat` for 'no interpolation'
 
-	/*
-	    // CubeSides face order:
-		CUBE_BACK   = 0,
-		CUBE_RIGHT  = 1,
-		CUBE_FRONT  = 2,
-		CUBE_LEFT   = 3,
-		CUBE_TOP    = 4,
-		CUBE_BOTTOM = 5
+/*
+	// CubeSides face order:
+	CUBE_BACK   = 0,
+	CUBE_RIGHT  = 1,
+	CUBE_FRONT  = 2,
+	CUBE_LEFT   = 3,
+	CUBE_TOP    = 4,
+	CUBE_BOTTOM = 5
 
-		// BlockGeometry face order:
-		TOP
-		BOTTOM
-		FRONT
-		RIGHT
-		BACK
-		LEFT
-	*/
+	// BlockGeometry face order:
+	TOP
+	BOTTOM
+	FRONT
+	RIGHT
+	BACK
+	LEFT
+*/
 
-int getSpriteFromTexBuffer()
+int getSpriteFromTexBuffer(int cube)
 {
 	if (gl_VertexID < 4)
 	{
 		// TOP
-		return texelFetch(cubesBuffer, column * 6 + 4).r;
+		return texelFetch(cubes, cube * 6 + 4).r;
 	}
 	if (gl_VertexID < 8)
 	{
 		// BOTTOM
-		return texelFetch(cubesBuffer, column * 6 + 5).r;
+		return texelFetch(cubes, cube * 6 + 5).r;
 	}
 	if (gl_VertexID < 12)
 	{
 		// FRONT
-		return texelFetch(cubesBuffer, column * 6 + 2).r;
+		return texelFetch(cubes, cube * 6 + 2).r;
 	}
 	if (gl_VertexID < 16)
 	{
 		// RIGHT
-		return texelFetch(cubesBuffer, column * 6 + 1).r;
+		return texelFetch(cubes, cube * 6 + 1).r;
 	}
 	if (gl_VertexID < 20)
 	{
 		// BACK
-		return texelFetch(cubesBuffer, column * 6 + 0).r;
+		return texelFetch(cubes, cube * 6 + 0).r;
 	}
 	if (gl_VertexID < 24)
 	{
 		// LEFT
-		return texelFetch(cubesBuffer, column * 6 + 3).r;
+		return texelFetch(cubes, cube * 6 + 3).r;
 	}
 }
 
@@ -90,7 +89,6 @@ float rand(vec3 co){
 vec4 skewPosition(vec4 pos)
 {
 	vec4 skewedPos = pos;
-	//vec4 posPlus = vec4(pos.x + 1.0f, pos.y + 1.0f, pos.z + 1.0f, pos.w);
 	pos += 1.5f;
 	skewedPos.x += rand(pos.xyz) * 0.275;
 	//skewedPos.y += rand(pos.xzy) * 0.10;
@@ -98,12 +96,41 @@ vec4 skewPosition(vec4 pos)
 	return skewedPos;
 }
 
+int getCubeFromInstanceID()
+{
+	switch (gl_InstanceID)
+	{
+		case 0:	// base block
+		return int(columnInfo[0][0]);
+		case 1: // height 0
+		return int(columnInfo[0][1]);
+		case 2: // height 1
+		return int(columnInfo[0][2]);
+		case 3: // height 2
+		return int(columnInfo[1][0]);
+		case 4: // height 3
+		return int(columnInfo[1][1]);
+		case 5: // height 4
+		return int(columnInfo[1][2]);
+		case 6: // height 5
+		return int(columnInfo[2][0]);
+		case 7: // height 6
+		return int(columnInfo[2][1]);
+		case 8: // height 7
+		return int(columnInfo[2][2]);
+	}
+}
+
 void main()
 {
     //gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0f);
-    gl_Position = projectionMatrix * viewMatrix * skewPosition(modelMatrix * vec4(in_Position, 1.0f));
+
+    vec4 columnPos = vec4(columnInfo[3][0], columnInfo[3][1] + float(gl_InstanceID), columnInfo[3][2], 1.0f);
+
+    //gl_Position = projectionMatrix * viewMatrix * skewPosition(modelMatrix * vec4(in_Position, 1.0f));
+    gl_Position = projectionMatrix * viewMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
     pass_Color = in_Color;
 
 	pass_Unwrap = in_Unwrap;
-	pass_Sprite = getSpriteFromTexBuffer();
+	pass_Sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
 }

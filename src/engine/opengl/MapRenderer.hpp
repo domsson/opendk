@@ -41,6 +41,7 @@ namespace OpenDK
 
 		// TODO remove this later, just dirty coding for now
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
+		void rotateCam(float rotX, float rotY, float rotZ);
 		void zoomCam(float zoomChange);
 		void debugCamCoords() const;
 		void nextCol();
@@ -51,6 +52,7 @@ namespace OpenDK
 
 	private:
 		ShaderProgram* sp;
+		ShaderProgram* sp2;
 		Texture* tex;
 		BlockGeometry* block;
 
@@ -70,12 +72,10 @@ namespace OpenDK
 		bool singleColMode;
 
 		glm::mat4 modelMatrix;
+		glm::vec3 camPosBefore;
 
-		void renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY);
-		void renderCube(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex);
-		void renderBaseBlock(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex);
-		int getSuitableSprite(TileType tileType) const;
-
+		void renderColumn(const VertexArrayObject& vao, int tileX, int tileY, int subtileX, int subtileY, int column = -1);
+		void renderCube(const VertexArrayObject& vao, int x, int y, int cube);
 	};
 
 }

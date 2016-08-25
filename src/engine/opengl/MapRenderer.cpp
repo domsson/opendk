@@ -4,7 +4,7 @@ namespace OpenDK
 {
 
 	MapRenderer::MapRenderer()
-	: sp(nullptr), tex(nullptr), block(nullptr), col(488), singleColMode(false)
+	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr), col(488), singleColMode(false)
 	{
 	}
 
@@ -12,6 +12,7 @@ namespace OpenDK
 	{
 		tex->free();
 		delete sp;
+		delete sp2;
 		delete tex;
 		delete block;
 	}
@@ -20,6 +21,12 @@ namespace OpenDK
 	{
 		glm::vec3 pos = camera.getPosition();
 		camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z + offsetZ));
+	}
+
+	void MapRenderer::rotateCam(float rotX, float rotY, float rotZ)
+	{
+		glm::vec3 rot = camera.getRotation();
+		camera.setRotation(glm::vec3(rot.x + rotX, rot.y + rotY, rot.z + rotZ));
 	}
 
 	void MapRenderer::zoomCam(float zoomChange)
@@ -35,6 +42,14 @@ namespace OpenDK
 
 	void MapRenderer::initDummyData()
 	{
+		sp2 = new ShaderProgram();
+		sp2->addShader("./bin/shaders/cube.vert", GL_VERTEX_SHADER);
+		sp2->addShader("./bin/shaders/cube.frag", GL_FRAGMENT_SHADER);
+		sp2->bindAttribute(ShaderAttribute::POSITION, "in_Position");
+		sp2->bindAttribute(ShaderAttribute::COLOR, "in_Color");
+		sp2->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
+		sp2->link();
+
 		sp = new ShaderProgram();
 		sp->addShader("./bin/shaders/column.vert", GL_VERTEX_SHADER);
 		sp->addShader("./bin/shaders/column.frag", GL_FRAGMENT_SHADER);
@@ -45,7 +60,7 @@ namespace OpenDK
 		sp->use();
 
 		tex = new Texture();
-		tex->loadAtlas("./bin/textures/block0_.bmp", 32, 32);
+		tex->loadAtlas("./bin/textures/block0.bmp", 32, 32);
 		glActiveTexture(GL_TEXTURE0);
 		tex->bind();
 		glUniform1i(sp->getUniformLocation("atlas"), 0);
@@ -55,8 +70,12 @@ namespace OpenDK
 
 		block = new BlockGeometry();
 
+		//camera.setPosition(0.0f, 0.0f, 0.0f);
+		//camera.setPosition(-34.0f, 0.0f, 0.0f);
+		camera.setPosition(34.0f, 0.0f, 0.0f);
+		//camera.setPosition(-88.5f, 10.0f, 0.0f);
+		//camera.setPosition(-175.0f, 20.f, 0.0f);
 		//camera.setPosition(-58.5f, 6.5f, 0.0f);
-		camera.setPosition(-175.0f, 20.f, 0.0f);
 		//camera.setPosition(-400.0f, 60.f, 0.0f);
 		camera.setZoom(2.0f);
 
@@ -115,64 +134,15 @@ namespace OpenDK
 		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
 		glBufferData(GL_TEXTURE_BUFFER, sizeof(cubesTBOData), cubesTBOData, GL_STATIC_DRAW);
 
-		if (glGetError() != GL_NO_ERROR)
-		{
-			std::cerr << typeid(this).name() << ": [ERR] glBufferData() was not happy." << std::endl;
-		}
-
 		glGenTextures(1, &tboTex);
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_R16I, tbo);
 
-		glUniform1i(sp->getUniformLocation("cubesBuffer"), 1);
+		glUniform1i(sp->getUniformLocation("cubes"), 1);
 
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-		/*
-		// Minimum size of uniform buffer objects: 16384 bytes
-		// So let's not exceed that...
-		// http://learnopengl.com/#!Advanced-OpenGL/Advanced-GLSL
-		sp->use();
-
-		GLuint uboCubesIndex = glGetUniformBlockIndex(sp->getId(), "cubes");
-		glUniformBlockBinding(sp->getId(), uboCubesIndex, 0); // 0: binding point
-
-		GLuint uboCubes;
-		glGenBuffers(1, &uboCubes);
-		glBindBuffer(GL_UNIFORM_BUFFER, uboCubes);
-		glBufferData(GL_UNIFORM_BUFFER, 512 * 6 * sizeof(GLint), NULL, GL_STATIC_DRAW); // allocate memory
-
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboCubes); // 0: binding point
-
-		glBindBuffer(GL_UNIFORM_BUFFER, uboCubes);
-
-		for (size_t c = 0; c < 512; ++c)
-		{
-			for (size_t s = 0; s < 6; ++s)
-			{
-				GLint sprite = cbd.getCubeSprite(c, s);
-				//GLint sprite = 1;
-				glBufferSubData(GL_UNIFORM_BUFFER,
-								(c*6*sizeof(GLint)) + (s*sizeof(GLint)),
-								sizeof(GLint),
-								&sprite);
-
-				if (glGetError() != GL_NO_ERROR)
-				{
-					std::cerr << typeid(this).name() << ": [ERR] glBufferSubData() was not happy." << std::endl;
-				}
-
-				if (c==0 || c==1)
-				{
-					std::cout << "uploading cube#" << c << " side: " << sprite << std::endl;
-				}
-			}
-		}
-
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		*/
 	}
 
 	void MapRenderer::nextCol()
@@ -223,6 +193,9 @@ namespace OpenDK
 
 	void MapRenderer::debugCol() const
 	{
+		std::cout << "COLUMN INFO\n";
+		std::cout << "height: " << (int)clm.getColumnHeight(col) << std::endl;
+
 		for (int h = 0; h < 8; ++h)
 		{
 			std::cout << "cube " << h << ": ";
@@ -240,6 +213,15 @@ namespace OpenDK
 
 	void MapRenderer::switchMode()
 	{
+		if (singleColMode)
+		{
+			camera.setPosition(camPosBefore.x, camPosBefore.y, camPosBefore.z);
+		}
+		else
+		{
+			camPosBefore = camera.getPosition();
+			camera.setPosition(0.0f, 0.0f, 0.0f);
+		}
 		singleColMode = !singleColMode;
 	}
 
@@ -276,65 +258,52 @@ namespace OpenDK
 				{
 					continue;
 				}
-				renderCube(vao, 42, 42, 1, 1, h, cubeType);
+				renderColumn(vao, 0, 0, 0, 0, col);
 			}
 		}
 		else
 		{
 			//for (int y = 0; y < 85; ++y)
-			for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
+			for (int y = 0; y < 42; ++y)
+			//for (int y = 34; y < 51; ++y) // for now, just a fifth of the map
 			{
 				//for (int x = 0; x < 85; ++x)
-				for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
+				for (int x = 0; x < 42; ++x)
+				//for (int x = 34; x < 51; ++x) // for now, just a fifth of the map
 				{
-					//renderBlock(vao, x, y);
-
 					for (int r = 0; r < 3; ++r)
 					{
 						for (int c = 0; c < 3; ++c)
 						{
-							//renderBlock(vao, x, y, c, r);
-
-							std::int16_t colIndex = dat.getColumnIndex(x, y, c, r);
-
-							for (int h = 0; h < 8; ++h)
-							{
-								if (!clm.cubeIsSolid(colIndex, h))
-								{
-									continue;
-								}
-								std::int16_t cubeType = clm.getCubeType(colIndex, h);
-								if (cubeType == 0)
-								{
-									continue;
-								}
-								renderCube(vao, x, y, c, r, h, cubeType);
-							}
+							renderColumn(vao, x, y, c, r);
 						}
 					}
 				}
 			}
 		}
 
+		/*
+		sp2->use();
+
+		glActiveTexture(GL_TEXTURE0);
+		tex->bind();
+
+		glUniformMatrix4fv(sp2->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
+		glUniformMatrix4fv(sp2->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
+
+		vao.bind();
+
+		renderCube(vao, 0, 0, 38);
+		*/
+
 		vao.unbind();
 
 	}
 
-	void MapRenderer::renderBlock(const VertexArrayObject& vao, int tileX, int tileY, int blockX, int blockY)
+	void MapRenderer::renderCube(const VertexArrayObject& vao, int x, int y, int cube)
 	{
-		modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)tileX*3+blockX, 0.0f, (float)tileY*3+blockY));
-
-		// For "block.vert" shader
-		//int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
-		//glUniform2i(sp->getUniformLocation("sprites"), sprite, sprite);
-
-		// For "cube.vert" shader
-		int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
-		GLint sides[6] = {sprite, sprite, sprite, sprite, sprite, sprite};
-		glUniform1iv(sp->getUniformLocation("sides"), 6, sides);	// +3% cpu
-
-		// Pass matrices to shaders
-		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));	// +6% cpu
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)y));
+		glUniformMatrix4fv(sp2->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
 		if (vao.hasIBO())
 		{
@@ -346,73 +315,34 @@ namespace OpenDK
 		}
 	}
 
-	void MapRenderer::renderCube(const VertexArrayObject& vao, int tileX, int tileY, int cubeX, int cubeY, int cubeZ, std::int16_t cubeIndex)
+	void MapRenderer::renderColumn(const VertexArrayObject& vao, int tileX, int tileY, int subtileX, int subtileY, int column)
 	{
-		modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)tileX*3+cubeX, (float)cubeZ, (float)tileY*3+cubeY));
+		if (column == -1)
+		{
+			column = dat.getColumnIndex(tileX, tileY, subtileX, subtileY);
+		}
+		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)tileX*3+subtileX, 0.0f, (float)tileY*3+subtileY));
 
-		// For "block.vert" shader
-		//int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
-		//glUniform2i(sp->getUniformLocation("sprites"), sprite, sprite);
+		// mat4[col][row]
+		columnMatrix[0][0] = clm.getBaseBlockType(column);
+		columnMatrix[0][1] = clm.getCubeType(column, 0);
+		columnMatrix[0][2] = clm.getCubeType(column, 1);
+		columnMatrix[1][0] = clm.getCubeType(column, 2);
+		columnMatrix[1][1] = clm.getCubeType(column, 3);
+		columnMatrix[1][2] = clm.getCubeType(column, 4);
+		columnMatrix[2][0] = clm.getCubeType(column, 5);
+		columnMatrix[2][1] = clm.getCubeType(column, 6);
+		columnMatrix[2][2] = clm.getCubeType(column, 7);
 
-		// For "cube.vert" shader
-		//int sprite = getSuitableSprite(slb.getTileType(tileX, tileY));
-
-		/*
-		GLint sides[6] = {
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_FRONT),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_RIGHT),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK),
-			cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT)
-		};
-		glUniform1iv(sp->getUniformLocation("sides"), 6, sides);	// +3% cpu
-		*/
-
-		// For "column.vert" shader
-		glUniform1i(sp->getUniformLocation("column"), cubeIndex);
-
-		// Pass matrices to shaders
-		glUniformMatrix4fv(sp->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));	// +6% cpu
+		glUniformMatrix4fv(sp->getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
 
 		if (vao.hasIBO())
 		{
-			glDrawElements(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0);
+			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, 9);
 		}
 		else
 		{
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-		}
-	}
-
-	int MapRenderer::getSuitableSprite(TileType tileType) const
-	{
-		switch (tileType)
-		{
-			case TileType::EARTH: // 2
-				return 27;
-				break;
-			case TileType::PATH: // 10
-				return 30;
-				break;
-			case TileType::LAND: // 11
-				return 176;
-				break;
-			case TileType::WALL:	// 4-9
-			case TileType::WALL_2:
-			case TileType::WALL_3:
-			case TileType::WALL_4:
-			case TileType::WALL_5:
-			case TileType::WALL_6:
-				return 112;
-				break;
-			case TileType::DUNGEON_HEART:
-				return 490;
-				break;
-			case TileType::ROCK: // 0
-			case TileType::TYPE_UNDEFINED:
-			default:
-				return 271;
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 9);
 		}
 	}
 

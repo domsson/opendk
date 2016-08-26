@@ -3,6 +3,7 @@
 in vec3 in_Position;
 in vec3 in_Color;
 in vec2 in_Unwrap;
+in vec3 in_Normal;
 
 uniform isamplerBuffer cubes;
 uniform mat4 columnInfo;
@@ -10,6 +11,7 @@ uniform mat4 columnInfo;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 modelViewProjectionMatrix;
 
 out vec3 pass_Color;
 out vec2 pass_Unwrap;
@@ -129,6 +131,7 @@ void main()
 
     //gl_Position = projectionMatrix * viewMatrix * skewPosition(modelMatrix * vec4(in_Position, 1.0f));
     gl_Position = projectionMatrix * viewMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
+    //gl_Position = modelViewProjectionMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
     pass_Color = in_Color;
 
 	pass_Unwrap = in_Unwrap;

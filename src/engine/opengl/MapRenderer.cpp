@@ -54,6 +54,7 @@ namespace OpenDK
 		sp2->bindAttribute(ShaderAttribute::POSITION, "in_Position");
 		sp2->bindAttribute(ShaderAttribute::COLOR, "in_Color");
 		sp2->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
+		sp2->bindAttribute(ShaderAttribute::NORMALS, "in_Normal");
 		sp2->link();
 
 		sp = new ShaderProgram();
@@ -62,6 +63,7 @@ namespace OpenDK
 		sp->bindAttribute(ShaderAttribute::POSITION, "in_Position");
 		sp->bindAttribute(ShaderAttribute::COLOR, "in_Color");
 		sp->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
+		sp->bindAttribute(ShaderAttribute::NORMALS, "in_Normal");
 		sp->link();
 		sp->use();
 
@@ -244,12 +246,16 @@ namespace OpenDK
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
 
+
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());			// +4% cpu
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());	// +5% cpu
 
+		// The following would be lighter on the GPU, heavier on the CPU
+		//glm::mat4 projectionViewMatrix = camera.getProjectionMatrix() * camera.getViewMatrix();
+		//glUniformMatrix4fv(	sp->getUniformLocation("modelViewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionViewMatrix));
+
 		VertexArrayObject vao = block->getVAO();
 		vao.bind();
-
 
 		if (singleColMode)
 		{

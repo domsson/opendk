@@ -13,6 +13,7 @@ namespace OpenDK
 		VertexBufferObject vboPos;
 		VertexBufferObject vboCol;
 		VertexBufferObject vboUvw;
+		VertexBufferObject vboNrm;
 		IndexBufferObject ibo;
 
 		GLfloat vertices[] = {
@@ -51,6 +52,39 @@ namespace OpenDK
 			-0.5f, -0.5f,  0.5f,	// 13 (=0)
 			-0.5f,  0.5f,  0.5f,	// 14 (=3)
 			-0.5f,  0.5f, -0.5f		// 15 (=10)
+		};
+
+
+		GLfloat normals[] = {
+			 0.0f,  1.0f,  0.0f, // up
+			 0.0f,  1.0f,  0.0f, // up
+			 0.0f,  1.0f,  0.0f, // up
+			 0.0f,  1.0f,  0.0f, // up
+
+			 0.0f, -1.0f,  0.0f, // down
+			 0.0f, -1.0f,  0.0f, // down
+			 0.0f, -1.0f,  0.0f, // down
+			 0.0f, -1.0f,  0.0f, // down
+
+			 0.0f,  0.0f,  1.0f, // front
+			 0.0f,  0.0f,  1.0f, // front
+			 0.0f,  0.0f,  1.0f, // front
+			 0.0f,  0.0f,  1.0f, // front
+
+			 1.0f,  0.0f,  0.0f, // right
+			 1.0f,  0.0f,  0.0f, // right
+			 1.0f,  0.0f,  0.0f, // right
+			 1.0f,  0.0f,  0.0f, // right
+
+			 0.0f,  0.0f, -1.0f, // back
+			 0.0f,  0.0f, -1.0f, // back
+			 0.0f,  0.0f, -1.0f, // back
+			 0.0f,  0.0f, -1.0f, // back
+
+			-1.0f,  0.0f,  0.0f, // left
+			-1.0f,  0.0f,  0.0f, // left
+			-1.0f,  0.0f,  0.0f, // left
+			-1.0f,  0.0f,  0.0f // left
 		};
 
 		GLubyte colors[sizeof(vertices)];
@@ -105,12 +139,14 @@ namespace OpenDK
 		vboCol.setData(colors, sizeof(colors));
 		vboUvw.setData(unwrap, sizeof(unwrap));
 		vboUvw.setChunkSize(2);
+		vboNrm.setData(normals, sizeof(normals));
 
 		ibo.setData(indices, sizeof(indices));
 
 		vao.addVBO(vboPos, ShaderAttribute::POSITION);
 		vao.addVBO(vboCol, ShaderAttribute::COLOR);
 		vao.addVBO(vboUvw, ShaderAttribute::TEXTURE);
+		vao.addVBO(vboNrm, ShaderAttribute::NORMALS);
 		vao.setIBO(ibo);
 	}
 

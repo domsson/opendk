@@ -99,22 +99,15 @@ namespace OpenDK
 
 	void Camera::updateViewMatrix()
 	{
-		// TODO - figure out if we can avoid re-creating the matrix over and over
-		viewMatrix = glm::mat4();
+		// Way nicer than what we had before!
+		// Now we just need to get the translation
+		// to take the camera's rotation into account
 
-		// WHAT A MESS... but the rotation is now around the cam's center!
-		// However... moving goes along the world coord axis, not the cam's axis
-		viewMatrix = glm::translate(viewMatrix, position);
-		viewMatrix = glm::inverse(viewMatrix);
-		viewMatrix = glm::translate(viewMatrix, position);
+		glm::mat4 transToOrigin = glm::translate(glm::mat4(), position * -1.0f);
+		glm::mat4 rotAroundX = glm::rotate(glm::mat4(), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 rotAroundY = glm::rotate(glm::mat4(), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
-//		viewMatrix = glm::inverse(viewMatrix);
-
-		//viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		viewMatrix = glm::translate(viewMatrix, position * -1.0f);
+		viewMatrix = rotAroundX * rotAroundY * transToOrigin;
 	}
 
 	void Camera::updateProjectionMatrix()

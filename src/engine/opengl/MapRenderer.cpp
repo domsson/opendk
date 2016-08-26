@@ -20,7 +20,13 @@ namespace OpenDK
 	void MapRenderer::moveCam(float offsetX, float offsetY, float offsetZ)
 	{
 		glm::vec3 pos = camera.getPosition();
-		camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z + offsetZ));
+		//camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z + offsetZ));
+
+		glm::vec3 move = glm::vec3(offsetX, offsetY, offsetZ);
+		move = glm::rotateY(move, glm::radians(- camera.getRotation().y));
+
+		pos = pos + move;
+		camera.setPosition(pos);
 	}
 
 	void MapRenderer::rotateCam(float rotX, float rotY, float rotZ)
@@ -273,10 +279,10 @@ namespace OpenDK
 			yStart = yStart < 0 ? 0 : yStart;
 
 			int xEnd = camX + 15;
-			xEnd = xEnd > 255 ? 255 : xEnd;
+			xEnd = xEnd > 85 ? 85 : xEnd;
 
 			int yEnd = camY + 15;
-			yEnd = yEnd > 255 ? 255 : yEnd;
+			yEnd = yEnd > 85 ? 85 : yEnd;
 
 
 			//for (int y = 0; y < 85; ++y)

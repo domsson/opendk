@@ -146,7 +146,12 @@ namespace OpenDK
 	{
 		float camOffsetX = 0.0f;
 		float camOffsetY = 0.0f;
+		float camOffsetZ = 0.0f;
+
+		float camRotateX = 0.0f;
 		float camRotateY = 0.0f;
+		float camRotateZ = 0.0f;
+
 		float zoomChange = 0.0f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -159,9 +164,17 @@ namespace OpenDK
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
-			camOffsetY =  0.1f;
+			camOffsetZ = -0.1f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			camOffsetZ =  0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+		{
+			camOffsetY =  0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 		{
 			camOffsetY = -0.1f;
 		}
@@ -175,15 +188,23 @@ namespace OpenDK
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 		{
-			camRotateY = -0.1f;
+			camRotateX = -0.1f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+		{
+			camRotateX =  0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		{
+			camRotateY = -0.1f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
 			camRotateY =  0.1f;
 		}
 
-		mapRenderer.moveCam(camOffsetX, camOffsetY);
-		mapRenderer.rotateCam(0.0f, camRotateY, 0.0f);
+		mapRenderer.moveCam(camOffsetX, camOffsetY, camOffsetZ);
+		mapRenderer.rotateCam(camRotateX, camRotateY, camRotateZ);
 		mapRenderer.zoomCam(zoomChange);
 	}
 

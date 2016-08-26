@@ -4,9 +4,9 @@ namespace OpenDK
 {
 
 	Camera::Camera()
-	: position(glm::vec3(0.0f, 0.0f, -3.0f)),
+	: position(glm::vec3(0.0f, 0.0f, 0.0f)),
 	  //rotation(glm::vec3(45.0f, 35.265f, 0.0f)),
-	  rotation(glm::vec3(45.0f, 45.0f, 0.0f)),
+	  rotation(glm::vec3(0.0f, 0.0f, 0.0f)),
 	  zoom(1.0f)
 	{
 		initViewMatrix();
@@ -101,23 +101,69 @@ namespace OpenDK
 	{
 		// TODO - figure out if we can avoid re-creating the matrix over and over
 		viewMatrix = glm::mat4();
+
+		// WHAT A MESS... but the rotation is now around the cam's center!
+		// However... moving goes along the world coord axis, not the cam's axis
+		viewMatrix = glm::translate(viewMatrix, position);
+		viewMatrix = glm::inverse(viewMatrix);
 		viewMatrix = glm::translate(viewMatrix, position);
 
-		viewMatrix = glm::inverse(viewMatrix);
+//		viewMatrix = glm::inverse(viewMatrix);
 
 		//viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
+		viewMatrix = glm::translate(viewMatrix, position * -1.0f);
 	}
 
 	void Camera::updateProjectionMatrix()
 	{
-		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
+
 		//projectionMatrix = glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
-		//projectionMatrix = glm::ortho(-4.0f * zoom, 4.0f * zoom, -3.0f * zoom, 3.0f * zoom, -100.0f, 100.0f);
+
+		// https://www.opengl.org/sdk/docs/man2/xhtml/glOrtho.xml
+		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
 		projectionMatrix = glm::ortho(-3.2f * zoom, 3.2f * zoom, -2.0f * zoom, 2.0f * zoom, -100.0f, 100.0f);
-		// glOrtho( -width/2*zoom, width/2*zoom, -height/2*zoom, height/2*zoom, -1, 1 );
+
+		glm::mat4 planeSwapMatrix;
+
+		// http://gamedev.stackexchange.com/questions/128946/should-i-use-the-x-y-plane-when-using-an-orthographic-projection-in-opengl/128953#128953
+		//
+		//	1  0  0  0
+		//	0  0 -1  0
+		//	0  1  0  0
+		//	0  0  0  1
+
+		planeSwapMatrix[0][0] =  1.0f;
+		planeSwapMatrix[0][1] =  0.0f;
+		planeSwapMatrix[0][2] =  0.0f;
+		planeSwapMatrix[0][3] =  0.0f;
+
+		planeSwapMatrix[1][0] =  0.0f;
+		planeSwapMatrix[1][1] =  0.0f;
+		planeSwapMatrix[1][2] =  1.0f;
+		planeSwapMatrix[1][3] =  0.0f;
+
+		planeSwapMatrix[2][0] =  0.0f;
+		planeSwapMatrix[2][1] = -1.0f;
+		planeSwapMatrix[2][2] =  0.0f;
+		planeSwapMatrix[2][3] =  0.0f;
+
+		planeSwapMatrix[3][0] =  0.0f;
+		planeSwapMatrix[3][1] =  0.0f;
+		planeSwapMatrix[3][2] =  0.0f;
+		planeSwapMatrix[3][3] =  1.0f;
+
+		// This will make our map, which lies in the X-Z plane,
+		// be in the X-Y plane, which is a lot easier to deal with.
+		// For example, an unrotated, default cam, looking to -Z
+		// will actually look 'on top' of the map.
+
+		projectionMatrix = projectionMatrix * planeSwapMatrix;
+
+
+
 	}
 
 }

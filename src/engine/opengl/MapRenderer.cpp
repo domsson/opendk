@@ -72,7 +72,7 @@ namespace OpenDK
 
 		//camera.setPosition(0.0f, 0.0f, 0.0f);
 		//camera.setPosition(-34.0f, 0.0f, 0.0f);
-		camera.setPosition(34.0f, 0.0f, 0.0f);
+		camera.setPosition(42.5f, 0.0f, 42.5f);
 		//camera.setPosition(-88.5f, 10.0f, 0.0f);
 		//camera.setPosition(-175.0f, 20.f, 0.0f);
 		//camera.setPosition(-58.5f, 6.5f, 0.0f);
@@ -263,11 +263,29 @@ namespace OpenDK
 		}
 		else
 		{
+			int camX = camera.getPosition().x * 2 / 3;
+			int camY = camera.getPosition().z * 2 / 3;
+
+			int xStart = camX - 15;
+			xStart = xStart < 0 ? 0 : xStart;
+
+			int yStart = camY - 15;
+			yStart = yStart < 0 ? 0 : yStart;
+
+			int xEnd = camX + 15;
+			xEnd = xEnd > 255 ? 255 : xEnd;
+
+			int yEnd = camY + 15;
+			yEnd = yEnd > 255 ? 255 : yEnd;
+
+
 			//for (int y = 0; y < 85; ++y)
-			for (int y = 30; y < 55; ++y) // for now, just part of the map
+			for (int y = yStart; y < yEnd; ++y) // for now, just part of the map
+			//for (int y = 0; y < 55; ++y) // for now, just part of the map
 			{
 				//for (int x = 0; x < 85; ++x)
-				for (int x = 30; x < 55; ++x) // for now, just part of the map
+				for (int x = xStart; x < xEnd; ++x) // for now, just part of the map
+				//for (int x = 0; x < 55; ++x) // for now, just part of the map
 				{
 					for (int r = 0; r < 3; ++r)
 					{

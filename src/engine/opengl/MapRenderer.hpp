@@ -40,7 +40,7 @@ namespace OpenDK
 		void render();
 
 		// TODO remove this later, just dirty coding for now
-		void moveLight(float offsetX, float offsetY);
+		void moveLight(float offsetX, float offsetY, float offsetZ);
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
 		void rotateCam(float rotX, float rotY, float rotZ);
 		void zoomCam(float zoomChange);
@@ -73,8 +73,7 @@ namespace OpenDK
 		bool singleColMode;
 
 		float lightMap[65025];
-		float lightPosX;
-		float lightPosY;
+		glm::vec3 lightPos;
 
 		glm::mat4 modelMatrix;
 		glm::vec3 camPosBefore;

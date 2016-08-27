@@ -6,7 +6,7 @@ namespace OpenDK
 	MapRenderer::MapRenderer()
 	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr),
 	  col(488), singleColMode(false),
-	  lightPosX(114.0f), lightPosY(130.0f)
+	  lightPos(glm::vec3(114.0f, 0.0f, 130.0f))
 	{
 	}
 
@@ -19,17 +19,17 @@ namespace OpenDK
 		delete block;
 	}
 
-	void MapRenderer::moveLight(float offsetX, float offsetY)
+	void MapRenderer::moveLight(float offsetX, float offsetY, float offsetZ)
 	{
-		lightPosX += offsetX;
-		lightPosY += offsetY;
+		glm::vec3 move = glm::vec3(offsetX, offsetY, offsetZ);
+		move = glm::rotateY(move, glm::radians(- camera.getRotation().y));
+
+		lightPos = lightPos + move;
 	}
 
 	void MapRenderer::moveCam(float offsetX, float offsetY, float offsetZ)
 	{
 		glm::vec3 pos = camera.getPosition();
-		//camera.setPosition(glm::vec3(pos.x + offsetX, pos.y + offsetY, pos.z + offsetZ));
-
 		glm::vec3 move = glm::vec3(offsetX, offsetY, offsetZ);
 		move = glm::rotateY(move, glm::radians(- camera.getRotation().y));
 
@@ -251,12 +251,12 @@ namespace OpenDK
 
 		float lightRadius = 7.0f;
 
-		for (int y = (int)lightPosY - (int)lightRadius; y < (int)lightPosY + (int) lightRadius; ++y)
+		for (int y = (int)lightPos.z - (int)lightRadius; y < (int)lightPos.z + (int) lightRadius; ++y)
 		{
-			for (int x = (int)lightPosX - (int)lightRadius; x < (int)lightPosX + (int) lightRadius; ++x)
+			for (int x = (int)lightPos.x - (int)lightRadius; x < (int)lightPos.x + (int) lightRadius; ++x)
 			{
-				float xTerm = (float)x - lightPosX;
-				float yTerm = (float)y - lightPosY;
+				float xTerm = (float)x - lightPos.x;
+				float yTerm = (float)y - lightPos.z;
 				float distance = sqrt(xTerm*xTerm + yTerm*yTerm);
 
 				if (distance < lightRadius)

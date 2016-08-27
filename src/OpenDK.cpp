@@ -103,6 +103,26 @@ namespace OpenDK
 					running = false;
 					// window.close();
 				}
+				else if (event.type == sf::Event::MouseMoved)
+				{
+					float moveX = 0.0f;
+					float moveY = 0.0f;
+
+					if (mouseX == 0 || mouseY == 0)
+					{
+						mouseX = event.mouseMove.x;
+						mouseY = event.mouseMove.y;
+					}
+					else
+					{
+						moveX = 0.05f * (event.mouseMove.x - mouseX);
+						moveY = 0.05f * (event.mouseMove.y - mouseY);
+						mouseX = event.mouseMove.x;
+						mouseY = event.mouseMove.y;
+					}
+
+					mapRenderer.moveLight(moveX, 0.0f, moveY);
+				}
 				else if (event.type == sf::Event::KeyPressed)
 				{
 					if (event.key.code == sf::Keyboard::Escape)
@@ -245,16 +265,25 @@ namespace OpenDK
 			camRotateZ =  0.6f;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+		{
+			lightOffsetY -= 0.2f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+		{
+			lightOffsetY += 0.2f;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
 		{
 			lightOffsetX -= 0.2f;
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
 		{
 			lightOffsetX += 0.2f;
 		}
 
-		mapRenderer.moveLight(lightOffsetX, lightOffsetY);
+		mapRenderer.moveLight(lightOffsetX, 0.0f, lightOffsetY);
 		mapRenderer.moveCam(camOffsetX, camOffsetY, camOffsetZ);
 		mapRenderer.rotateCam(camRotateX, camRotateY, camRotateZ);
 		mapRenderer.zoomCam(zoomChange);

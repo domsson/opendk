@@ -21,6 +21,15 @@ namespace OpenDK
 
 	class OpenDK
 	{
+	public:
+		// Something
+		OpenDK();
+		~OpenDK();
+
+		void run();
+		void update();
+		void render();
+
 	private:
 		//DummyRenderer renderer;
 		MapRenderer mapRenderer;
@@ -34,18 +43,12 @@ namespace OpenDK
 		sf::Image gameIcon;
 		bool iconLoaded;
 
+		int mouseX;
+		int mouseY;
+
 		void initWindow();
 		void initGLEW();
 		void initGL();
-
-	public:
-		// Something
-		OpenDK();
-		~OpenDK();
-
-		void run();
-		void update();
-		void render();
 	};
 
 }

@@ -122,6 +122,34 @@ namespace OpenDK
 					}
 
 					mapRenderer.moveLight(moveX, 0.0f, moveY);
+
+					/*
+					float camOffsetX = 0.0f;
+					float camOffsetZ = 0.0f;
+
+					if (mouseX < (INITIAL_WIDTH * 0.1f))
+					{
+						camOffsetX -= 0.05f;
+					}
+					else if (mouseX > ((float)INITIAL_WIDTH - INITIAL_WIDTH * 0.1f))
+					{
+						camOffsetX += 0.05f;
+					}
+					if (mouseY < (INITIAL_HEIGHT * 0.1f))
+					{
+						camOffsetZ -= 0.05f;
+					}
+					else if (mouseY > ((float)INITIAL_HEIGHT - INITIAL_HEIGHT * 0.1f))
+					{
+						camOffsetZ += 0.05f;
+					}
+
+					mapRenderer.moveCam(camOffsetX, 0.0f, camOffsetZ);
+					*/
+				}
+				else if (event.type == sf::Event::MouseWheelMoved)
+				{
+					mapRenderer.zoomCam(-0.2f * event.mouseWheel.delta);
 				}
 				else if (event.type == sf::Event::KeyPressed)
 				{

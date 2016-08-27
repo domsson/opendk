@@ -37,35 +37,76 @@ flat out int pass_Sprite; // `flat` for 'no interpolation'
 
 int getSpriteFromTexBuffer(int cube)
 {
-	if (gl_VertexID < 4)
+	if (gl_VertexID < 4)	// TOP
 	{
-		// TOP
 		return texelFetch(cubes, cube * 6 + 4).r;
 	}
-	if (gl_VertexID < 8)
+	if (gl_VertexID < 8)	// BOTTOM
 	{
-		// BOTTOM
 		return texelFetch(cubes, cube * 6 + 5).r;
 	}
-	if (gl_VertexID < 12)
+	if (gl_VertexID < 12)	// FRONT
 	{
-		// FRONT
 		return texelFetch(cubes, cube * 6 + 2).r;
 	}
-	if (gl_VertexID < 16)
+	if (gl_VertexID < 16)	// RIGHT
 	{
-		// RIGHT
 		return texelFetch(cubes, cube * 6 + 1).r;
 	}
-	if (gl_VertexID < 20)
+	if (gl_VertexID < 20)	// BACK
 	{
-		// BACK
 		return texelFetch(cubes, cube * 6 + 0).r;
 	}
-	if (gl_VertexID < 24)
+	if (gl_VertexID < 24)	// LEFT
 	{
-		// LEFT
 		return texelFetch(cubes, cube * 6 + 3).r;
+	}
+}
+
+vec3 getLightLevelFromColumnData()
+{
+	if (gl_VertexID < 4)	// TOP - needs special treatment
+	{
+		if (gl_VertexID == 0) // TOP - FRONT-LEFT
+		{
+			float intensity = (columnInfo[0][3] + columnInfo[3][3]) * 0.5f;
+			return vec3(intensity, intensity, intensity);
+		}
+		if (gl_VertexID == 1) // TOP - FRONT-RIGHT
+		{
+			float intensity = (columnInfo[0][3] + columnInfo[1][3]) * 0.5f;
+			return vec3(intensity, intensity, intensity);
+		}
+		if (gl_VertexID == 2) // TOP - BACK-RIGHT
+		{
+			float intensity = (columnInfo[2][3] + columnInfo[1][3]) * 0.5f;
+			return vec3(intensity, intensity, intensity);
+		}
+		if (gl_VertexID == 3) // TOP - BACK-LEFT
+		{
+			float intensity = (columnInfo[2][3] + columnInfo[3][3]) * 0.5f;
+			return vec3(intensity, intensity, intensity);
+		}
+	}
+	if (gl_VertexID < 8)	// BOTTOM - needs special treatment
+	{
+		return vec3(1.0f, 1.0f, 1.0f); // TODO
+	}
+	if (gl_VertexID < 12)	// FRONT
+	{
+		return vec3(columnInfo[0][3], columnInfo[0][3], columnInfo[0][3]);
+	}
+	if (gl_VertexID < 16)	// RIGHT
+	{
+		return vec3(columnInfo[1][3], columnInfo[1][3], columnInfo[1][3]);
+	}
+	if (gl_VertexID < 20)	// BACK
+	{
+		return vec3(columnInfo[2][3], columnInfo[2][3], columnInfo[2][3]);
+	}
+	if (gl_VertexID < 24)	// LEFT
+	{
+		return vec3(columnInfo[3][3], columnInfo[3][3], columnInfo[3][3]);
 	}
 }
 
@@ -132,7 +173,8 @@ void main()
     //gl_Position = projectionMatrix * viewMatrix * skewPosition(modelMatrix * vec4(in_Position, 1.0f));
     gl_Position = projectionMatrix * viewMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
     //gl_Position = modelViewProjectionMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
-    pass_Color = in_Color;
+    // pass_Color = in_Color;
+    pass_Color = getLightLevelFromColumnData();
 
 	pass_Unwrap = in_Unwrap;
 	pass_Sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());

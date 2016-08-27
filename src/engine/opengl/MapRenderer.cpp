@@ -4,7 +4,9 @@ namespace OpenDK
 {
 
 	MapRenderer::MapRenderer()
-	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr), col(488), singleColMode(false)
+	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr),
+	  col(488), singleColMode(false),
+	  lightPosX(114.0f), lightPosY(130.0f)
 	{
 	}
 
@@ -15,6 +17,12 @@ namespace OpenDK
 		delete sp2;
 		delete tex;
 		delete block;
+	}
+
+	void MapRenderer::moveLight(float offsetX, float offsetY)
+	{
+		lightPosX += offsetX;
+		lightPosY += offsetY;
 	}
 
 	void MapRenderer::moveCam(float offsetX, float offsetY, float offsetZ)
@@ -44,6 +52,10 @@ namespace OpenDK
 	{
 		glm::vec3 camPos = camera.getPosition();
 		std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
+		glm::vec3 camRot = camera.getRotation();
+		std::cout << "cam rot: " << camRot.x << ", " << camRot.y << ", " << camRot.z << std::endl;
+		float camZoom = camera.getZoom();
+		std::cout << "cam zoom: " << camZoom << std::endl;
 	}
 
 	void MapRenderer::initDummyData()
@@ -78,14 +90,11 @@ namespace OpenDK
 
 		block = new BlockGeometry();
 
-		//camera.setPosition(0.0f, 0.0f, 0.0f);
-		//camera.setPosition(-34.0f, 0.0f, 0.0f);
-		camera.setPosition(42.5f, 0.0f, 42.5f);
-		//camera.setPosition(-88.5f, 10.0f, 0.0f);
-		//camera.setPosition(-175.0f, 20.f, 0.0f);
-		//camera.setPosition(-58.5f, 6.5f, 0.0f);
-		//camera.setPosition(-400.0f, 60.f, 0.0f);
-		camera.setZoom(2.0f);
+
+		//camera.setPosition(42.5f, 0.0f, 42.5f);
+		camera.setPosition(65.0f, 0.0f, 63.0f);
+		camera.setRotation(-45.0f, 45.0f, 0.0f);
+		camera.setZoom(2.4f);
 
 		slb.load("./bin/levels/MAP00001.SLB");
 		//slb.printMap();
@@ -235,6 +244,29 @@ namespace OpenDK
 
 	void MapRenderer::render()
 	{
+		for (int i = 0; i < 65025; ++i)
+		{
+			lightMap[i] = 0.0f;
+		}
+
+		float lightRadius = 7.0f;
+
+		for (int y = (int)lightPosY - (int)lightRadius; y < (int)lightPosY + (int) lightRadius; ++y)
+		{
+			for (int x = (int)lightPosX - (int)lightRadius; x < (int)lightPosX + (int) lightRadius; ++x)
+			{
+				float xTerm = (float)x - lightPosX;
+				float yTerm = (float)y - lightPosY;
+				float distance = sqrt(xTerm*xTerm + yTerm*yTerm);
+
+				if (distance < lightRadius)
+				{
+					lightMap[y * 255 + x] = 1.0f - (distance / lightRadius);
+				}
+			}
+		}
+
+
 		camera.update();
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -349,7 +381,9 @@ namespace OpenDK
 		{
 			column = dat.getColumnIndex(tileX, tileY, subtileX, subtileY);
 		}
-		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)tileX*3+subtileX, 0.0f, (float)tileY*3+subtileY));
+		int x = tileX * 3 + subtileX;
+		int y = tileY * 3 + subtileY;
+		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)y));
 
 		// mat4[col][row]
 		columnMatrix[0][0] = clm.getBaseBlockType(column);
@@ -361,6 +395,18 @@ namespace OpenDK
 		columnMatrix[2][0] = clm.getCubeType(column, 5);
 		columnMatrix[2][1] = clm.getCubeType(column, 6);
 		columnMatrix[2][2] = clm.getCubeType(column, 7);
+
+		// LIGHT LEVELS!
+		columnMatrix[0][3] = lightMap[(y+1) * 255 + x];
+		columnMatrix[1][3] = lightMap[y * 255 + x + 1];
+		columnMatrix[2][3] = lightMap[(y-1) * 255 + x];
+		columnMatrix[3][3] = lightMap[y * 255 + x - 1];
+		/*
+		columnMatrix[0][3] = 1.0f;
+		columnMatrix[1][3] = 1.0f;
+		columnMatrix[2][3] = 1.0f;
+		columnMatrix[3][3] = 1.0f;
+		*/
 
 		glUniformMatrix4fv(sp->getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
 

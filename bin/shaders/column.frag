@@ -14,5 +14,5 @@ void main()
 	{
 		discard;
 	}
-    out_Color = texture(atlas, vec3(pass_Unwrap, pass_Sprite)) * (vec4(pass_Color, 1.0f) + vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    out_Color = texture(atlas, vec3(pass_Unwrap, pass_Sprite)) * (vec4(pass_Color, 1.0f) + vec4(0.3f, 0.3f, 0.3f, 1.0f));
 }

@@ -8,6 +8,7 @@ namespace OpenDK
 	  col(488), singleColMode(false)
 	{
 		light.setPosition(glm::vec3(114.0f, 6.0f, 130.0f));
+		light.setIntensity(2.0f);
 	}
 
 	MapRenderer::~MapRenderer()
@@ -151,6 +152,15 @@ namespace OpenDK
 				}
 			}
 		}
+
+		light1.setRadius(5.0f);
+		light2.setRadius(5.0f);
+		light3.setRadius(5.0f);
+		light4.setRadius(5.0f);
+		light5.setRadius(5.0f);
+		light6.setRadius(5.0f);
+		light7.setRadius(5.0f);
+		light8.setRadius(5.0f);
 
 		/*
 		for (int t = 0; t < numLights; ++t)
@@ -317,7 +327,7 @@ namespace OpenDK
 		}
 
 		// http://gamedev.stackexchange.com/questions/56897/glsl-light-attenuation-color-and-intensity-formula
-		float b = 1.0f / (l.getRadius()*l.getRadius() * 0.1f);
+		float b = l.getIntensity() / (l.getRadius()*l.getRadius() * 0.1f);
 
 		for (int z = (int)l.getPosition().z - (int)l.getRadius(); z < (int)l.getPosition().z + (int)l.getRadius(); ++z)
 		{
@@ -332,13 +342,14 @@ namespace OpenDK
 					if (bresenham((int)l.getPosition().x, (int)l.getPosition().z, x, z, (int)l.getPosition().y))
 					{
 						// lightMap[z * 255 + x] += 1.0f - (distance / l.getRadius());
-						lightMap[z * 255 + x] += 1.0 / (1.0 + b*distance*distance);
+						lightMap[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
 
-
+						/*
 						if (lightMap[z * 255 + x] > 1.0f)
 						{
 							lightMap[z * 255 + x] = 1.0f;
 						}
+						*/
 					}
 				}
 			}
@@ -536,6 +547,76 @@ namespace OpenDK
 		return (i < 0 || i >= 255*255) ? 0.0f : lightMap[i];
 	}
 
+	bool MapRenderer::bresenham(int x1, int y1, int const x2, int const y2, int lightHeight)
+	{
+		int delta_x(x2 - x1);
+		// if x1 == x2, then it does not matter what we set here
+		signed char const ix((delta_x > 0) - (delta_x < 0));
+		delta_x = std::abs(delta_x) << 1;
+
+		int delta_y(y2 - y1);
+		// if y1 == y2, then it does not matter what we set here
+		signed char const iy((delta_y > 0) - (delta_y < 0));
+		delta_y = std::abs(delta_y) << 1;
+
+		//plot(x1, y1);
+		// TODO
+		int column = dat.getColumnIndex(x2, y2);
+		int height = clm.getColumnHeight(column);
+		if (height > lightHeight) { return false; }
+
+		if (delta_x >= delta_y)
+		{
+			// error may go below zero
+			int error(delta_y - (delta_x >> 1));
+
+			while (x1 != x2)
+			{
+				if ((error >= 0) && (error || (ix > 0)))
+				{
+					error -= delta_x;
+					y1 += iy;
+				}
+				// else do nothing
+
+				error += delta_y;
+				x1 += ix;
+
+				//plot(x1, y1);
+				// TODO
+				int column = dat.getColumnIndex(x2, y2);
+				int height = clm.getColumnHeight(column);
+				if (height > lightHeight) { return false; }
+			}
+		}
+		else
+		{
+			// error may go below zero
+			int error(delta_x - (delta_y >> 1));
+
+			while (y1 != y2)
+			{
+				if ((error >= 0) && (error || (iy > 0)))
+				{
+					error -= delta_y;
+					x1 += ix;
+				}
+				// else do nothing
+
+				error += delta_x;
+				y1 += iy;
+
+				//plot(x1, y1);
+				// TODO
+				int column = dat.getColumnIndex(x2, y2);
+				int height = clm.getColumnHeight(column);
+				if (height > lightHeight) { return false; }
+			}
+		}
+
+		return true; // yes, you can put some light there
+	}
+
 	/*
 	// https://gist.github.com/yamamushi/5823518
 	void MapRenderer::Bresenham3D(int x1, int y1, int z1, const int x2, const int y2, const int z2, WorldMap *output, int symbol)
@@ -611,75 +692,5 @@ namespace OpenDK
 		output->getTileAt(point[0], point[1], point[2])->setSymbol(symbol);
 	}
 	*/
-
-	bool MapRenderer::bresenham(int x1, int y1, int const x2, int const y2, int lightHeight)
-	{
-		int delta_x(x2 - x1);
-		// if x1 == x2, then it does not matter what we set here
-		signed char const ix((delta_x > 0) - (delta_x < 0));
-		delta_x = std::abs(delta_x) << 1;
-
-		int delta_y(y2 - y1);
-		// if y1 == y2, then it does not matter what we set here
-		signed char const iy((delta_y > 0) - (delta_y < 0));
-		delta_y = std::abs(delta_y) << 1;
-
-		//plot(x1, y1);
-		// TODO
-		int column = dat.getColumnIndex(x2, y2);
-		int height = clm.getColumnHeight(column);
-		if (height > lightHeight) { return false; }
-
-		if (delta_x >= delta_y)
-		{
-			// error may go below zero
-			int error(delta_y - (delta_x >> 1));
-
-			while (x1 != x2)
-			{
-				if ((error >= 0) && (error || (ix > 0)))
-				{
-					error -= delta_x;
-					y1 += iy;
-				}
-				// else do nothing
-
-				error += delta_y;
-				x1 += ix;
-
-				//plot(x1, y1);
-				// TODO
-				int column = dat.getColumnIndex(x2, y2);
-				int height = clm.getColumnHeight(column);
-				if (height > lightHeight) { return false; }
-			}
-		}
-		else
-		{
-			// error may go below zero
-			int error(delta_x - (delta_y >> 1));
-
-			while (y1 != y2)
-			{
-				if ((error >= 0) && (error || (iy > 0)))
-				{
-					error -= delta_y;
-					x1 += ix;
-				}
-				// else do nothing
-
-				error += delta_x;
-				y1 += iy;
-
-				//plot(x1, y1);
-				// TODO
-				int column = dat.getColumnIndex(x2, y2);
-				int height = clm.getColumnHeight(column);
-				if (height > lightHeight) { return false; }
-			}
-		}
-
-		return true; // yes, you can put some light there
-	}
 
 }

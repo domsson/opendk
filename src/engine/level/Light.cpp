@@ -6,7 +6,7 @@ namespace OpenDK
 	Light::Light()
 	: Entity(),
 	  color(glm::vec3(1.0f, 1.0f, 1.0f)),
-	  radius(9.0f),
+	  radius(7.0f),
 	  intensity(1.0f)
 	{
 		// Nothing

@@ -7,7 +7,7 @@ namespace OpenDK
 	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr),
 	  col(488), singleColMode(false)
 	{
-		light.setPosition(glm::vec3(114.0f, 3.0f, 130.0f));
+		light.setPosition(glm::vec3(114.0f, 6.0f, 130.0f));
 	}
 
 	MapRenderer::~MapRenderer()
@@ -307,6 +307,44 @@ namespace OpenDK
 		singleColMode = !singleColMode;
 	}
 
+	void MapRenderer::bakeLight(const Light& l)
+	{
+		int column = dat.getColumnIndex((int)l.getPosition().x, (int)l.getPosition().z);
+		bool solid = clm.cubeIsSolid(column, (int)l.getPosition().y);
+		if (solid)
+		{
+			return;
+		}
+
+		// http://gamedev.stackexchange.com/questions/56897/glsl-light-attenuation-color-and-intensity-formula
+		float b = 1.0f / (l.getRadius()*l.getRadius() * 0.1f);
+
+		for (int z = (int)l.getPosition().z - (int)l.getRadius(); z < (int)l.getPosition().z + (int)l.getRadius(); ++z)
+		{
+			for (int x = (int)l.getPosition().x - (int)l.getRadius(); x < (int)l.getPosition().x + (int)l.getRadius(); ++x)
+			{
+				float xTerm = (float)x - l.getPosition().x;
+				float zTerm = (float)z - l.getPosition().z;
+				float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
+
+				if (distance < l.getRadius())
+				{
+					if (bresenham((int)l.getPosition().x, (int)l.getPosition().z, x, z, (int)l.getPosition().y))
+					{
+						// lightMap[z * 255 + x] += 1.0f - (distance / l.getRadius());
+						lightMap[z * 255 + x] += 1.0 / (1.0 + b*distance*distance);
+
+
+						if (lightMap[z * 255 + x] > 1.0f)
+						{
+							lightMap[z * 255 + x] = 1.0f;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	void MapRenderer::render()
 	{
 		for (int i = 0; i < 65025; ++i)
@@ -314,293 +352,15 @@ namespace OpenDK
 			lightMap[i] = 0.0f;
 		}
 
-		// MOVING LIGHT
-		{
-			int column = dat.getColumnIndex((int)light.getPosition().x, (int)light.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light.getPosition().z - (int)lightRadius; z < (int)light.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light.getPosition().x - (int)lightRadius; x < (int)light.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light.getPosition().x;
-						float zTerm = (float)z - light.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light.getPosition().x, (int)light.getPosition().z, x, z, (int)light.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 1
-		{
-			int column = dat.getColumnIndex((int)light1.getPosition().x, (int)light1.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light1.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light1.getPosition().z - (int)lightRadius; z < (int)light1.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light1.getPosition().x - (int)lightRadius; x < (int)light1.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light1.getPosition().x;
-						float zTerm = (float)z - light1.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light1.getPosition().x, (int)light1.getPosition().z, x, z, (int)light1.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 2
-		{
-			int column = dat.getColumnIndex((int)light2.getPosition().x, (int)light2.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light2.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light2.getPosition().z - (int)lightRadius; z < (int)light2.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light2.getPosition().x - (int)lightRadius; x < (int)light2.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light2.getPosition().x;
-						float zTerm = (float)z - light2.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light2.getPosition().x, (int)light2.getPosition().z, x, z, (int)light2.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 3
-		{
-			int column = dat.getColumnIndex((int)light3.getPosition().x, (int)light3.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light3.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light3.getPosition().z - (int)lightRadius; z < (int)light3.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light3.getPosition().x - (int)lightRadius; x < (int)light3.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light3.getPosition().x;
-						float zTerm = (float)z - light3.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light3.getPosition().x, (int)light3.getPosition().z, x, z, (int)light3.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 4
-		{
-			int column = dat.getColumnIndex((int)light4.getPosition().x, (int)light4.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light4.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light4.getPosition().z - (int)lightRadius; z < (int)light4.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light4.getPosition().x - (int)lightRadius; x < (int)light4.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light4.getPosition().x;
-						float zTerm = (float)z - light4.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light4.getPosition().x, (int)light4.getPosition().z, x, z, (int)light4.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 5
-		{
-			int column = dat.getColumnIndex((int)light5.getPosition().x, (int)light5.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light5.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light5.getPosition().z - (int)lightRadius; z < (int)light5.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light5.getPosition().x - (int)lightRadius; x < (int)light5.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light5.getPosition().x;
-						float zTerm = (float)z - light5.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light5.getPosition().x, (int)light5.getPosition().z, x, z, (int)light5.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 6
-		{
-			int column = dat.getColumnIndex((int)light6.getPosition().x, (int)light6.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light6.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light6.getPosition().z - (int)lightRadius; z < (int)light6.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light6.getPosition().x - (int)lightRadius; x < (int)light6.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light6.getPosition().x;
-						float zTerm = (float)z - light6.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light6.getPosition().x, (int)light6.getPosition().z, x, z, (int)light6.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 7
-		{
-			int column = dat.getColumnIndex((int)light7.getPosition().x, (int)light7.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light7.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light7.getPosition().z - (int)lightRadius; z < (int)light7.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light7.getPosition().x - (int)lightRadius; x < (int)light7.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light7.getPosition().x;
-						float zTerm = (float)z - light7.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light7.getPosition().x, (int)light7.getPosition().z, x, z, (int)light7.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// LIGHT 8
-		{
-			int column = dat.getColumnIndex((int)light8.getPosition().x, (int)light8.getPosition().z);
-			bool solid = clm.cubeIsSolid(column, (int)light8.getPosition().y);
-			if (!solid)
-			{
-				float lightRadius = 7.0f;
-				for (int z = (int)light8.getPosition().z - (int)lightRadius; z < (int)light8.getPosition().z + (int) lightRadius; ++z)
-				{
-					for (int x = (int)light8.getPosition().x - (int)lightRadius; x < (int)light8.getPosition().x + (int) lightRadius; ++x)
-					{
-						float xTerm = (float)x - light8.getPosition().x;
-						float zTerm = (float)z - light8.getPosition().z;
-						float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
-
-						if (distance < lightRadius)
-						{
-							if (bresenham((int)light8.getPosition().x, (int)light8.getPosition().z, x, z, (int)light8.getPosition().y))
-							{
-								lightMap[z * 255 + x] += 1.0f - (distance / lightRadius);
-
-								if (lightMap[z * 255 + x] > 1.0f)
-								{
-									lightMap[z * 255 + x] = 1.0f;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		bakeLight(light);
+		bakeLight(light1);
+		bakeLight(light2);
+		bakeLight(light3);
+		bakeLight(light4);
+		bakeLight(light5);
+		bakeLight(light6);
+		bakeLight(light7);
+		bakeLight(light8);
 
 		camera.update();
 

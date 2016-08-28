@@ -4,10 +4,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include "../Entity.hpp"
+
 namespace OpenDK
 {
 
-	class Camera
+	class Camera: public Entity
 	{
 	public:
 
@@ -21,6 +23,7 @@ namespace OpenDK
 
 		const float* getProjectionMatrixPtr() const;
 
+		/*
 		const glm::vec3& getPosition() const;
 
 		void setPosition(float x, float y, float z);
@@ -32,6 +35,7 @@ namespace OpenDK
 		void setRotation(float x, float y, float z);
 
 		void setRotation(const glm::vec3& rotation);
+		*/
 
 		void setZoom(float zoom);
 
@@ -41,8 +45,10 @@ namespace OpenDK
 
 	private:
 
+		/*
 		glm::vec3 position;
 		glm::vec3 rotation;
+		*/
 
 		float zoom;
 

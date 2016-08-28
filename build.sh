@@ -1,5 +1,6 @@
 cd src
 g++ -c *.cpp -std=c++11 -Wall
+g++ -c engine/*.cpp -std=c++11 -Wall
 g++ -c engine/opengl/*.cpp -std=c++11 -Wall
 g++ -c engine/level/*.cpp -std=c++11 -Wall
 g++ -c utils/*.cpp -std=c++11 -Wall

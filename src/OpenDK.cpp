@@ -103,6 +103,7 @@ namespace OpenDK
 					running = false;
 					// window.close();
 				}
+				/*
 				else if (event.type == sf::Event::MouseMoved)
 				{
 					float moveX = 0.0f;
@@ -123,7 +124,6 @@ namespace OpenDK
 
 					mapRenderer.moveLight(moveX, 0.0f, moveY);
 
-					/*
 					float camOffsetX = 0.0f;
 					float camOffsetZ = 0.0f;
 
@@ -145,8 +145,8 @@ namespace OpenDK
 					}
 
 					mapRenderer.moveCam(camOffsetX, 0.0f, camOffsetZ);
-					*/
 				}
+				*/
 				else if (event.type == sf::Event::MouseWheelMoved)
 				{
 					mapRenderer.zoomCam(-0.2f * event.mouseWheel.delta);
@@ -170,6 +170,10 @@ namespace OpenDK
 					if (event.key.code == sf::Keyboard::F)
 					{
 						mapRenderer.debugCol();
+					}
+					if (event.key.code == sf::Keyboard::Q)
+					{
+						mapRenderer.debugLight();
 					}
 					if (event.key.code == sf::Keyboard::N)
 					{
@@ -209,6 +213,7 @@ namespace OpenDK
 
 		float lightOffsetX = 0.0f;
 		float lightOffsetY = 0.0f;
+		float lightOffsetZ = 0.0f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 		{
@@ -284,34 +289,25 @@ namespace OpenDK
 			zoomChange =  0.1f;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		{
-			camRotateZ = -0.6f;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-			camRotateZ =  0.6f;
-		}
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
 		{
-			lightOffsetY -= 0.2f;
+			lightOffsetZ -= 0.1f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 		{
-			lightOffsetY += 0.2f;
+			lightOffsetZ += 0.1f;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
 		{
-			lightOffsetX -= 0.2f;
+			lightOffsetX -= 0.1f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
 		{
-			lightOffsetX += 0.2f;
+			lightOffsetX += 0.1f;
 		}
 
-		mapRenderer.moveLight(lightOffsetX, 0.0f, lightOffsetY);
+		mapRenderer.moveLight(lightOffsetX, lightOffsetY, lightOffsetZ);
 		mapRenderer.moveCam(camOffsetX, camOffsetY, camOffsetZ);
 		mapRenderer.rotateCam(camRotateX, camRotateY, camRotateZ);
 		mapRenderer.zoomCam(zoomChange);

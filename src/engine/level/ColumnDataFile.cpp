@@ -110,14 +110,14 @@ namespace OpenDK
 		if (colX < 0 || colX > 2 || colY < 0 || colY > 2)
 		{
 			std::cerr << typeid(this).name() << ": [ERR] Can't get column data value, "
-					<< "invalid column position given (" << colX << "," << colY << ")" << std::endl;
+					<< "invalid column position given (" << colX << ", " << colY << ")" << std::endl;
 			return -1;
 		}
 
 		if (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight)
 		{
 			std::cerr << typeid(this).name() << ": [ERR] Can't get column data value, "
-					<< "invalid tile position given (" << tileX << "," << tileY << ")" << std::endl;
+					<< "invalid tile position given (" << tileX << ", " << tileY << ")" << std::endl;
 			return -1;
 		}
 
@@ -133,6 +133,20 @@ namespace OpenDK
 		*/
 
 		int offset = colDatPos(tileX * 3 + colX, tileY * 3 + colY);
+		std::int16_t columnIndex = *(reinterpret_cast<std::int16_t *>(mapLayout + offset));
+		return std::abs(columnIndex);
+	}
+
+	std::int16_t ColumnDataFile::getColumnIndex(int x, int y) const
+	{
+		if (x < 0 || x > mapWidth * 3 || y < 0 || y > mapHeight * 3)
+		{
+			std::cerr << typeid(this).name() << ": [ERR] Can't get column index, "
+					<< "invalid position given (" << x << ", " << y << ")" << std::endl;
+			return -1;
+		}
+
+		int offset = colDatPos(x, y);
 		std::int16_t columnIndex = *(reinterpret_cast<std::int16_t *>(mapLayout + offset));
 		return std::abs(columnIndex);
 	}

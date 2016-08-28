@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cmath>
-//#include <iomanip>		// setw
+#include <cmath>		// std::abs(), std::floor(), ...
+#include <iomanip>		// std::setw()
 
 #include <GL/glew.h>
 #include <SFML/System.hpp>
@@ -14,6 +14,7 @@
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
+#include "BlockGeometry.hpp"
 #include "Camera.hpp"
 
 #include "../level/Map.hpp"
@@ -23,8 +24,9 @@
 #include "../level/OwnerFile.hpp"
 #include "../level/ColumnFile.hpp"
 #include "../level/ColumnDataFile.hpp"
+#include "../level/ThingFile.hpp"
 #include "../level/CubeSide.hpp"
-#include "BlockGeometry.hpp"
+#include "../level/Light.hpp"
 
 namespace OpenDK
 {
@@ -39,7 +41,6 @@ namespace OpenDK
 		void initDummyData();
 		void render();
 
-		// TODO remove this later, just dirty coding for now
 		void moveLight(float offsetX, float offsetY, float offsetZ);
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
 		void rotateCam(float rotX, float rotY, float rotZ);
@@ -49,6 +50,7 @@ namespace OpenDK
 		void prevCol();
 		void debugDAT() const;
 		void debugCol() const;
+		void debugLight() const;
 		void switchMode();
 
 	private:
@@ -61,6 +63,7 @@ namespace OpenDK
 		ColumnFile clm;
 		ColumnDataFile dat;
 		CubeDataFile cbd;
+		ThingFile tng;
 
 		std::int16_t col;
 
@@ -73,13 +76,23 @@ namespace OpenDK
 		bool singleColMode;
 
 		float lightMap[65025];
-		glm::vec3 lightPos;
+		Light light;
+		Light light1;
+		Light light2;
+		Light light3;
+		Light light4;
+		Light light5;
+		Light light6;
+		Light light7;
+		Light light8;
 
 		glm::mat4 modelMatrix;
 		glm::vec3 camPosBefore;
 
-		void renderColumn(const VertexArrayObject& vao, int tileX, int tileY, int subtileX, int subtileY, int column = -1);
-		void renderCube(const VertexArrayObject& vao, int x, int y, int cube);
+		void renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column = -1);
+		void renderCube(const VertexArrayObject& vao, int x, int z, int cube);
+		float getLightLevelAt(int x, int z, int side) const;
+		bool bresenham(int x1, int y1, int const x2, int const y2, int lightHeight);
 	};
 
 }

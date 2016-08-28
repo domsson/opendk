@@ -21,6 +21,8 @@ namespace OpenDK
 
 		std::int16_t getColumnIndex(int tileX, int tileY, int colX, int colY) const;
 
+		std::int16_t getColumnIndex(int x, int y) const;
+
 	private:
 
 		int colDatPos(int x, int y) const;

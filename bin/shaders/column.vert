@@ -177,5 +177,13 @@ void main()
     pass_Color = getLightLevelFromColumnData();
 
 	pass_Unwrap = in_Unwrap;
-	pass_Sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
+	int sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
+	if (sprite == 548) { sprite = 80; }
+	if (sprite == 549) { sprite = 84; }
+	if (sprite == 550) { sprite = 88; }
+	if (sprite == 552) { sprite = 92; }
+	if (sprite == 553) { sprite = 92; }
+	if (sprite == 554) { sprite = 92; }
+	//pass_Sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
+	pass_Sprite = sprite;
 }

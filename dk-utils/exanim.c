@@ -48,20 +48,32 @@ int main (int argc, char **argv)
     tabfp = fopen ("creature.tab", "rb");
     if (!tabfp)
     {
-	printf ("Can't open creature.tab.\n");
-	return 1;
+		tabfp = fopen ("CREATURE.TAB", "rb");
+    }
+    if (!tabfp)
+    {
+		printf ("Can't open creature.tab.\n");
+		return 1;
     }
     datfp = fopen ("creature.jty", "rb");
     if (!datfp)
     {
-	printf ("Can't open creature.jty.\n");
-	return 1;
+		datfp = fopen ("CREATURE.JTY", "rb");
+    }
+    if (!datfp)
+    {
+		printf ("Can't open creature.jty.\n");
+		return 1;
     }
     palfp = fopen ("main.pal", "rb");
     if (!palfp)
     {
-	printf ("Can't open main.pal.\n");
-	return 1;
+		palfp = fopen ("MAIN.PAL", "rb");
+    }
+    if (!palfp)
+    {
+		printf ("Can't open main.pal.\n");
+		return 1;
     }
     fread (palette, 768, 1, palfp);
     while (picnum < 9137)

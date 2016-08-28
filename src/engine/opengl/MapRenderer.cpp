@@ -222,7 +222,9 @@ namespace OpenDK
 		std::cout << "\nThat's a total of " << unusedCount << " unused." << std::endl;
 */
 
+		//
 		// CUBES.DAT -> BUFFER TEXTURE -> GPU
+		//
 		GLshort cubesTBOData[3072];
 
 		for (size_t c = 0; c < 512; ++c)
@@ -240,11 +242,32 @@ namespace OpenDK
 
 		glGenTextures(1, &tboTex);
 
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE1); // 1
 		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_R16I, tbo);
 
-		glUniform1i(sp->getUniformLocation("cubes"), 1);
+		glUniform1i(sp->getUniformLocation("cubes"), 1); // 1
+
+		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+		//
+		// LIGHT MAP -> BUFFER TEXTURE -> GPU (YOU BETTER HAVE SOME VRAM)
+		//
+		//GLhalf lightTBOData[65025];
+		// will have to set/update the light map data every frame.. ugh
+
+		//GLuint tboLight;
+		glGenBuffers(1, &tboLight);
+		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(lightTBOData), lightTBOData, GL_STREAM_DRAW);
+
+		glGenTextures(1, &tboLightTex);
+
+		glActiveTexture(GL_TEXTURE2); // 2
+		glBindTexture(GL_TEXTURE_BUFFER, tboLightTex);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, tboLight);
+
+		glUniform1i(sp->getUniformLocation("light"), 2); // 2
 
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
 	}
@@ -357,7 +380,8 @@ namespace OpenDK
 					if (bresenham((int)l.getPosition().x, (int)l.getPosition().z, x, z, (int)l.getPosition().y))
 					{
 						// lightMap[z * 255 + x] += 1.0f - (distance / l.getRadius());
-						lightMap[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
+						//lightMap[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
+						lightTBOData[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
 
 						/*
 						if (lightMap[z * 255 + x] > 1.0f)
@@ -375,7 +399,8 @@ namespace OpenDK
 	{
 		for (int i = 0; i < 65025; ++i)
 		{
-			lightMap[i] = 0.0f;
+			//lightMap[i] = 0.0f;
+			lightTBOData[i] = 0.0f;
 		}
 
 		bakeLight(light);
@@ -388,6 +413,11 @@ namespace OpenDK
 		bakeLight(light7);
 		bakeLight(light8);
 
+		// send upated light map to GPU
+		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
+		glBufferSubData(GL_TEXTURE_BUFFER, 0, sizeof(lightTBOData), &lightTBOData);
+		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
 		camera.update();
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -398,6 +428,9 @@ namespace OpenDK
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_BUFFER, tboLightTex);
 
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());			// +4% cpu
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());	// +5% cpu
@@ -559,7 +592,8 @@ namespace OpenDK
 			i = (z+1) * 255 + x;
 		}
 
-		return (i < 0 || i >= 255*255) ? 0.0f : lightMap[i];
+		//return (i < 0 || i >= 255*255) ? 0.0f : lightMap[i];
+		return (i < 0 || i >= 255*255) ? 0.0f : lightTBOData[i];
 	}
 
 	bool MapRenderer::bresenham(int x1, int y1, int const x2, int const y2, int lightHeight)

@@ -69,6 +69,7 @@ namespace OpenDK
 		std::int16_t col;
 
 		GLuint tboTex;
+		GLuint tboLightTex;
 
 		sf::Clock clock;
 
@@ -76,6 +77,8 @@ namespace OpenDK
 
 		bool singleColMode;
 
+		GLuint tboLight; // BUFFER ID
+		GLfloat lightTBOData[65025];
 		float lightMap[65025];
 		Light light;
 		Light light1;

@@ -113,133 +113,126 @@ vec3 getLightLevelFromColumnData()
 
 float getLightLevelFromBuffer(int x, int z)
 {
+	float c = 0.0f; // current subtile (center)
+	float f = 0.0f; // subtile in front of current
+	float s = 0.0f; // subtile to side of current
+	float d = 0.0f; // subtile diagonal to current
 
 	if (gl_VertexID == 0)	// TOP - front left
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
 	}
 	if (gl_VertexID == 1)	// TOP - front right
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 2)	// TOP - back right
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 3)	// TOP - back left
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
 	}
 
 	if (gl_VertexID == 4)	// BOTTOM - back left
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
 	}
 	if (gl_VertexID == 5)	// BOTTOM - back right
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 6)	// BOTTOM - front right
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 7)	// BOTTOM - front left
 	{
-		float c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
-		float f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
-		return (c + f + s + d) * 0.25;
+		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
+		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
 	}
 
 	if (gl_VertexID == 8 || gl_VertexID == 11)	// FRONT - left
 	{
-		float a = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float b = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
-		float c = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		return (a + b + c) * 0.333;
+		// TODO check if these are fsd
+		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		s = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
 	}
 	if (gl_VertexID == 9 || gl_VertexID == 10)	// FRONT - right
 	{
-		float a = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float b = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float c = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
-		return (a + b + c) * 0.333;
+		// TODO check if these are fsd
+		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 
 	if (gl_VertexID == 12 || gl_VertexID == 15)	// RIGHT - left
 	{
-		float a = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float b = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float c = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
-		return (a + b + c) * 0.333;
+		// TODO check if these are fsd
+		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 13 || gl_VertexID == 14)	// RIGHT - right
 	{
-		float a = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float b = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float c = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
-		return (a + b + c) * 0.333;
+		// TODO check if these are fsd
+		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 
 	if (gl_VertexID == 16 || gl_VertexID == 19)	// BACK - left
 	{
-		float f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
-		return (f * 0.4 + s * 0.4 + d * 0.2);
+		f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 17 || gl_VertexID == 18)	// BACK - right
 	{
-		float f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
-		return (f * 0.4 + s * 0.4 + d * 0.2);
+		f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
 	}
 
 	if (gl_VertexID == 20 || gl_VertexID == 23)	// LEFT - left
 	{
-		float f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
-		return (f * 0.4 + s * 0.4 + d * 0.2);
+		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
 	}
 	if (gl_VertexID == 21 || gl_VertexID == 22)	// LEFT - right
 	{
-		float f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-		float s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-		float d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
-		return (f * 0.4 + s * 0.4 + d * 0.2);
+		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+		s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
 	}
 
+	return (c + f + s + d) * 0.25;
 }
 
 // http://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
@@ -298,20 +291,19 @@ int getCubeFromInstanceID()
 
 void main()
 {
-    //gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0f);
+	// Position (Geometry)
+    vec4 cubePos = vec4(columnInfo[3][0], columnInfo[3][1] + float(gl_InstanceID), columnInfo[3][2], 1.0f);
+    gl_Position = projectionMatrix * viewMatrix * skewPosition(cubePos + vec4(in_Position, 1.0f));
 
-    vec4 columnPos = vec4(columnInfo[3][0], columnInfo[3][1] + float(gl_InstanceID), columnInfo[3][2], 1.0f);
-
-    //gl_Position = projectionMatrix * viewMatrix * skewPosition(modelMatrix * vec4(in_Position, 1.0f));
-    gl_Position = projectionMatrix * viewMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
-    //gl_Position = modelViewProjectionMatrix * skewPosition(columnPos + vec4(in_Position, 1.0f));
-    // pass_Color = in_Color;
+	// Color (Light level)
     //pass_Color = getLightLevelFromColumnData();
-
-    float lightLevel = getLightLevelFromBuffer(int(columnPos.x), int(columnPos.z));
+    float lightLevel = getLightLevelFromBuffer(int(cubePos.x), int(cubePos.z));
     pass_Color = vec3(lightLevel, lightLevel, lightLevel);
 
+	// Unwrap (Texture coordinates)
 	pass_Unwrap = in_Unwrap;
+
+	// Sprite (Which texture to use)
 	int sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
 	if (sprite == 548) { sprite = 80; }
 	if (sprite == 549) { sprite = 84; }
@@ -319,6 +311,5 @@ void main()
 	if (sprite == 552) { sprite = 92; }
 	if (sprite == 553) { sprite = 92; }
 	if (sprite == 554) { sprite = 92; }
-	//pass_Sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
 	pass_Sprite = sprite;
 }

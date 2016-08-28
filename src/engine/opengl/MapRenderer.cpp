@@ -165,14 +165,23 @@ namespace OpenDK
 			}
 		}
 
-		light1.setRadius(5.0f);
-		light2.setRadius(5.0f);
-		light3.setRadius(5.0f);
-		light4.setRadius(5.0f);
-		light5.setRadius(5.0f);
-		light6.setRadius(5.0f);
-		light7.setRadius(5.0f);
-		light8.setRadius(5.0f);
+		light1.setRadius(6.5f);
+		light2.setRadius(6.5f);
+		light3.setRadius(6.5f);
+		light4.setRadius(6.5f);
+		light5.setRadius(6.5f);
+		light6.setRadius(6.5f);
+		light7.setRadius(6.5f);
+		light8.setRadius(6.5f);
+
+		light1.setIntensity(1.8f);
+		light2.setIntensity(1.8f);
+		light3.setIntensity(1.8f);
+		light4.setIntensity(1.8f);
+		light5.setIntensity(1.8f);
+		light6.setIntensity(1.8f);
+		light7.setIntensity(1.8f);
+		light8.setIntensity(1.8f);
 
 		/*
 		for (int t = 0; t < numLights; ++t)

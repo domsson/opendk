@@ -42,6 +42,7 @@ namespace OpenDK
 		void render();
 
 		void moveLight(float offsetX, float offsetY, float offsetZ);
+		void moveLight(float offsetX, float offsetZ);
 		void moveCam(float offsetX, float offsetY, float offsetZ = 0.0f);
 		void rotateCam(float rotX, float rotY, float rotZ);
 		void zoomCam(float zoomChange);

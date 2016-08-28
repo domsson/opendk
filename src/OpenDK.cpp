@@ -212,7 +212,7 @@ namespace OpenDK
 		float zoomChange = 0.0f;
 
 		float lightOffsetX = 0.0f;
-		float lightOffsetY = 0.0f;
+		//float lightOffsetY = 0.0f;
 		float lightOffsetZ = 0.0f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
@@ -307,7 +307,7 @@ namespace OpenDK
 			lightOffsetX += 0.1f;
 		}
 
-		mapRenderer.moveLight(lightOffsetX, lightOffsetY, lightOffsetZ);
+		mapRenderer.moveLight(lightOffsetX, lightOffsetZ);
 		mapRenderer.moveCam(camOffsetX, camOffsetY, camOffsetZ);
 		mapRenderer.rotateCam(camRotateX, camRotateY, camRotateZ);
 		mapRenderer.zoomCam(zoomChange);

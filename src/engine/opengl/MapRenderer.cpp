@@ -7,7 +7,7 @@ namespace OpenDK
 	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr),
 	  col(488), singleColMode(false)
 	{
-		light.setPosition(glm::vec3(114.0f, 6.0f, 130.0f));
+		light.setPosition(glm::vec3(114.0f, 2.0f, 130.0f));
 		light.setIntensity(2.0f);
 	}
 
@@ -27,6 +27,18 @@ namespace OpenDK
 		move = glm::rotateY(move, glm::radians(- camera.getRotation().y));
 
 		pos = pos + move;
+		light.setPosition(pos);
+	}
+
+	// Always puts the light one cube above the ground (or is supposed to)
+	void MapRenderer::moveLight(float offsetX, float offsetZ)
+	{
+		glm::vec3 pos = light.getPosition();
+		glm::vec3 move = glm::vec3(offsetX, pos.y, offsetZ);
+		move = glm::rotateY(move, glm::radians(- camera.getRotation().y));
+
+		pos = pos + move;
+		pos.y = clm.getColumnHeight(dat.getColumnIndex(pos.x, pos.z)) + 1;
 		light.setPosition(pos);
 	}
 
@@ -320,10 +332,13 @@ namespace OpenDK
 	void MapRenderer::bakeLight(const Light& l)
 	{
 		int column = dat.getColumnIndex((int)l.getPosition().x, (int)l.getPosition().z);
-		bool solid = clm.cubeIsSolid(column, (int)l.getPosition().y);
-		if (solid)
+		if ((int)l.getPosition().y < 8) // the "hand of evil" light could be higher up!
 		{
-			return;
+			bool solid = clm.cubeIsSolid(column, (int)l.getPosition().y);
+			if (solid)
+			{
+				return;
+			}
 		}
 
 		// http://gamedev.stackexchange.com/questions/56897/glsl-light-attenuation-color-and-intensity-formula
@@ -561,9 +576,10 @@ namespace OpenDK
 
 		//plot(x1, y1);
 		// TODO
-		int column = dat.getColumnIndex(x2, y2);
+		int column = dat.getColumnIndex(x1, y1);
 		int height = clm.getColumnHeight(column);
 		if (height > lightHeight) { return false; }
+		//if (height > 1) { return false; }
 
 		if (delta_x >= delta_y)
 		{
@@ -584,9 +600,10 @@ namespace OpenDK
 
 				//plot(x1, y1);
 				// TODO
-				int column = dat.getColumnIndex(x2, y2);
+				int column = dat.getColumnIndex(x1, y1);
 				int height = clm.getColumnHeight(column);
 				if (height > lightHeight) { return false; }
+				//if (height > 1) { return false; }
 			}
 		}
 		else
@@ -608,9 +625,10 @@ namespace OpenDK
 
 				//plot(x1, y1);
 				// TODO
-				int column = dat.getColumnIndex(x2, y2);
+				int column = dat.getColumnIndex(x1, y1);
 				int height = clm.getColumnHeight(column);
 				if (height > lightHeight) { return false; }
+				//if (height > 1) { return false; }
 			}
 		}
 

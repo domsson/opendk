@@ -304,12 +304,19 @@ void main()
 	pass_Unwrap = in_Unwrap;
 
 	// Sprite (Which texture to use)
-	int sprite = getSpriteFromTexBuffer(getCubeFromInstanceID());
-	if (sprite == 548) { sprite = 80; }
-	if (sprite == 549) { sprite = 84; }
-	if (sprite == 550) { sprite = 88; }
-	if (sprite == 552) { sprite = 92; }
-	if (sprite == 553) { sprite = 92; }
-	if (sprite == 554) { sprite = 92; }
+	// Base block (gl_InstanceID == 0) is directly referencing a sprite, not a cube
+	int sprite = (gl_InstanceID == 0) ? getCubeFromInstanceID() : getSpriteFromTexBuffer(getCubeFromInstanceID());
+	if (sprite == 544) { sprite =  40; } // dirt near water
+	if (sprite == 545) { sprite =  48; } // water
+	if (sprite == 546) { sprite =  56; } // lava 1
+	if (sprite == 547) { sprite =  64; } // lava 2
+	if (sprite == 548) { sprite =  80; } // gold 1
+	if (sprite == 549) { sprite =  84; } // gold 2
+	if (sprite == 550) { sprite =  88; } // gold 3
+	if (sprite == 551) { sprite = 160; } // brick near water
+	if (sprite == 552) { sprite =  92; } // gold near lava 1
+	if (sprite == 553) { sprite =  92; } // gold near lava 1
+	if (sprite == 554) { sprite =  92; } // gold near lava 1
+	if (sprite == 581) { sprite = 195; } // center top of portal
 	pass_Sprite = sprite;
 }

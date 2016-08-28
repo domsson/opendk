@@ -231,6 +231,8 @@ namespace OpenDK
 		std::cout << "\nThat's a total of " << unusedCount << " unused." << std::endl;
 */
 
+		std::cout << "col of interest: " << dat.getColumnIndex(160, 130) << std::endl;
+
 		//
 		// CUBES.DAT -> BUFFER TEXTURE -> GPU
 		//
@@ -331,6 +333,7 @@ namespace OpenDK
 	{
 		std::cout << "COLUMN INFO\n";
 		std::cout << "height: " << (int)clm.getColumnHeight(col) << std::endl;
+		std::cout << "base block: " << (int)clm.getBaseBlockType(col) << std::endl;
 
 		for (int h = 0; h < 8; ++h)
 		{
@@ -550,7 +553,7 @@ namespace OpenDK
 		//glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, (float)y, 0.0f));
 
 		// mat4[col][row]
-		columnMatrix[0][0] = clm.getBaseBlockType(column);
+		columnMatrix[0][0] = (int)clm.getBaseBlockType(column);
 		columnMatrix[0][1] = clm.getCubeType(column, 0);
 		columnMatrix[0][2] = clm.getCubeType(column, 1);
 		columnMatrix[1][0] = clm.getCubeType(column, 2);

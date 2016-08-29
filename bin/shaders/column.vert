@@ -7,6 +7,7 @@ in vec3 in_Normal;
 
 uniform isamplerBuffer cubes;
 uniform samplerBuffer light;
+uniform isamplerBuffer visibility;
 uniform mat4 columnInfo;
 
 uniform mat4 modelMatrix;
@@ -113,6 +114,7 @@ vec3 getLightLevelFromColumnData()
 
 float getLightLevelFromBuffer(int x, int z)
 {
+	//float c = -0.3f; // current subtile (center)
 	float c = 0.0f; // current subtile (center)
 	float f = 0.0f; // subtile in front of current
 	float s = 0.0f; // subtile to side of current
@@ -289,6 +291,12 @@ int getCubeFromInstanceID()
 	}
 }
 
+int getVisibilityFromBuffer(int x, int z)
+{
+	int slab = (z/3) * 85 + (x/3);
+	return texelFetch(visibility, slab).r;
+}
+
 void main()
 {
 	// Position (Geometry)
@@ -298,7 +306,13 @@ void main()
 	// Color (Light level)
     //pass_Color = getLightLevelFromColumnData();
     float lightLevel = getLightLevelFromBuffer(int(cubePos.x), int(cubePos.z));
-    pass_Color = vec3(lightLevel, lightLevel, lightLevel);
+	/*
+    if (getVisibilityFromBuffer(int(cubePos.x), int(cubePos.z)) == 0)
+    {
+		lightLevel = 0.0f;
+	}
+	*/
+	pass_Color = vec3(lightLevel, lightLevel, lightLevel);
 
 	// Unwrap (Texture coordinates)
 	pass_Unwrap = in_Unwrap;

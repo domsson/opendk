@@ -120,6 +120,7 @@ namespace OpenDK
 
 		// LOAD LEVEL DATA
 		slb.load("./bin/levels/MAP00001.SLB");
+		own.load("./bin/levels/MAP00001.OWN");
 		clm.load("./bin/levels/MAP00001.CLM");
 		dat.load("./bin/levels/MAP00001.DAT");
 		tng.load("./bin/levels/MAP00001.TNG");
@@ -281,6 +282,49 @@ namespace OpenDK
 		glUniform1i(sp->getUniformLocation("light"), 2); // 2
 
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+
+		//
+		// VISIBILITY MAP -> BUFFER TEXTURE -> GPU (YES! WE EAT MORE VRAM)
+		//
+
+		//visibilityTBOData[];
+		for (int z = 0; z < 85; ++z)
+		{
+			for (int x = 0; x < 85; ++x)
+			{
+				TileType  type  = slb.getTileType(x, z);
+				TileOwner owner = own.getTileOwner(x, z);
+
+				if (owner == TileOwner::PLAYER0)
+				{
+					visibilityTBOData[z*85+x] = 1;
+					continue;
+				}
+				if (type ==TileType::PORTAL ||
+					type == TileType::GOLD ||
+					type == TileType::GEM)
+				{
+					visibilityTBOData[z*85+x] = 1;
+					continue;
+				}
+				visibilityTBOData[z*85+x] = 0;
+			}
+		}
+
+		glGenBuffers(1, &tboVisibility);
+		glBindBuffer(GL_TEXTURE_BUFFER, tboVisibility);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(visibilityTBOData), visibilityTBOData, GL_STREAM_DRAW);
+
+		glGenTextures(1, &tboVisibilityTex);
+
+		glActiveTexture(GL_TEXTURE3); // 3
+		glBindTexture(GL_TEXTURE_BUFFER, tboVisibilityTex);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_R8I, tboVisibility);
+
+		glUniform1i(sp->getUniformLocation("visibility"), 3); // 3
+
+		glBindBuffer(GL_TEXTURE_BUFFER, 0);
 	}
 
 	void MapRenderer::nextCol()
@@ -366,6 +410,12 @@ namespace OpenDK
 
 	void MapRenderer::bakeLight(const Light& l)
 	{
+		int slab = ((int)l.getPosition().z / 3) * 85 + ((int)l.getPosition().x / 3);
+		if (visibilityTBOData[slab] == 0)
+		{
+			return;
+		}
+
 		int column = dat.getColumnIndex((int)l.getPosition().x, (int)l.getPosition().z);
 		if ((int)l.getPosition().y < 8) // the "hand of evil" light could be higher up!
 		{
@@ -383,6 +433,12 @@ namespace OpenDK
 		{
 			for (int x = (int)l.getPosition().x - (int)l.getRadius(); x < (int)l.getPosition().x + (int)l.getRadius(); ++x)
 			{
+				int slab = (z / 3) * 85 + (x / 3);
+				if (visibilityTBOData[slab] == 0)
+				{
+					continue;
+				}
+
 				float xTerm = (float)x - l.getPosition().x;
 				float zTerm = (float)z - l.getPosition().z;
 				float distance = sqrt(xTerm * xTerm + zTerm * zTerm);
@@ -409,10 +465,30 @@ namespace OpenDK
 
 	void MapRenderer::render()
 	{
-		for (int i = 0; i < 65025; ++i)
+		/*
+		for (int i = 0; i < 255*255; ++i)
 		{
 			//lightMap[i] = 0.0f;
-			lightTBOData[i] = 0.0f;
+			lightTBOData[i] = 0.3f; // bit of ambient light
+		}
+		*/
+
+		for (int z = 0; z < 255; ++z)
+		{
+			for (int x = 0; x < 255; ++x)
+			{
+				int slabZ = z / 3;
+				int slabX = x / 3;
+
+				if (visibilityTBOData[slabZ * 85 + slabX])
+				{
+					lightTBOData[z*255+x] = 0.3f; // bit of ambient light
+				}
+				else
+				{
+					lightTBOData[z*255+x] = 0.0f; // nothing
+				}
+			}
 		}
 
 		bakeLight(light);
@@ -424,6 +500,35 @@ namespace OpenDK
 		bakeLight(light6);
 		bakeLight(light7);
 		bakeLight(light8);
+
+		/*
+		for (int z = 0; z < 85; ++z)
+		{
+			for (int x = 0; x < 85; ++x)
+			{
+				TileType  type  = slb.getTileType(x, z);
+				TileOwner owner = own.getTileOwner(x, z);
+
+				if (owner != TileOwner::PLAYER0 &&
+					!(type == TileType::PORTAL ||
+					  type == TileType::GOLD ||
+					  type == TileType::GEM))
+				{
+					for (int cz = 0; cz < 3; ++cz)
+					{
+						for (int cx = 0; cx < 3; ++cx)
+						{
+							int columnIndex = (z * 3 + cz) * 255 + (x * 3 + cx);
+							if (lightTBOData[columnIndex] == 0)
+							{
+								lightTBOData[columnIndex] = -0.3f;
+							}
+						}
+					}
+				}
+			}
+		}
+		*/
 
 		// send upated light map to GPU
 		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
@@ -443,6 +548,9 @@ namespace OpenDK
 
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_BUFFER, tboLightTex);
+
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_BUFFER, tboVisibilityTex);
 
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());			// +4% cpu
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());	// +5% cpu

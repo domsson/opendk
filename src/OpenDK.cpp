@@ -6,8 +6,10 @@ namespace OpenDK
 	static const std::string TITLE = "OpenDK";
 	static const std::string VERSION = "0.0.1";
 
-	static const int INITIAL_WIDTH = 1280;
-	static const int INITIAL_HEIGHT = 800;
+	//static const int INITIAL_WIDTH = 1280;
+	//static const int INITIAL_HEIGHT = 800;
+	static const int INITIAL_WIDTH = 640;
+	static const int INITIAL_HEIGHT = 400;
 	static const std::string GAME_ICON = "icon.png";
 
 	static const int TARGET_FPS = 40;

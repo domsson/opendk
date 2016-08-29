@@ -45,11 +45,14 @@ namespace OpenDK
 		void printMap() const;
 
 		/**
+		 * @param x Column position on x (column)
+		 * @param y Column position on y (row)
 		 * @return The byte value (tile type) of the tile at position x,y or -1
 		 */
 		TileOwner getTileOwner(int x, int y) const;
 
 		/**
+		 * @param i Column index
 		 * @return The byte value (tile type) of the tile at index i or -1
 		 */
 		TileOwner getTileOwner(int i) const;

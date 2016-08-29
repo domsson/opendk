@@ -61,6 +61,7 @@ namespace OpenDK
 		BlockGeometry* block;
 
 		SlabFile slb;
+		OwnerFile own;
 		ColumnFile clm;
 		ColumnDataFile dat;
 		CubeDataFile cbd;
@@ -70,6 +71,7 @@ namespace OpenDK
 
 		GLuint tboTex;
 		GLuint tboLightTex;
+		GLuint tboVisibilityTex;
 
 		sf::Clock clock;
 
@@ -77,7 +79,9 @@ namespace OpenDK
 
 		bool singleColMode;
 
+		GLuint tboVisibility; // BUFFER ID
 		GLuint tboLight; // BUFFER ID
+		GLbyte visibilityTBOData[7225];
 		GLfloat lightTBOData[65025];
 		float lightMap[65025];
 		Light light;

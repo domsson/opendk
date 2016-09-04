@@ -3,10 +3,13 @@
 gcc -c dernc.c -D MAIN
 gcc -o dernc dernc.o
 
+# or short
+
+gcc -o dernc dernc.c -D MAIN
+
 # xgfx
 
-gcc -c xgfx.c
-gcc -o xgfx xgfx.o
+gcc -o xgfx xgfx.c
 
 # terrain
 

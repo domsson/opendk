@@ -227,7 +227,7 @@ char *rnc_error (long errcode)
 		errcode = 0;
 	}
     if (errcode > sizeof(errors)/sizeof(*errors) - 1)
-}	{
+	{
 		errcode = sizeof(errors)/sizeof(*errors) - 1;
 	}
     return errors[errcode];

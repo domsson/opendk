@@ -72,13 +72,11 @@ namespace OpenDK
 		glEnable(GL_CULL_FACE);		// Do not render back sides
 		glCullFace(GL_BACK);		// cull back face (default)
 		glFrontFace(GL_CCW);		// GL_CCW for counter clock-wise (default)
-		//renderer.initDummyData();
 		mapRenderer.initDummyData();
 	}
 
 	void OpenDK::run()
 	{
-		//std::cout << "Hello World!" << std::endl;
 		sf::Clock clock;
 		bool running = true;
 
@@ -105,50 +103,6 @@ namespace OpenDK
 					running = false;
 					// window.close();
 				}
-				/*
-				else if (event.type == sf::Event::MouseMoved)
-				{
-					float moveX = 0.0f;
-					float moveY = 0.0f;
-
-					if (mouseX == 0 || mouseY == 0)
-					{
-						mouseX = event.mouseMove.x;
-						mouseY = event.mouseMove.y;
-					}
-					else
-					{
-						moveX = 0.05f * (event.mouseMove.x - mouseX);
-						moveY = 0.05f * (event.mouseMove.y - mouseY);
-						mouseX = event.mouseMove.x;
-						mouseY = event.mouseMove.y;
-					}
-
-					mapRenderer.moveLight(moveX, 0.0f, moveY);
-
-					float camOffsetX = 0.0f;
-					float camOffsetZ = 0.0f;
-
-					if (mouseX < (INITIAL_WIDTH * 0.1f))
-					{
-						camOffsetX -= 0.05f;
-					}
-					else if (mouseX > ((float)INITIAL_WIDTH - INITIAL_WIDTH * 0.1f))
-					{
-						camOffsetX += 0.05f;
-					}
-					if (mouseY < (INITIAL_HEIGHT * 0.1f))
-					{
-						camOffsetZ -= 0.05f;
-					}
-					else if (mouseY > ((float)INITIAL_HEIGHT - INITIAL_HEIGHT * 0.1f))
-					{
-						camOffsetZ += 0.05f;
-					}
-
-					mapRenderer.moveCam(camOffsetX, 0.0f, camOffsetZ);
-				}
-				*/
 				else if (event.type == sf::Event::MouseWheelMoved)
 				{
 					mapRenderer.zoomCam(-0.2f * event.mouseWheel.delta);
@@ -163,12 +117,6 @@ namespace OpenDK
 					{
 						mapRenderer.debugCamCoords();
 					}
-					/*
-					if (event.key.code == sf::Keyboard::D)
-					{
-						mapRenderer.debugDAT();
-					}
-					*/
 					if (event.key.code == sf::Keyboard::F)
 					{
 						mapRenderer.debugCol();
@@ -318,10 +266,7 @@ namespace OpenDK
 	void OpenDK::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//renderer.render();
 		mapRenderer.render();
-
         window.display();
 	}
 

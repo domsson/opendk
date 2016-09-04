@@ -13,7 +13,6 @@
 #include <SFML/Audio.hpp>
 #include <SFML/OpenGL.hpp>
 
-//#include "engine/opengl/DummyRenderer.hpp"
 #include "engine/opengl/MapRenderer.hpp"
 
 namespace OpenDK
@@ -22,7 +21,6 @@ namespace OpenDK
 	class OpenDK
 	{
 	public:
-		// Something
 		OpenDK();
 		~OpenDK();
 
@@ -31,7 +29,6 @@ namespace OpenDK
 		void render();
 
 	private:
-		//DummyRenderer renderer;
 		MapRenderer mapRenderer;
 
 		sf::Window window;

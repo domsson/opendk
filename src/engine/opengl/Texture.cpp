@@ -107,19 +107,6 @@ namespace OpenDK
 		{
 			for (int x = 0; x < cols; ++x)
 			{
-				/*
-					GLenum target,
-					GLint level,
-					GLint xoffset,
-					GLint yoffset,
-					GLint zoffset,
-					GLsizei width,
-					GLsizei height,
-					GLsizei depth,
-					GLenum format,
-					GLenum type,
-					const GLvoid * pixels
-				 */
 				glTexSubImage3D(
 					GL_TEXTURE_2D_ARRAY,
 					0,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>		// std::abs(), std::floor(), ...
+#include <cstdlib>		// std::rand()
 #include <iomanip>		// std::setw()
 
 #include <GL/glew.h>

@@ -491,6 +491,16 @@ namespace OpenDK
 			}
 		}
 
+		float wurst = 300.0f;
+		light1.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light2.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light3.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light4.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light5.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light6.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light7.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+		light8.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+
 		bakeLight(light);
 		bakeLight(light1);
 		bakeLight(light2);

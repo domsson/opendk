@@ -20,7 +20,7 @@ out vec2 pass_Unwrap;
 flat out int pass_Sprite; // `flat` for 'no interpolation'
 
 /*
-	// CubeSides face order:
+	// CUBE.DAT face order:
 	CUBE_BACK   = 0,
 	CUBE_RIGHT  = 1,
 	CUBE_FRONT  = 2,
@@ -28,7 +28,7 @@ flat out int pass_Sprite; // `flat` for 'no interpolation'
 	CUBE_TOP    = 4,
 	CUBE_BOTTOM = 5
 
-	// BlockGeometry face order:
+	// CubeGeometry face order:
 	TOP
 	BOTTOM
 	FRONT
@@ -119,31 +119,34 @@ float getLightLevelFromBuffer(int x, int z)
 	float f = 0.0f; // subtile in front of current
 	float s = 0.0f; // subtile to side of current
 	float d = 0.0f; // subtile diagonal to current
+	float p = 0.333333f; // multiply the sum by this at the end
+
+	if (gl_VertexID < 8) // TOP OR BOTTOM
+	{
+		c = texelFetch(light, z * 255 + x).r;
+		p = 0.25;
+	}
 
 	if (gl_VertexID == 0)	// TOP - front left
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
 		s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
 		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
 	}
 	if (gl_VertexID == 1)	// TOP - front right
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
 		s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
 		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 2)	// TOP - back right
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
 		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
 		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 3)	// TOP - back left
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
 		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
 		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
@@ -151,28 +154,24 @@ float getLightLevelFromBuffer(int x, int z)
 
 	if (gl_VertexID == 4)	// BOTTOM - back left
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
 		s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
 		d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
 	}
 	if (gl_VertexID == 5)	// BOTTOM - back right
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
 		s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
 		d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 6)	// BOTTOM - front right
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
 		s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
 		d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
 	}
 	if (gl_VertexID == 7)	// BOTTOM - front left
 	{
-		c = texelFetch(light, (z + 0) * 255 + (x + 0)).r;
 		f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
 		s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
 		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
@@ -234,7 +233,7 @@ float getLightLevelFromBuffer(int x, int z)
 		d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
 	}
 
-	return (c + f + s + d) * 0.25;
+	return (c + f + s + d) * p;
 }
 
 // http://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
@@ -245,8 +244,6 @@ float rand(vec2 co){
 // http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
 // Modified so it works on a vec3 instead vec2 - jd
 float rand(vec3 co){
-	//return fract(sin(dot(co.xyz ,vec3(12.9898, 78.233, 22.721))) * 43758.5453);
-
     highp float a = 12.9898;
     highp float b = 78.233;
     highp float c = 22.721;
@@ -261,10 +258,11 @@ vec4 skewPosition(vec4 pos)
 	vec4 skewedPos = pos;
 	pos += 1.5f;
 	skewedPos.x += rand(pos.xyz) * 0.275;
-	//skewedPos.y += rand(pos.xzy) * 0.10;
 	skewedPos.z += rand(pos.zyx) * 0.275;
 	return skewedPos;
 }
+
+	//skewedPos.y += rand(pos.xzy) * 0.10;
 
 int getCubeFromInstanceID()
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <iostream> // Gives you stuff like `cout`
+#include <iostream>
 #include <chrono>
 #include <thread>
 
@@ -25,8 +25,6 @@ namespace OpenDK
 		~OpenDK();
 
 		void run();
-		void update();
-		void render();
 
 	private:
 		MapRenderer mapRenderer;
@@ -42,6 +40,10 @@ namespace OpenDK
 
 		int mouseX;
 		int mouseY;
+
+		void pinput();
+		void update();
+		void render();
 
 		void initWindow();
 		void initGLEW();

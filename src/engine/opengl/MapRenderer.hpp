@@ -3,6 +3,7 @@
 #include <cmath>		// std::abs(), std::floor(), ...
 #include <cstdlib>		// std::rand()
 #include <iomanip>		// std::setw()
+#include <vector>
 
 #include <GL/glew.h>
 #include <SFML/System.hpp>
@@ -15,10 +16,9 @@
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
-#include "BlockGeometry.hpp"
+#include "CubeGeometry.hpp"
 #include "Camera.hpp"
 
-#include "../level/Map.hpp"
 #include "../level/SlabFile.hpp"
 #include "../level/CubeDataFile.hpp"
 #include "../level/ColumnFile.hpp"
@@ -39,7 +39,8 @@ namespace OpenDK
 		MapRenderer();
 		~MapRenderer();
 
-		void initDummyData();
+		void init();
+		void update();
 		void render();
 
 		void moveLight(float offsetX, float offsetY, float offsetZ);
@@ -59,7 +60,7 @@ namespace OpenDK
 		ShaderProgram* sp;
 		ShaderProgram* sp2;
 		Texture* tex;
-		BlockGeometry* block;
+		CubeGeometry* cube;
 
 		SlabFile slb;
 		OwnerFile own;
@@ -85,19 +86,13 @@ namespace OpenDK
 		GLbyte visibilityTBOData[7225];
 		GLfloat lightTBOData[65025];
 		float lightMap[65025];
+		std::vector<Light> lights;
 		Light light;
-		Light light1;
-		Light light2;
-		Light light3;
-		Light light4;
-		Light light5;
-		Light light6;
-		Light light7;
-		Light light8;
 
 		glm::mat4 modelMatrix;
 		glm::vec3 camPosBefore;
 
+		void updateLight();
 		void renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column = -1);
 		void renderCube(const VertexArrayObject& vao, int x, int z, int cube);
 		float getLightLevelAt(int x, int z, int side) const;

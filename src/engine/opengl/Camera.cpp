@@ -58,10 +58,6 @@ namespace OpenDK
 
 	void Camera::updateViewMatrix()
 	{
-		// Way nicer than what we had before!
-		// Now we just need to get the translation
-		// to take the camera's rotation into account
-
 		glm::mat4 transToOrigin = glm::translate(glm::mat4(), position * -1.0f);
 		glm::mat4 rotAroundY = glm::rotate(glm::mat4(), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotAroundX = glm::rotate(glm::mat4(), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -76,10 +72,9 @@ namespace OpenDK
 		// LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR
 		projectionMatrix = glm::ortho(-3.2f * zoom, 3.2f * zoom, -2.0f * zoom, 2.0f * zoom, -100.0f, 100.0f);
 
+		/*
 		glm::mat4 planeSwapMatrix;
 
-		// http://gamedev.stackexchange.com/questions/128946/should-i-use-the-x-y-plane-when-using-an-orthographic-projection-in-opengl/128953#128953
-		//
 		//	1  0  0  0
 		//	0  0 -1  0
 		//	0  1  0  0
@@ -105,38 +100,8 @@ namespace OpenDK
 		planeSwapMatrix[3][2] =  0.0f;
 		planeSwapMatrix[3][3] =  1.0f;
 
-		//	1  0  0  0
-		//	0  0  1  0
-		//	0 -1  0  0
-		//	0  0  0  1
-
-		/*
-		planeSwapMatrix[0][0] =  1.0f;
-		planeSwapMatrix[0][1] =  0.0f;
-		planeSwapMatrix[0][2] =  0.0f;
-		planeSwapMatrix[0][3] =  0.0f;
-
-		planeSwapMatrix[1][0] =  0.0f;
-		planeSwapMatrix[1][1] =  0.0f;
-		planeSwapMatrix[1][2] = -1.0f;
-		planeSwapMatrix[1][3] =  0.0f;
-
-		planeSwapMatrix[2][0] =  0.0f;
-		planeSwapMatrix[2][1] =  1.0f;
-		planeSwapMatrix[2][2] =  0.0f;
-		planeSwapMatrix[2][3] =  0.0f;
-
-		planeSwapMatrix[3][0] =  0.0f;
-		planeSwapMatrix[3][1] =  0.0f;
-		planeSwapMatrix[3][2] =  0.0f;
-		planeSwapMatrix[3][3] =  1.0f;
+		projectionMatrix = projectionMatrix * planeSwapMatrix;
 		*/
-
-		// This will make our map, which lies in the X-Z plane,
-		// be in the X-Y plane. I forgot why I'm doing this,
-		// but... there was a reason, I'm pretty sure.
-
-		// projectionMatrix = projectionMatrix * planeSwapMatrix;
 	}
 
 }

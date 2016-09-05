@@ -78,13 +78,8 @@ namespace OpenDK
 			return -1;
 		}
 
-		// Variant 1: Using cast and pointers
 		// http://stackoverflow.com/questions/544928/reading-integer-size-bytes-from-a-char-array
 		return *(reinterpret_cast<std::int16_t *>(data + offset));
-
-		// Variant 2: Using memcpy
-		//std::int16_t columnType;
-		//std::memcpy(&columnType, columnData + offset, 2);
 	}
 
 	bool ColumnFile::cubeIsSolid(int columnIndex, int height) const
@@ -105,11 +100,6 @@ namespace OpenDK
 			return -1;
 		}
 
-		/*
-		std::int8_t solidMask = data[offset];
-		std::int8_t bitMask = 0x01 << height;
-		return (solidMask & bitMask) > 0;
-		*/
 		return (data[offset] & (0x01 << height)) > 0;
 	}
 

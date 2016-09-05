@@ -87,7 +87,7 @@ namespace OpenDK
 
 	private:
 
-		// This Program's OpenGL name/id (0 if not yet assigned)
+		// This program's OpenGL name/id (0 if not yet assigned)
 		GLuint id;
 
 		// Link status: GL_TRUE = linked, GL_FALSE = not (yet) linked

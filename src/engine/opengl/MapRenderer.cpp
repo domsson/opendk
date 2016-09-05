@@ -4,7 +4,7 @@ namespace OpenDK
 {
 
 	MapRenderer::MapRenderer()
-	: sp(nullptr), sp2(nullptr), tex(nullptr), block(nullptr),
+	: sp(nullptr), sp2(nullptr), tex(nullptr), cube(nullptr),
 	  col(488), singleColMode(false)
 	{
 		light.setPosition(glm::vec3(114.0f, 2.0f, 130.0f));
@@ -17,7 +17,7 @@ namespace OpenDK
 		delete sp;
 		delete sp2;
 		delete tex;
-		delete block;
+		delete cube;
 	}
 
 	void MapRenderer::moveLight(float offsetX, float offsetY, float offsetZ)
@@ -30,7 +30,7 @@ namespace OpenDK
 		light.setPosition(pos);
 	}
 
-	// Always puts the light one cube above the ground (or is supposed to)
+	// Always puts the light one cube above the ground
 	void MapRenderer::moveLight(float offsetX, float offsetZ)
 	{
 		glm::vec3 pos = light.getPosition();
@@ -79,7 +79,7 @@ namespace OpenDK
 		std::cout << "light pos: " << lightPos.x << ", " << lightPos.y << ", " << lightPos.z << std::endl;
 	}
 
-	void MapRenderer::initDummyData()
+	void MapRenderer::init()
 	{
 		// INIT CUBE SHADER
 		sp2 = new ShaderProgram();
@@ -111,7 +111,7 @@ namespace OpenDK
 		tex->unbind();
 
 		// INIT CUBE GEOMETRY
-		block = new BlockGeometry();
+		cube = new CubeGeometry();
 
 		// CAMERA INIT
 		camera.setPosition(65.0f, 0.0f, 63.0f);
@@ -129,11 +129,7 @@ namespace OpenDK
 		// INIT TORCHES (WE IGNORE EVERYTHING ELSE FOR NOW)
 		int numThings = tng.getThingCount();
 		int numLights = tng.getThingCount(1, 2);
-		//lights = new Light[numLights]; // torches!
-		std::cout << "NUM TORCHES FOUND: " << numLights << std::endl;
-
-		//int gimme = 0;
-		int torch = 0;
+		std::cout << "Number of torches found: " << numLights << std::endl;
 
 		for (int t = 0; t < numThings; ++t)
 		{
@@ -143,63 +139,16 @@ namespace OpenDK
 				int subtype = tng.getThingSubtype(t);
 				if (subtype == 2) // torch
 				{
-					++torch;
 					glm::vec3 loc = tng.getThingLocation(t);
 
-					if (torch==1) { light1.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==2) { light2.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==3) { light3.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==4) { light4.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==5) { light5.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==6) { light6.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==7) { light7.setPosition(loc.x, loc.z, loc.y); }
-					if (torch==8) { light8.setPosition(loc.x, loc.z, loc.y); }
-
-					/*
-					if (torch++ == gimme)
-					{
-						glm::vec3 loc = tng.getThingLocation(t);
-						light2.setPosition(loc.x, loc.z, loc.y);
-					}
-					*/
+					Light l;
+					l.setPosition(loc.x, loc.z, loc.y);
+					l.setRadius(6.5f);
+					l.setIntensity(1.8f);
+					lights.push_back(l);
 				}
 			}
 		}
-
-		light1.setRadius(6.5f);
-		light2.setRadius(6.5f);
-		light3.setRadius(6.5f);
-		light4.setRadius(6.5f);
-		light5.setRadius(6.5f);
-		light6.setRadius(6.5f);
-		light7.setRadius(6.5f);
-		light8.setRadius(6.5f);
-
-		light1.setIntensity(1.8f);
-		light2.setIntensity(1.8f);
-		light3.setIntensity(1.8f);
-		light4.setIntensity(1.8f);
-		light5.setIntensity(1.8f);
-		light6.setIntensity(1.8f);
-		light7.setIntensity(1.8f);
-		light8.setIntensity(1.8f);
-
-		/*
-		for (int t = 0; t < numLights; ++t)
-		{
-			std::cout << "torch " << t << ": "
-				<< lights[t].getPosition().x << ", "
-				<< lights[t].getPosition().y << ", "
-				<< lights[t].getPosition().z << std::endl;
-		}
-
-		std::cout << "torch " << gimme << ": "
-				<< light2.getPosition().x << ", "
-				<< light2.getPosition().y << ", "
-				<< light2.getPosition().z << std::endl;
-		*/
-
-		// scale, rotate, translate (note: glm operations should be in reverse!)
 
 /*
 		bool spritesUsed[544];
@@ -232,8 +181,6 @@ namespace OpenDK
 		std::cout << "\nThat's a total of " << unusedCount << " unused." << std::endl;
 */
 
-		std::cout << "col of interest: " << dat.getColumnIndex(160, 130) << std::endl;
-
 		//
 		// CUBES.DAT -> BUFFER TEXTURE -> GPU
 		//
@@ -264,11 +211,9 @@ namespace OpenDK
 
 		//
 		// LIGHT MAP -> BUFFER TEXTURE -> GPU (YOU BETTER HAVE SOME VRAM)
-		//
-		//GLhalf lightTBOData[65025];
 		// will have to set/update the light map data every frame.. ugh
+		//
 
-		//GLuint tboLight;
 		glGenBuffers(1, &tboLight);
 		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
 		glBufferData(GL_TEXTURE_BUFFER, sizeof(lightTBOData), lightTBOData, GL_STREAM_DRAW);
@@ -287,8 +232,6 @@ namespace OpenDK
 		//
 		// VISIBILITY MAP -> BUFFER TEXTURE -> GPU (YES! WE EAT MORE VRAM)
 		//
-
-		//visibilityTBOData[];
 		for (int z = 0; z < 85; ++z)
 		{
 			for (int x = 0; x < 85; ++x)
@@ -447,38 +390,34 @@ namespace OpenDK
 				{
 					if (bresenham((int)l.getPosition().x, (int)l.getPosition().z, x, z, (int)l.getPosition().y))
 					{
-						// lightMap[z * 255 + x] += 1.0f - (distance / l.getRadius());
-						//lightMap[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
 						lightTBOData[z * 255 + x] += l.getIntensity() / (1.0 + b*distance*distance);
-
-						/*
-						if (lightMap[z * 255 + x] > 1.0f)
-						{
-							lightMap[z * 255 + x] = 1.0f;
-						}
-						*/
 					}
 				}
 			}
 		}
 	}
 
-	void MapRenderer::render()
+	void MapRenderer::update()
 	{
-		/*
-		for (int i = 0; i < 255*255; ++i)
-		{
-			//lightMap[i] = 0.0f;
-			lightTBOData[i] = 0.3f; // bit of ambient light
-		}
-		*/
+		updateLight();
+		camera.update();
+	}
 
+	void MapRenderer::updateLight()
+	{
+		// Reset / initialize the light map
 		for (int z = 0; z < 255; ++z)
 		{
 			for (int x = 0; x < 255; ++x)
 			{
 				int slabZ = z / 3;
 				int slabX = x / 3;
+
+				if (singleColMode)
+				{
+					lightTBOData[z*255+x] = 1.0f;
+					continue;
+				}
 
 				if (visibilityTBOData[slabZ * 85 + slabX])
 				{
@@ -491,63 +430,30 @@ namespace OpenDK
 			}
 		}
 
-		float wurst = 300.0f;
-		light1.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light2.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light3.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light4.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light5.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light6.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light7.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-		light8.setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-
-		bakeLight(light);
-		bakeLight(light1);
-		bakeLight(light2);
-		bakeLight(light3);
-		bakeLight(light4);
-		bakeLight(light5);
-		bakeLight(light6);
-		bakeLight(light7);
-		bakeLight(light8);
-
-		/*
-		for (int z = 0; z < 85; ++z)
+		if (!singleColMode)
 		{
-			for (int x = 0; x < 85; ++x)
-			{
-				TileType  type  = slb.getTileType(x, z);
-				TileOwner owner = own.getTileOwner(x, z);
+			// Every WIP source code needs at least one 'wurst' variable
+			float wurst = 500.0f;
 
-				if (owner != TileOwner::PLAYER0 &&
-					!(type == TileType::PORTAL ||
-					  type == TileType::GOLD ||
-					  type == TileType::GEM))
-				{
-					for (int cz = 0; cz < 3; ++cz)
-					{
-						for (int cx = 0; cx < 3; ++cx)
-						{
-							int columnIndex = (z * 3 + cz) * 255 + (x * 3 + cx);
-							if (lightTBOData[columnIndex] == 0)
-							{
-								lightTBOData[columnIndex] = -0.3f;
-							}
-						}
-					}
-				}
+			for (size_t i = 0; i < lights.size(); ++i)
+			{
+				lights[i].setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+				bakeLight(lights[i]);
 			}
 		}
-		*/
+
+		bakeLight(light);
 
 		// send upated light map to GPU
 		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
 		glBufferSubData(GL_TEXTURE_BUFFER, 0, sizeof(lightTBOData), &lightTBOData);
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	}
 
-		camera.update();
+	void MapRenderer::render()
+	{
+		// scale, rotate, translate (note: glm operations should be in reverse!)
 
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		sp->use();
 
 		glActiveTexture(GL_TEXTURE0);
@@ -562,14 +468,10 @@ namespace OpenDK
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_BUFFER, tboVisibilityTex);
 
-		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());			// +4% cpu
-		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());	// +5% cpu
+		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
+		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
 
-		// The following would be lighter on the GPU, heavier on the CPU
-		//glm::mat4 projectionViewMatrix = camera.getProjectionMatrix() * camera.getViewMatrix();
-		//glUniformMatrix4fv(	sp->getUniformLocation("modelViewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionViewMatrix));
-
-		VertexArrayObject vao = block->getVAO();
+		VertexArrayObject vao = cube->getVAO();
 		vao.bind();
 
 		if (singleColMode)
@@ -606,13 +508,9 @@ namespace OpenDK
 			zEnd = zEnd > 85 ? 85 : zEnd;
 
 
-			//for (int y = 0; y < 85; ++y)
-			for (int z = zStart; z < zEnd; ++z) // for now, just part of the map
-			//for (int y = 0; y < 55; ++y) // for now, just part of the map
+			for (int z = zStart; z < zEnd; ++z)
 			{
-				//for (int x = 0; x < 85; ++x)
-				for (int x = xStart; x < xEnd; ++x) // for now, just part of the map
-				//for (int x = 0; x < 55; ++x) // for now, just part of the map
+				for (int x = xStart; x < xEnd; ++x)
 				{
 					for (int r = 0; r < 3; ++r)
 					{
@@ -625,35 +523,19 @@ namespace OpenDK
 			}
 		}
 
-		/*
-		sp2->use();
-
-		glActiveTexture(GL_TEXTURE0);
-		tex->bind();
-
-		glUniformMatrix4fv(sp2->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
-		glUniformMatrix4fv(sp2->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
-
-		vao.bind();
-
-		renderCube(vao, 0, 0, 38);
-		*/
-
 		vao.unbind();
-
 	}
 
 	void MapRenderer::renderCube(const VertexArrayObject& vao, int x, int z, int cube)
 	{
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)z));
-		//glm::mat4 modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, (float)y, 0.0f));
 		glUniformMatrix4fv(sp2->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
 		if (vao.hasIBO())
 		{
 			glDrawElements(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0);
 		}
-		else
+		else // We *know* all cubes have an IBO, but better be safe than sorry
 		{
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
@@ -668,7 +550,6 @@ namespace OpenDK
 		int x = tileX * 3 + subtileX;
 		int z = tileZ * 3 + subtileZ;
 		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)z));
-		//glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, (float)y, 0.0f));
 
 		// mat4[col][row]
 		columnMatrix[0][0] = (int)clm.getBaseBlockType(column);
@@ -693,7 +574,7 @@ namespace OpenDK
 		{
 			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, 9);
 		}
-		else
+		else // We *know* all cubes have an IBO, but better be safe than sorry
 		{
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 9);
 		}
@@ -722,7 +603,6 @@ namespace OpenDK
 			i = (z+1) * 255 + x;
 		}
 
-		//return (i < 0 || i >= 255*255) ? 0.0f : lightMap[i];
 		return (i < 0 || i >= 255*255) ? 0.0f : lightTBOData[i];
 	}
 
@@ -739,11 +619,9 @@ namespace OpenDK
 		delta_y = std::abs(delta_y) << 1;
 
 		//plot(x1, y1);
-		// TODO
 		int column = dat.getColumnIndex(x1, y1);
 		int height = clm.getColumnHeight(column);
 		if (height > lightHeight) { return false; }
-		//if (height > 1) { return false; }
 
 		if (delta_x >= delta_y)
 		{
@@ -763,11 +641,9 @@ namespace OpenDK
 				x1 += ix;
 
 				//plot(x1, y1);
-				// TODO
 				int column = dat.getColumnIndex(x1, y1);
 				int height = clm.getColumnHeight(column);
 				if (height > lightHeight) { return false; }
-				//if (height > 1) { return false; }
 			}
 		}
 		else
@@ -788,91 +664,13 @@ namespace OpenDK
 				y1 += iy;
 
 				//plot(x1, y1);
-				// TODO
 				int column = dat.getColumnIndex(x1, y1);
 				int height = clm.getColumnHeight(column);
 				if (height > lightHeight) { return false; }
-				//if (height > 1) { return false; }
 			}
 		}
 
 		return true; // yes, you can put some light there
 	}
-
-	/*
-	// https://gist.github.com/yamamushi/5823518
-	void MapRenderer::Bresenham3D(int x1, int y1, int z1, const int x2, const int y2, const int z2, WorldMap *output, int symbol)
-	{
-		int i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
-		int point[3] = { x1, y1, z1 };
-
-		dx = x2 - x1;
-		dy = y2 - y1;
-		dz = z2 - z1;
-		x_inc = (dx < 0) ? -1 : 1;
-		l = abs(dx);
-		y_inc = (dy < 0) ? -1 : 1;
-		m = abs(dy);
-		z_inc = (dz < 0) ? -1 : 1;
-		n = abs(dz);
-		dx2 = l << 1;
-		dy2 = m << 1;
-		dz2 = n << 1;
-
-		if ((l >= m) && (l >= n)) {
-			err_1 = dy2 - l;
-			err_2 = dz2 - l;
-			for (i = 0; i < l; i++) {
-				output->getTileAt(point[0], point[1], point[2])->setSymbol(symbol);
-				if (err_1 > 0) {
-					point[1] += y_inc;
-					err_1 -= dx2;
-				}
-				if (err_2 > 0) {
-					point[2] += z_inc;
-					err_2 -= dx2;
-				}
-				err_1 += dy2;
-				err_2 += dz2;
-				point[0] += x_inc;
-			}
-		} else if ((m >= l) && (m >= n)) {
-			err_1 = dx2 - m;
-			err_2 = dz2 - m;
-			for (i = 0; i < m; i++) {
-				output->getTileAt(point[0], point[1], point[2])->setSymbol(symbol);
-				if (err_1 > 0) {
-					point[0] += x_inc;
-					err_1 -= dy2;
-				}
-				if (err_2 > 0) {
-					point[2] += z_inc;
-					err_2 -= dy2;
-				}
-				err_1 += dx2;
-				err_2 += dz2;
-				point[1] += y_inc;
-			}
-		} else {
-			err_1 = dy2 - n;
-			err_2 = dx2 - n;
-			for (i = 0; i < n; i++) {
-				output->getTileAt(point[0], point[1], point[2])->setSymbol(symbol);
-				if (err_1 > 0) {
-					point[1] += y_inc;
-					err_1 -= dz2;
-				}
-				if (err_2 > 0) {
-					point[0] += x_inc;
-					err_2 -= dz2;
-				}
-				err_1 += dy2;
-				err_2 += dx2;
-				point[2] += z_inc;
-			}
-		}
-		output->getTileAt(point[0], point[1], point[2])->setSymbol(symbol);
-	}
-	*/
 
 }

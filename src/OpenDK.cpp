@@ -32,6 +32,7 @@ namespace OpenDK
 
 	void OpenDK::initWindow()
 	{
+		//sf::ContextSettings context(2, 0, 4, 3, 1);
 		sf::ContextSettings context(2, 0, 0, 3, 1);
 		window.create(sf::VideoMode(width, height), title, sf::Style::Close, context);
 		window.setMouseCursorVisible(false);
@@ -45,13 +46,6 @@ namespace OpenDK
 		std::cout << "stencil bits: " << settings.stencilBits << std::endl;
 		std::cout << "antialiasing: " << settings.antialiasingLevel << std::endl;
 		std::cout << "gl version:   " << settings.majorVersion << "." << settings.minorVersion << std::endl;
-
-		GLint maxUniformSize;
-		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformSize);
-		GLint maxVertUniformBlocks;
-		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertUniformBlocks);
-		std::cout << "max uniform blocks for vertex shader: " << maxVertUniformBlocks << std::endl;
-		std::cout << "max uniform block size in bytes: " << maxUniformSize << std::endl;
 	}
 
 	void OpenDK::initGLEW()
@@ -72,7 +66,7 @@ namespace OpenDK
 		glEnable(GL_CULL_FACE);		// Do not render back sides
 		glCullFace(GL_BACK);		// cull back face (default)
 		glFrontFace(GL_CCW);		// GL_CCW for counter clock-wise (default)
-		mapRenderer.initDummyData();
+		mapRenderer.init();
 	}
 
 	void OpenDK::run()
@@ -97,11 +91,9 @@ namespace OpenDK
 			sf::Event event;
 			while (window.pollEvent(event))
 		    {
-		        // "close requested" event: we close the window
 		        if (event.type == sf::Event::Closed)
 				{
 					running = false;
-					// window.close();
 				}
 				else if (event.type == sf::Event::MouseWheelMoved)
 				{
@@ -140,13 +132,14 @@ namespace OpenDK
 				}
 			}
 
-			update();
-			render();
+			pinput(); // process input
+			update(); // update the simulation
+			render(); // render the current state
 		}
 		window.close();
 	}
 
-	void OpenDK::update()
+	void OpenDK::pinput()
 	{
 		bool ctrl = false;
 		bool alt  = false;
@@ -261,6 +254,11 @@ namespace OpenDK
 		mapRenderer.moveCam(camOffsetX, camOffsetY, camOffsetZ);
 		mapRenderer.rotateCam(camRotateX, camRotateY, camRotateZ);
 		mapRenderer.zoomCam(zoomChange);
+	}
+
+	void OpenDK::update()
+	{
+		mapRenderer.update();
 	}
 
 	void OpenDK::render()

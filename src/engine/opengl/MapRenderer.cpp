@@ -150,6 +150,9 @@ namespace OpenDK
 			}
 		}
 
+		light.setRadius(9.0f);
+		light.setIntensity(2.0f);
+
 /*
 		bool spritesUsed[544];
 

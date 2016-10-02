@@ -197,40 +197,17 @@ namespace OpenDK
 			}
 		}
 
-		GLuint tbo;
-		glGenBuffers(1, &tbo);
-		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(cubesTBOData), cubesTBOData, GL_STATIC_DRAW);
-
-		glGenTextures(1, &tboTex);
-
-		glActiveTexture(GL_TEXTURE1); // 1
-		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
-		glTexBuffer(GL_TEXTURE_BUFFER, GL_R16I, tbo);
-
-		glUniform1i(sp->getUniformLocation("cubes"), 1); // 1
-
-		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+		tboCubes.setDrawType(GL_STATIC_DRAW);
+		tboCubes.setData(cubesTBOData, sizeof(cubesTBOData));
+		glUniform1i(sp->getUniformLocation("cubes"), 1);
 
 		//
 		// LIGHT MAP -> BUFFER TEXTURE -> GPU (YOU BETTER HAVE SOME VRAM)
 		// will have to set/update the light map data every frame.. ugh
 		//
-
-		glGenBuffers(1, &tboLight);
-		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(lightTBOData), lightTBOData, GL_STREAM_DRAW);
-
-		glGenTextures(1, &tboLightTex);
-
-		glActiveTexture(GL_TEXTURE2); // 2
-		glBindTexture(GL_TEXTURE_BUFFER, tboLightTex);
-		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, tboLight);
-
-		glUniform1i(sp->getUniformLocation("light"), 2); // 2
-
-		glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
+		tboLight.setDrawType(GL_STREAM_DRAW);
+		tboLight.setData(lightTBOData, sizeof(lightTBOData));
+		glUniform1i(sp->getUniformLocation("light"), 2);
 
 		//
 		// VISIBILITY MAP -> BUFFER TEXTURE -> GPU (YES! WE EAT MORE VRAM)
@@ -258,19 +235,9 @@ namespace OpenDK
 			}
 		}
 
-		glGenBuffers(1, &tboVisibility);
-		glBindBuffer(GL_TEXTURE_BUFFER, tboVisibility);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(visibilityTBOData), visibilityTBOData, GL_STREAM_DRAW);
-
-		glGenTextures(1, &tboVisibilityTex);
-
-		glActiveTexture(GL_TEXTURE3); // 3
-		glBindTexture(GL_TEXTURE_BUFFER, tboVisibilityTex);
-		glTexBuffer(GL_TEXTURE_BUFFER, GL_R8I, tboVisibility);
-
-		glUniform1i(sp->getUniformLocation("visibility"), 3); // 3
-
-		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+		tboVisibility.setDrawType(GL_STREAM_DRAW);
+		tboVisibility.setData(visibilityTBOData, sizeof(visibilityTBOData));
+		glUniform1i(sp->getUniformLocation("visibility"), 3);
 	}
 
 	void MapRenderer::nextCol()
@@ -446,11 +413,7 @@ namespace OpenDK
 		}
 
 		bakeLight(light);
-
-		// send upated light map to GPU
-		glBindBuffer(GL_TEXTURE_BUFFER, tboLight);
-		glBufferSubData(GL_TEXTURE_BUFFER, 0, sizeof(lightTBOData), &lightTBOData);
-		glBindBuffer(GL_TEXTURE_BUFFER, 0);
+		tboLight.updateData(&lightTBOData);
 	}
 
 	void MapRenderer::render()
@@ -463,13 +426,13 @@ namespace OpenDK
 		tex->bind();
 
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_BUFFER, tboTex);
+		tboCubes.bindTexture();
 
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_BUFFER, tboLightTex);
+		tboLight.bindTexture();
 
 		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_BUFFER, tboVisibilityTex);
+		tboVisibility.bindTexture();
 
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());

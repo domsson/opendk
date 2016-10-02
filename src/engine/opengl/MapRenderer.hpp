@@ -16,6 +16,7 @@
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
+#include "TextureBufferObject.hpp"
 #include "CubeGeometry.hpp"
 #include "Camera.hpp"
 
@@ -57,6 +58,7 @@ namespace OpenDK
 		void switchMode();
 
 	private:
+
 		ShaderProgram* sp;
 		ShaderProgram* sp2;
 		Texture* tex;
@@ -72,8 +74,6 @@ namespace OpenDK
 		std::int16_t col;
 
 		GLuint tboTex;
-		GLuint tboLightTex;
-		GLuint tboVisibilityTex;
 
 		sf::Clock clock;
 
@@ -81,11 +81,14 @@ namespace OpenDK
 
 		bool singleColMode;
 
-		GLuint tboVisibility; // BUFFER ID
-		GLuint tboLight; // BUFFER ID
-		GLbyte visibilityTBOData[7225];
+		TextureBufferObject tboCubes;
+
+		TextureBufferObject tboLight;
 		GLfloat lightTBOData[65025];
-		float lightMap[65025];
+
+		TextureBufferObject tboVisibility;
+		GLbyte visibilityTBOData[7225];
+
 		std::vector<Light> lights;
 		Light light;
 

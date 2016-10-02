@@ -14,16 +14,8 @@ namespace OpenDK {
 		 */
 		IndexBufferObject();
 
-		/**
-		 * Creates a IndexBufferObject from int data.
-		 * @param data An array of type GLuint
-		 * @param size The size of data in bytes
-		 */
-		IndexBufferObject(GLuint data[], GLsizeiptr size);
-
-
 	private:
-		
+
 		// Nothing
 	};
 

@@ -12,6 +12,10 @@ namespace OpenDK {
 		 * The default number of components per vertex attribute.
 		 */
 		static const GLint DEFAULT_CHUNK_SIZE;
+
+		/**
+		 * The default number of components per color attribute.
+		 */
 		static const GLint COLOR_CHUNK_SIZE;
 
 		/**
@@ -20,41 +24,6 @@ namespace OpenDK {
 		 * to call setData() on it before you can use it with OpenGL.
 		 */
 		VertexBufferObject();
-
-		/**
-		 * Creates a VertexBufferObject from float data
-		 * and with default chunk size.
-		 * @param data An array of type GLfloat
-		 * @param size The size of data in bytes (= sizeof(data))
-		 */
-		VertexBufferObject(GLfloat data[], GLsizeiptr size);
-
-		/**
-		 * Creates a VertexBufferObject from float data
-		 * and with the given chunk size.
-		 * @param data An array of type GLfloat
-		 * @param size The number of elements in data
-		 * @param chunkSize The number of components per vertex attribute
-		 */
-		VertexBufferObject(GLfloat data[], GLsizeiptr size, GLint chunkSize);
-
-		/**
-		 * Creates a VertexBufferObject from unsigned byte data.
-		 * It is assumed to hold vertex color data, hence the chunk size
-		 * will automatically be set to 2.
-		 * @param data An array of type GLubyte
-		 * @param size The size of data in bytes (= sizeof(data))
-		 */
-		VertexBufferObject(GLubyte data[], GLsizeiptr size);
-
-		/**
-		 * Creates a VertexBufferObject from unsigned byte data
-		 * and with the given chunk size.
-		 * @param data An array of type GLubyte
-		 * @param size The number of elements in data
-		 * @param chunkSize The number of components per vertex attribute
-		 */
-		VertexBufferObject(GLubyte data[], GLsizeiptr size, GLint chunkSize);
 
 		/**
 		 * Set the chunk size for this VertexBufferObject.

@@ -5,7 +5,6 @@ namespace OpenDK
 
 	const GLenum BufferObject::DEFAULT_BUFFER_TYPE = GL_ARRAY_BUFFER;
 	const GLenum BufferObject::DEFAULT_DRAW_TYPE = GL_STATIC_DRAW;
-
 	const GLenum BufferObject::DEFAULT_DATA_TYPE = GL_FLOAT;
 
 	BufferObject::BufferObject()
@@ -23,25 +22,7 @@ namespace OpenDK
 	{
 	}
 
-	BufferObject::BufferObject(GLuint data[], GLsizeiptr size)
-	: id(0), size(size), dataType(GL_UNSIGNED_INT), bufferType(GL_ELEMENT_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
-	{
-		setData(data, size);
-	}
-
-	BufferObject::BufferObject(GLubyte data[], GLsizeiptr size)
-	: id(0), size(size), dataType(GL_UNSIGNED_BYTE), bufferType(GL_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
-	{
-		setData(data, size);
-	}
-
-	BufferObject::BufferObject(GLfloat data[], GLsizeiptr size)
-	: id(0), size(size), bufferType(GL_ARRAY_BUFFER), drawType(GL_STATIC_DRAW)
-	{
-		setData(data, size);
-	}
-
-	void BufferObject::setBufferType(GLuint bufferType)
+	void BufferObject::setBufferType(GLenum bufferType)
 	{
 		if (id != 0)
 		{
@@ -51,7 +32,7 @@ namespace OpenDK
 		this->bufferType = bufferType;
 	}
 
-	void BufferObject::setDrawType(GLuint drawType)
+	void BufferObject::setDrawType(GLenum drawType)
 	{
 		if (id != 0)
 		{
@@ -61,42 +42,55 @@ namespace OpenDK
 		this->drawType = drawType;
 	}
 
-	void BufferObject::setData(GLfloat data[], GLsizeiptr size)
+	void BufferObject::setData(GLbyte data[], GLsizeiptr size)
 	{
-		if (id != 0)
-		{
-			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
-			return;
-		}
-		bufferType = GL_ARRAY_BUFFER;
-		this->size = size;
-		dataType = GL_FLOAT;
-		init(data);
-	}
-
-	void BufferObject::setData(GLuint data[], GLsizeiptr size)
-	{
-		if (id != 0)
-		{
-			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
-			return;
-		}
-		bufferType = GL_ELEMENT_ARRAY_BUFFER;
-		this->size = size;
-		dataType = GL_UNSIGNED_INT;
-		init(data);
+		setData(data, size, GL_BYTE);
 	}
 
 	void BufferObject::setData(GLubyte data[], GLsizeiptr size)
 	{
+		setData(data, size, GL_UNSIGNED_BYTE);
+	}
+
+	void BufferObject::setData(GLshort data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_SHORT);
+	}
+
+	void BufferObject::setData(GLushort data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_UNSIGNED_SHORT);
+	}
+
+	void BufferObject::setData(GLint data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_INT);
+	}
+
+	void BufferObject::setData(GLuint data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_UNSIGNED_INT);
+	}
+
+	void BufferObject::setData(GLfloat data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_FLOAT);
+	}
+
+	void BufferObject::setData(GLdouble data[], GLsizeiptr size)
+	{
+		setData(data, size, GL_DOUBLE);
+	}
+
+	void BufferObject::setData(GLvoid* data, GLsizeiptr size, GLenum type)
+	{
 		if (id != 0)
 		{
 			std::cerr << typeid(this).name() << ": [ERR] Can't set data, BufferObject is already initialized" << std::endl;
 			return;
 		}
-		bufferType = GL_ARRAY_BUFFER;
 		this->size = size;
-		dataType = GL_UNSIGNED_BYTE;
+		dataType = type;
 		init(data);
 	}
 
@@ -148,21 +142,7 @@ namespace OpenDK
 		}
 	}
 
-	void BufferObject::init(GLfloat data[]) {
-		generateId();
-		bind();
-		glBufferData(bufferType, size, data, drawType);
-		unbind();
-	}
-
-	void BufferObject::init(GLuint data[]) {
-		generateId();
-		bind();
-		glBufferData(bufferType, size, data, drawType);
-		unbind();
-	}
-
-	void BufferObject::init(GLubyte data[]) {
+	void BufferObject::init(GLvoid* data) {
 		generateId();
 		bind();
 		glBufferData(bufferType, size, data, drawType);

@@ -25,6 +25,7 @@ namespace OpenDK
 		 */
 		static const GLenum DEFAULT_DRAW_TYPE;
 
+
 		static const GLenum DEFAULT_DATA_TYPE;
 
 		/**
@@ -49,53 +50,72 @@ namespace OpenDK
 		BufferObject(GLenum bufferType, GLenum drawType);
 
 		/**
-		 * Creates a BufferObject from integer data,
-		 * assuming that it is supposed to be an IBO.
-		 * @param data An array of type GLuint
-		 */
-		BufferObject(GLuint data[], GLsizeiptr size);
-
-		/**
-		 * Creates a BufferObject from float data,
-		 * assuming that it is supposed to be a VBO.
-		 * @param data An array of type GLfloat
-		 */
-		BufferObject(GLfloat data[], GLsizeiptr size);
-
-		/**
-		 * Creates a BufferObject from integer data,
-		 * assuming that it is supposed to be a VBO.
-		 * @param data An array of type GLuint
-		 */
-		BufferObject(GLubyte data[], GLsizeiptr size);
-
-		/**
-		 * Change the type of this Buffer. This will only have an effect if called before
-		 * the Buffer's data has been set, otherwise it will do nothing.
+		 * Change the type of this Buffer. This will only have an effect if
+		 * called before the Buffer's data has been set, otherwise it will
+		 * do nothing.
 		 * @param bufferType A valid Buffer Type
 		 */
-		void setBufferType(GLuint bufferType);
+		void setBufferType(GLenum bufferType);
 
 		/**
-		 * Change the draw type of this Buffer. This will only have an effect if called before
-		 * the Buffer's data has been set, otherwise it will do nothing.
+		 * Change the draw type of this Buffer. This will only have an effect
+		 * if called before the Buffer's data has been set, otherwise it will
+		 * do nothing.
 		 * @param drawType A valid Draw Type
 		 */
-		void setDrawType(GLuint drawType);
+		void setDrawType(GLenum drawType);
 
 		/**
 		 * Set this buffer's data. This will create and initialize this Buffer.
 		 * Afterwards, this Buffer will have an id and can be bound and drawn.
 		 * If the data has been set before, this will do nothing.
-		 * @param data An array of type GLfloat
+		 * @param data An array of type GLbyte
+		 * @param size The size of the data in bytes
 		 */
-		void setData(GLfloat data[], GLsizeiptr size);
+		void setData(GLbyte data[], GLsizeiptr size);
+
+		/**
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data An array of type GLubyte
+		 * @param size The size of the data in bytes
+		 */
+		void setData(GLubyte data[], GLsizeiptr size);
+
+		/**
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data An array of type GLshort
+		 * @param size The size of the data in bytes
+		 */
+		void setData(GLshort data[], GLsizeiptr size);
+
+		/**
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data An array of type GLushort
+		 * @param size The size of the data in bytes
+		 */
+		void setData(GLushort data[], GLsizeiptr size);
+
+		/**
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data An array of type GLint
+		 * @param size The size of the data in bytes
+		 */
+		void setData(GLint data[], GLsizeiptr size);
 
 		/**
 		 * Set this buffer's data. This will create and initialize this Buffer.
 		 * Afterwards, this Buffer will have an id and can be bound and drawn.
 		 * If the data has been set before, this will do nothing.
 		 * @param data An array of type GLuint
+		 * @param size The size of the data in bytes
 		 */
 		void setData(GLuint data[], GLsizeiptr size);
 
@@ -103,9 +123,19 @@ namespace OpenDK
 		 * Set this buffer's data. This will create and initialize this Buffer.
 		 * Afterwards, this Buffer will have an id and can be bound and drawn.
 		 * If the data has been set before, this will do nothing.
-		 * @param data An array of type GLubyte
+		 * @param data An array of type GLfloat
+		 * @param size The size of the data in bytes
 		 */
-		void setData(GLubyte data[], GLsizeiptr size);
+		void setData(GLfloat data[], GLsizeiptr size);
+
+		/**
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data An array of type GLdouble
+		 * @param size The size of the data in bytes
+		 */
+		void setData(GLdouble data[], GLsizeiptr size);
 
 		/**
 		 * Get this Buffer's id/name as registered with OpenGL.
@@ -168,28 +198,22 @@ namespace OpenDK
 		void generateId();
 
 		/**
-		 * Actually creates this Buffer from the given float data.
-		 * This will register the buffer with OpenGL and send its data to OpenGL.
-		 * Afterwards, this Buffer will have an id and can be used for drawing.
-		 * @param data An array of type float
+		 * Set this buffer's data. This will create and initialize this Buffer.
+		 * Afterwards, this Buffer will have an id and can be bound and drawn.
+		 * If the data has been set before, this will do nothing.
+		 * @param data A pointer to the data to be filled into the buffer
+		 * @param size The size of the data in bytes
+		 * @param type The type of the data
 		 */
-		void init(GLfloat data[]);
+		void setData(GLvoid* data, GLsizeiptr size, GLenum type);
 
 		/**
-		 * Actually creates this Buffer from the given unsigned int data.
+		 * Actually creates this Buffer from the given data.
 		 * This will register the buffer with OpenGL and send its data to OpenGL.
 		 * Afterwards, this Buffer will have an id and can be used for drawing.
-		 * @param data An array of type int
+		 * @param data A pointer to the data to be filled into the buffer
 		 */
-		void init(GLuint data[]);
-
-		/**
-		 * Actually creates this Buffer from the given unsigned byte data.
-		 * This will register the buffer with OpenGL and send its data to OpenGL.
-		 * Afterwards, this Buffer will have an id and can be used for drawing.
-		 * @param data An array of type float
-		 */
-		void init(GLubyte data[]);
+		virtual void init(GLvoid* data);
 
 	};
 

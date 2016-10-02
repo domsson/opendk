@@ -21,6 +21,9 @@ namespace OpenDK
 		bind();
 		vbo.bind();
 		GLenum dataType = vbo.getDataType();
+		// this is for the 'color' VBO that uses GLubyte for optimization IIRC
+		// but the thing is, we might need a ubyte VBO for whatever else, no?
+		// maybe we should rather have a "normalize" parameter for this method?
 		bool normalize = dataType == GL_UNSIGNED_BYTE ? true : false;
 		glVertexAttribPointer(shaderAttribute, vbo.getChunkSize(), dataType, normalize, 0, 0);
 		glEnableVertexAttribArray(shaderAttribute);	// Enable the new VBO

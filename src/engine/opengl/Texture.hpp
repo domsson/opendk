@@ -79,7 +79,9 @@ namespace OpenDK
 
 	private:
 
-		// This texture's OpenGL name/id (0 if not yet assigned)
+		/**
+		 * This texture's OpenGL name/id (0 if not yet assigned)
+		 */
 		GLuint id;
 
 		unsigned int width;

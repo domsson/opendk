@@ -66,53 +66,6 @@ int getSpriteFromTexBuffer(int cube)
 	}
 }
 
-vec3 getLightLevelFromColumnData()
-{
-	if (gl_VertexID < 4)	// TOP - needs special treatment
-	{
-		if (gl_VertexID == 0) // TOP - FRONT-LEFT
-		{
-			float intensity = (columnInfo[0][3] + columnInfo[3][3]) * 0.5f;
-			return vec3(intensity, intensity, intensity);
-		}
-		if (gl_VertexID == 1) // TOP - FRONT-RIGHT
-		{
-			float intensity = (columnInfo[0][3] + columnInfo[1][3]) * 0.5f;
-			return vec3(intensity, intensity, intensity);
-		}
-		if (gl_VertexID == 2) // TOP - BACK-RIGHT
-		{
-			float intensity = (columnInfo[2][3] + columnInfo[1][3]) * 0.5f;
-			return vec3(intensity, intensity, intensity);
-		}
-		if (gl_VertexID == 3) // TOP - BACK-LEFT
-		{
-			float intensity = (columnInfo[2][3] + columnInfo[3][3]) * 0.5f;
-			return vec3(intensity, intensity, intensity);
-		}
-	}
-	if (gl_VertexID < 8)	// BOTTOM - needs special treatment
-	{
-		return vec3(1.0f, 1.0f, 1.0f); // TODO
-	}
-	if (gl_VertexID < 12)	// FRONT
-	{
-		return vec3(columnInfo[0][3], columnInfo[0][3], columnInfo[0][3]);
-	}
-	if (gl_VertexID < 16)	// RIGHT
-	{
-		return vec3(columnInfo[1][3], columnInfo[1][3], columnInfo[1][3]);
-	}
-	if (gl_VertexID < 20)	// BACK
-	{
-		return vec3(columnInfo[2][3], columnInfo[2][3], columnInfo[2][3]);
-	}
-	if (gl_VertexID < 24)	// LEFT
-	{
-		return vec3(columnInfo[3][3], columnInfo[3][3], columnInfo[3][3]);
-	}
-}
-
 float getLightLevelFromBuffer(int x, int z)
 {
 	//float c = -0.3f; // current subtile (center)
@@ -260,58 +213,42 @@ vec4 skewPosition(vec4 pos)
 	pos += 1.5f;
 	skewedPos.x += rand(pos.xyz) * 0.275;
 	skewedPos.z += rand(pos.zyx) * 0.275;
+	//skewedPos.y += rand(pos.xzy) * 0.10;
 	return skewedPos;
 }
 
-	//skewedPos.y += rand(pos.xzy) * 0.10;
-
-int getCubeFromInstanceID()
+int getCubeIndexFromInstanceID()
 {
-	switch (gl_InstanceID)
-	{
-		case 0:	// base block
-		return int(columnInfo[0][0]);
-		case 1: // height 0
-		return int(columnInfo[0][1]);
-		case 2: // height 1
-		return int(columnInfo[0][2]);
-		case 3: // height 2
-		return int(columnInfo[1][0]);
-		case 4: // height 3
-		return int(columnInfo[1][1]);
-		case 5: // height 4
-		return int(columnInfo[1][2]);
-		case 6: // height 5
-		return int(columnInfo[2][0]);
-		case 7: // height 6
-		return int(columnInfo[2][1]);
-		case 8: // height 7
-		return int(columnInfo[2][2]);
-	}
+	return gl_InstanceID - int(gl_InstanceID / 9) * 9;
 }
 
 int getCubeFromColumnBuffer(int column)
 {
-	int cube = gl_InstanceID - int(gl_InstanceID / 8) * 8;
-	return texelFetch(columns, (column * 8) + cube).r;
+	int cube = getCubeIndexFromInstanceID();
+	return texelFetch(columns, (column * 9) + cube).r;
+}
+
+int getBaseSpriteFromColumnBuffer(int column)
+{
+	return texelFetch(columns, column * 9).r;
 }
 
 int getColumnFromInstanceID()
 {
-	if (gl_InstanceID < 8)  { return int(columnInfo[0][0]); }
-	if (gl_InstanceID < 16) { return int(columnInfo[0][1]); }
-	if (gl_InstanceID < 24) { return int(columnInfo[0][2]); }
-	if (gl_InstanceID < 32) { return int(columnInfo[1][0]); }
-	if (gl_InstanceID < 40) { return int(columnInfo[1][1]); }
-	if (gl_InstanceID < 48) { return int(columnInfo[1][2]); }
-	if (gl_InstanceID < 56) { return int(columnInfo[2][0]); }
-	if (gl_InstanceID < 64) { return int(columnInfo[2][1]); }
-	if (gl_InstanceID < 72) { return int(columnInfo[2][2]); }
+	if (gl_InstanceID < 9)  { return int(columnInfo[0][0]); }
+	if (gl_InstanceID < 18) { return int(columnInfo[0][1]); }
+	if (gl_InstanceID < 27) { return int(columnInfo[0][2]); }
+	if (gl_InstanceID < 36) { return int(columnInfo[1][0]); }
+	if (gl_InstanceID < 45) { return int(columnInfo[1][1]); }
+	if (gl_InstanceID < 54) { return int(columnInfo[1][2]); }
+	if (gl_InstanceID < 63) { return int(columnInfo[2][0]); }
+	if (gl_InstanceID < 72) { return int(columnInfo[2][1]); }
+	if (gl_InstanceID < 81) { return int(columnInfo[2][2]); }
 }
 
 vec2 getColumnPositionFromInstanceID()
 {
-	int column = int(gl_InstanceID / 8);
+	int column = int(gl_InstanceID / 9);
 	if (column == 0) { return vec2(0.0f, 0.0f); }
 	if (column == 1) { return vec2(0.0f, 1.0f); }
 	if (column == 2) { return vec2(0.0f, 2.0f); }
@@ -334,7 +271,7 @@ void main()
 	// Position (Geometry)
 	float x = columnInfo[3][0] + getColumnPositionFromInstanceID().x;
 	float z = columnInfo[3][2] + getColumnPositionFromInstanceID().y;
-	float y = columnInfo[3][1] + float(gl_InstanceID - int(gl_InstanceID / 8) * 8);
+	float y = columnInfo[3][1] + getCubeIndexFromInstanceID();
 
     vec4 cubePos = vec4(x, y, z, 1.0f);
     gl_Position = projectionMatrix * viewMatrix * skewPosition(cubePos + vec4(in_Position, 1.0f));
@@ -354,12 +291,8 @@ void main()
 	pass_Unwrap = in_Unwrap;
 
 	// Sprite (Which texture to use)
-	// Base block (gl_InstanceID == 0) is directly referencing a sprite, not a cube
-	//int sprite = (gl_InstanceID == 0) ? getCubeFromInstanceID() : getSpriteFromTexBuffer(getCubeFromInstanceID());
 	int column = getColumnFromInstanceID();
-	int sprite = getSpriteFromTexBuffer(getCubeFromColumnBuffer(column));
-
-	if (column == 0) { sprite = 80; }
+	int sprite = getCubeIndexFromInstanceID() ? getBaseSpriteFromColumnBuffer(column) : getSpriteFromTexBuffer(getCubeFromColumnBuffer(column));
 
 	if (sprite == 544) { sprite =  40; } // dirt near water
 	if (sprite == 545) { sprite =  48; } // water

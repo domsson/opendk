@@ -84,7 +84,7 @@ namespace OpenDK
 		TextureBufferObject tboCubes;
 
 		TextureBufferObject tboColumns;
-		GLshort columnsTBOData[8*2048]; // 16384
+		GLshort columnsTBOData[9*2048]; // 18432
 
 		TextureBufferObject tboLight;
 		GLfloat lightTBOData[65025];

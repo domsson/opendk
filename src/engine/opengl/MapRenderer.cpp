@@ -244,9 +244,11 @@ namespace OpenDK
 		//
 		for (size_t col = 0; col < 2048; ++col)
 		{
+			columnsTBOData[(col * 9)] = (GLshort) clm.getBaseBlockType(col);
+
 			for (size_t cube = 0; cube < 8; ++cube)
 			{
-				columnsTBOData[(col * 8) + cube] = (GLshort) clm.getCubeType(col, cube);
+				columnsTBOData[(col * 9) + cube + 1] = (GLshort) clm.getCubeType(col, cube);
 			}
 		}
 
@@ -590,11 +592,11 @@ namespace OpenDK
 
 		if (vao.hasIBO())
 		{
-			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, 8*9); // 8 cubes * 9 columns
+			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, (1+8)*9); // (base block + 8 cubes) * 9 columns
 		}
 		else // We *know* all cubes have an IBO, but better be safe than sorry
 		{
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 8*9); // 8 cubes * 9 columns
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, (1+8)*9); // (base block + 8 cubes) * 9 columns
 		}
 	}
 

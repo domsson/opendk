@@ -33,7 +33,6 @@ namespace OpenDK
 
 	void TextureBufferObject::init(GLvoid* data)
 	{
-		std::cout << "WOOOPOOLOO\n";
 		generateId();
 		bind();
 		glBufferData(bufferType, size, data, drawType);

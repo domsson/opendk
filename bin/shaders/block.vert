@@ -292,7 +292,7 @@ int getCubeFromInstanceID()
 
 int getCubeFromColumnBuffer(int column)
 {
-	int cube = gl_InstanceID - int(float(gl_InstanceID) / 8.0f) * 8;
+	int cube = gl_InstanceID - int(gl_InstanceID / 8) * 8;
 	return texelFetch(columns, (column * 8) + cube).r;
 }
 
@@ -311,7 +311,7 @@ int getColumnFromInstanceID()
 
 vec2 getColumnPositionFromInstanceID()
 {
-	int column = int(float(gl_InstanceID) / 8.0f);
+	int column = int(gl_InstanceID / 8);
 	if (column == 0) { return vec2(0.0f, 0.0f); }
 	if (column == 1) { return vec2(0.0f, 1.0f); }
 	if (column == 2) { return vec2(0.0f, 2.0f); }
@@ -334,7 +334,7 @@ void main()
 	// Position (Geometry)
 	float x = columnInfo[3][0] + getColumnPositionFromInstanceID().x;
 	float z = columnInfo[3][2] + getColumnPositionFromInstanceID().y;
-	float y = columnInfo[3][1] + float(gl_InstanceID - int(float(gl_InstanceID) / 8.0f) * 8);
+	float y = columnInfo[3][1] + float(gl_InstanceID - int(gl_InstanceID / 8) * 8);
 
     vec4 cubePos = vec4(x, y, z, 1.0f);
     gl_Position = projectionMatrix * viewMatrix * skewPosition(cubePos + vec4(in_Position, 1.0f));

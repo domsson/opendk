@@ -7,8 +7,6 @@ namespace OpenDK
 	: sp(nullptr), sp2(nullptr), tex(nullptr), cube(nullptr),
 	  col(488), singleColMode(false)
 	{
-		light.setPosition(glm::vec3(114.0f, 2.0f, 130.0f));
-		light.setIntensity(2.0f);
 	}
 
 	MapRenderer::~MapRenderer()
@@ -93,8 +91,8 @@ namespace OpenDK
 
 		// INIT COLUMN SHADER
 		sp = new ShaderProgram();
-		sp->addShader("./bin/shaders/column.vert", GL_VERTEX_SHADER);
-		sp->addShader("./bin/shaders/column.frag", GL_FRAGMENT_SHADER);
+		sp->addShader("./bin/shaders/block.vert", GL_VERTEX_SHADER);
+		sp->addShader("./bin/shaders/block.frag", GL_FRAGMENT_SHADER);
 		sp->bindAttribute(ShaderAttribute::POSITION, "in_Position");
 		sp->bindAttribute(ShaderAttribute::COLOR, "in_Color");
 		sp->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
@@ -150,8 +148,10 @@ namespace OpenDK
 			}
 		}
 
-		light.setRadius(9.0f);
+		// INIT LIGHT (HAND OF EVIL)
+		light.setPosition(glm::vec3(114.0f, 2.0f, 130.0f));
 		light.setIntensity(2.0f);
+		light.setRadius(9.0f);
 
 /*
 		bool spritesUsed[544];
@@ -238,6 +238,22 @@ namespace OpenDK
 		tboVisibility.setDrawType(GL_STREAM_DRAW);
 		tboVisibility.setData(visibilityTBOData, sizeof(visibilityTBOData));
 		glUniform1i(sp->getUniformLocation("visibility"), 3);
+
+		//
+		// COLUMN MAP -> BUFFER TEX -> GPU (OOOOOH BOY)
+		//
+		for (size_t col = 0; col < 2048; ++col)
+		{
+			for (size_t cube = 0; cube < 8; ++cube)
+			{
+				columnsTBOData[(col * 8) + cube] = (GLshort) clm.getCubeType(col, cube);
+			}
+		}
+
+		tboColumns.setDrawType(GL_STATIC_DRAW);
+		tboColumns.setData(columnsTBOData, sizeof(columnsTBOData));
+		glUniform1i(sp->getUniformLocation("columns"), 4);
+
 	}
 
 	void MapRenderer::nextCol()
@@ -434,6 +450,9 @@ namespace OpenDK
 		glActiveTexture(GL_TEXTURE3);
 		tboVisibility.bindTexture();
 
+		glActiveTexture(GL_TEXTURE4);
+		tboColumns.bindTexture();
+
 		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
 		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
 
@@ -478,6 +497,8 @@ namespace OpenDK
 			{
 				for (int x = xStart; x < xEnd; ++x)
 				{
+					renderBlock(vao, x, z);
+					/*
 					for (int r = 0; r < 3; ++r)
 					{
 						for (int c = 0; c < 3; ++c)
@@ -485,6 +506,7 @@ namespace OpenDK
 							renderColumn(vao, x, z, c, r);
 						}
 					}
+					*/
 				}
 			}
 		}
@@ -543,6 +565,36 @@ namespace OpenDK
 		else // We *know* all cubes have an IBO, but better be safe than sorry
 		{
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 9);
+		}
+	}
+
+	void MapRenderer::renderBlock(const VertexArrayObject& vao, int slabX, int slabZ)
+	{
+		int x = slabX * 3;
+		int z = slabZ * 3;
+
+		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)z));
+
+		// mat4[col][row]
+		columnMatrix[0][0] = dat.getColumnIndex(slabX, slabZ, 0, 0);
+		columnMatrix[0][1] = dat.getColumnIndex(slabX, slabZ, 0, 1);
+		columnMatrix[0][2] = dat.getColumnIndex(slabX, slabZ, 0, 2);
+		columnMatrix[1][0] = dat.getColumnIndex(slabX, slabZ, 1, 0);
+		columnMatrix[1][1] = dat.getColumnIndex(slabX, slabZ, 1, 1);
+		columnMatrix[1][2] = dat.getColumnIndex(slabX, slabZ, 1, 2);
+		columnMatrix[2][0] = dat.getColumnIndex(slabX, slabZ, 2, 0);
+		columnMatrix[2][1] = dat.getColumnIndex(slabX, slabZ, 2, 1);
+		columnMatrix[2][2] = dat.getColumnIndex(slabX, slabZ, 2, 2);
+
+		glUniformMatrix4fv(sp->getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
+
+		if (vao.hasIBO())
+		{
+			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, 8*9); // 8 cubes * 9 columns
+		}
+		else // We *know* all cubes have an IBO, but better be safe than sorry
+		{
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 8*9); // 8 cubes * 9 columns
 		}
 	}
 

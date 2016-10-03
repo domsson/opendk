@@ -83,6 +83,9 @@ namespace OpenDK
 
 		TextureBufferObject tboCubes;
 
+		TextureBufferObject tboColumns;
+		GLshort columnsTBOData[8*2048]; // 16384
+
 		TextureBufferObject tboLight;
 		GLfloat lightTBOData[65025];
 
@@ -96,6 +99,7 @@ namespace OpenDK
 		glm::vec3 camPosBefore;
 
 		void updateLight();
+		void renderBlock(const VertexArrayObject& vao, int slabX, int slabZ);
 		void renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column = -1);
 		void renderCube(const VertexArrayObject& vao, int x, int z, int cube);
 		float getLightLevelAt(int x, int z, int side) const;

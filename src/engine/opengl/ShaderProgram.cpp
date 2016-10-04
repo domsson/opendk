@@ -5,6 +5,10 @@ namespace OpenDK
 	ShaderProgram::ShaderProgram()
 	: id(0)
 	{
+	}
+
+	void ShaderProgram::init()
+	{
 		generateId();
 	}
 

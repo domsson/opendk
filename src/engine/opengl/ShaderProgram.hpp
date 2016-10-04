@@ -22,6 +22,13 @@ namespace OpenDK
 		 */
 		ShaderProgram();
 
+		// Has to be called after construction and before anything
+		// else. But don't put it in the constructor, that will
+		// have us end up with a segfault.
+		// TODO - maybe change the other methods so that they will
+		// make sure that the shader has been initialized...
+		void init();
+
 		/**
 		 * Reads and creates a shader from the given source file, then adds
 		 * that Shader to this ShaderProgram. Once all Shaders have been added

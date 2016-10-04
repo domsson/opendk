@@ -57,7 +57,6 @@ namespace OpenDK
 
 		ShaderProgram sp;
 		Texture tex;
-		//CubeGeometry* cube;
 		CubeGeometry cube;
 
 		SlabFile slb;
@@ -90,7 +89,6 @@ namespace OpenDK
 
 		void updateLight();
 		void renderBlock(const VertexArrayObject& vao, int slabX, int slabZ);
-		void renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column = -1);
 		float getLightLevelAt(int x, int z, int side) const;
 		void bakeLight(const Light& l);
 		bool bresenham(int x1, int y1, int const x2, int const y2, int lightHeight);

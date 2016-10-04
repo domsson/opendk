@@ -93,7 +93,6 @@ namespace OpenDK
 		//tex.unbind();
 
 		// INIT CUBE GEOMETRY
-		//cube = new CubeGeometry();
 		cube.create();
 
 		// CAMERA INIT
@@ -402,45 +401,6 @@ namespace OpenDK
 		}
 
 		vao.unbind();
-	}
-
-	void MapRenderer::renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column)
-	{
-		if (column == -1)
-		{
-			column = dat.getColumnIndex(tileX, tileZ, subtileX, subtileZ);
-		}
-		int x = tileX * 3 + subtileX;
-		int z = tileZ * 3 + subtileZ;
-		glm::mat4 columnMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)z));
-
-		// mat4[col][row]
-		columnMatrix[0][0] = (int)clm.getBaseBlockType(column);
-		columnMatrix[0][1] = clm.getCubeType(column, 0);
-		columnMatrix[0][2] = clm.getCubeType(column, 1);
-		columnMatrix[1][0] = clm.getCubeType(column, 2);
-		columnMatrix[1][1] = clm.getCubeType(column, 3);
-		columnMatrix[1][2] = clm.getCubeType(column, 4);
-		columnMatrix[2][0] = clm.getCubeType(column, 5);
-		columnMatrix[2][1] = clm.getCubeType(column, 6);
-		columnMatrix[2][2] = clm.getCubeType(column, 7);
-
-		// LIGHT LEVELS!
-		columnMatrix[0][3] = getLightLevelAt(x, z, 0);
-		columnMatrix[1][3] = getLightLevelAt(x, z, 1);
-		columnMatrix[2][3] = getLightLevelAt(x, z, 2);
-		columnMatrix[3][3] = getLightLevelAt(x, z, 3);
-
-		glUniformMatrix4fv(sp.getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
-
-		if (vao.hasIBO())
-		{
-			glDrawElementsInstanced(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0, 9);
-		}
-		else // We *know* all cubes have an IBO, but better be safe than sorry
-		{
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 9);
-		}
 	}
 
 	void MapRenderer::renderBlock(const VertexArrayObject& vao, int slabX, int slabZ)

@@ -20,15 +20,11 @@
 #include "CubeGeometry.hpp"
 #include "Camera.hpp"
 
-//#include "../level/SlabFile.hpp"
 #include "../level/CubeDataFile.hpp"
 #include "../level/ColumnFile.hpp"
-//#include "../level/OwnerFile.hpp"
 #include "../level/ColumnFile.hpp"
 #include "../level/ColumnDataFile.hpp"
-//#include "../level/ThingFile.hpp"
 #include "../level/CubeSide.hpp"
-//#include "../level/Light.hpp"
 
 namespace OpenDK
 {
@@ -59,8 +55,6 @@ namespace OpenDK
 		Texture* tex;
 		CubeGeometry* cube;
 
-		//SlabFile slb;
-		//OwnerFile own;
 		ColumnFile clm;
 		ColumnDataFile dat;
 		CubeDataFile cbd;

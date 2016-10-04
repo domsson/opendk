@@ -109,14 +109,17 @@ namespace OpenDK
 					{
 						mapRenderer.debugCamCoords();
 					}
+					/*
 					if (event.key.code == sf::Keyboard::F)
 					{
 						mapRenderer.debugCol();
 					}
+					*/
 					if (event.key.code == sf::Keyboard::Q)
 					{
 						mapRenderer.debugLight();
 					}
+					/*
 					if (event.key.code == sf::Keyboard::N)
 					{
 						mapRenderer.prevCol();
@@ -129,6 +132,7 @@ namespace OpenDK
 					{
 						mapRenderer.switchMode();
 					}
+					*/
 				}
 			}
 

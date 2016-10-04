@@ -50,18 +50,13 @@ namespace OpenDK
 		void rotateCam(float rotX, float rotY, float rotZ);
 		void zoomCam(float zoomChange);
 		void debugCamCoords() const;
-		void nextCol();
-		void prevCol();
 		void debugDAT() const;
-		void debugCol() const;
 		void debugLight() const;
-		void switchMode();
 
 	private:
 
-		ShaderProgram* sp;
-		ShaderProgram* sp2;
-		Texture* tex;
+		ShaderProgram sp;
+		Texture tex;
 		CubeGeometry* cube;
 
 		SlabFile slb;
@@ -71,15 +66,9 @@ namespace OpenDK
 		CubeDataFile cbd;
 		ThingFile tng;
 
-		std::int16_t col;
-
-		GLuint tboTex;
-
 		sf::Clock clock;
 
 		Camera camera;
-
-		bool singleColMode;
 
 		TextureBufferObject tboCubes;
 
@@ -101,7 +90,6 @@ namespace OpenDK
 		void updateLight();
 		void renderBlock(const VertexArrayObject& vao, int slabX, int slabZ);
 		void renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column = -1);
-		void renderCube(const VertexArrayObject& vao, int x, int z, int cube);
 		float getLightLevelAt(int x, int z, int side) const;
 		void bakeLight(const Light& l);
 		bool bresenham(int x1, int y1, int const x2, int const y2, int lightHeight);

@@ -4,17 +4,13 @@ namespace OpenDK
 {
 
 	MapRenderer::MapRenderer()
-	: sp(nullptr), sp2(nullptr), tex(nullptr), cube(nullptr),
-	  col(488), singleColMode(false)
+	: cube(nullptr)
 	{
 	}
 
 	MapRenderer::~MapRenderer()
 	{
-		tex->free();
-		delete sp;
-		delete sp2;
-		delete tex;
+		tex.free();
 		delete cube;
 	}
 
@@ -79,34 +75,24 @@ namespace OpenDK
 
 	void MapRenderer::init()
 	{
-		// INIT CUBE SHADER
-		sp2 = new ShaderProgram();
-		sp2->addShader("./bin/shaders/cube.vert", GL_VERTEX_SHADER);
-		sp2->addShader("./bin/shaders/cube.frag", GL_FRAGMENT_SHADER);
-		sp2->bindAttribute(ShaderAttribute::POSITION, "in_Position");
-		sp2->bindAttribute(ShaderAttribute::COLOR, "in_Color");
-		sp2->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
-		sp2->bindAttribute(ShaderAttribute::NORMALS, "in_Normal");
-		sp2->link();
-
 		// INIT COLUMN SHADER
-		sp = new ShaderProgram();
-		sp->addShader("./bin/shaders/block.vert", GL_VERTEX_SHADER);
-		sp->addShader("./bin/shaders/block.frag", GL_FRAGMENT_SHADER);
-		sp->bindAttribute(ShaderAttribute::POSITION, "in_Position");
-		sp->bindAttribute(ShaderAttribute::COLOR, "in_Color");
-		sp->bindAttribute(ShaderAttribute::TEXTURE, "in_Unwrap");
-		sp->bindAttribute(ShaderAttribute::NORMALS, "in_Normal");
-		sp->link();
-		sp->use();
+		sp.init();
+		sp.addShader("./bin/shaders/block.vert", GL_VERTEX_SHADER);
+		sp.addShader("./bin/shaders/block.frag", GL_FRAGMENT_SHADER);
+		sp.bindAttribute(ShaderAttribute::POSITION, "in_Position");
+		sp.bindAttribute(ShaderAttribute::COLOR,    "in_Color");
+		sp.bindAttribute(ShaderAttribute::TEXTURE,  "in_Unwrap");
+		sp.bindAttribute(ShaderAttribute::NORMALS,  "in_Normal");
+		sp.link();
+		sp.use();
 
 		// INIT CUBE SPRITE SHEET
-		tex = new Texture();
-		tex->loadAtlas("./bin/textures/block0.bmp", 32, 32);
-		glActiveTexture(GL_TEXTURE0);
-		tex->bind();
-		glUniform1i(sp->getUniformLocation("atlas"), 0);
-		tex->unbind();
+		tex.loadAtlas("./bin/textures/block0.bmp", 32, 32);
+		//glActiveTexture(GL_TEXTURE0);
+		//tex.bind();
+		glUniform1i(sp.getUniformLocation("atlas"), 0);
+		//glUniform1i(sp->getUniformLocation("atlas"), 0);
+		//tex.unbind();
 
 		// INIT CUBE GEOMETRY
 		cube = new CubeGeometry();
@@ -199,7 +185,7 @@ namespace OpenDK
 
 		tboCubes.setDrawType(GL_STATIC_DRAW);
 		tboCubes.setData(cubesTBOData, sizeof(cubesTBOData));
-		glUniform1i(sp->getUniformLocation("cubes"), 1);
+		glUniform1i(sp.getUniformLocation("cubes"), 1);
 
 		//
 		// LIGHT MAP -> BUFFER TEXTURE -> GPU (YOU BETTER HAVE SOME VRAM)
@@ -207,7 +193,7 @@ namespace OpenDK
 		//
 		tboLight.setDrawType(GL_STREAM_DRAW);
 		tboLight.setData(lightTBOData, sizeof(lightTBOData));
-		glUniform1i(sp->getUniformLocation("light"), 2);
+		glUniform1i(sp.getUniformLocation("light"), 2);
 
 		//
 		// VISIBILITY MAP -> BUFFER TEXTURE -> GPU (YES! WE EAT MORE VRAM)
@@ -237,7 +223,7 @@ namespace OpenDK
 
 		tboVisibility.setDrawType(GL_STREAM_DRAW);
 		tboVisibility.setData(visibilityTBOData, sizeof(visibilityTBOData));
-		glUniform1i(sp->getUniformLocation("visibility"), 3);
+		glUniform1i(sp.getUniformLocation("visibility"), 3);
 
 		//
 		// COLUMN MAP -> BUFFER TEX -> GPU (OOOOOH BOY)
@@ -254,34 +240,8 @@ namespace OpenDK
 
 		tboColumns.setDrawType(GL_STATIC_DRAW);
 		tboColumns.setData(columnsTBOData, sizeof(columnsTBOData));
-		glUniform1i(sp->getUniformLocation("columns"), 4);
+		glUniform1i(sp.getUniformLocation("columns"), 4);
 
-	}
-
-	void MapRenderer::nextCol()
-	{
-		++col;
-		if (col > 2047) { col = 2047; }
-		std::cout << "col=" << std::setw(4) << col;
-
-		if (clm.columnIsPermanent(col))
-		{
-			std::cout << " (perm)";
-		}
-		std::cout << " (" << clm.getColumnUses(col) << " uses)" << std::endl;
-	}
-
-	void MapRenderer::prevCol()
-	{
-		--col;
-		if (col < 0) { col = 0; }
-		std::cout << "col=" << std::setw(4) << col;
-
-		if (clm.columnIsPermanent(col))
-		{
-			std::cout << " (perm)";
-		}
-		std::cout << " (" << clm.getColumnUses(col) << " uses)" << std::endl;
 	}
 
 	void MapRenderer::debugDAT() const
@@ -302,41 +262,6 @@ namespace OpenDK
 				}
 			}
 		}
-	}
-
-	void MapRenderer::debugCol() const
-	{
-		std::cout << "COLUMN INFO\n";
-		std::cout << "height: " << (int)clm.getColumnHeight(col) << std::endl;
-		std::cout << "base block: " << (int)clm.getBaseBlockType(col) << std::endl;
-
-		for (int h = 0; h < 8; ++h)
-		{
-			std::cout << "cube " << h << ": ";
-			std::int16_t cubeIndex = clm.getCubeType(col, h);
-			std::cout << std::setw(3) << cubeIndex << ":";
-			std::cout << " T=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_TOP);
-			std::cout << " B=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BOTTOM);
-			std::cout << " F=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_FRONT);
-			std::cout << " R=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_RIGHT);
-			std::cout << " B=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_BACK);
-			std::cout << " L=" << std::setw(3) << cbd.getCubeSprite(cubeIndex, CubeSide::CUBE_LEFT);
-			std::cout << std::endl;
-		}
-	}
-
-	void MapRenderer::switchMode()
-	{
-		if (singleColMode)
-		{
-			camera.setPosition(camPosBefore.x, camPosBefore.y, camPosBefore.z);
-		}
-		else
-		{
-			camPosBefore = camera.getPosition();
-			camera.setPosition(0.0f, 0.0f, 0.0f);
-		}
-		singleColMode = !singleColMode;
 	}
 
 	void MapRenderer::bakeLight(const Light& l)
@@ -401,12 +326,6 @@ namespace OpenDK
 				int slabZ = z / 3;
 				int slabX = x / 3;
 
-				if (singleColMode)
-				{
-					lightTBOData[z*255+x] = 1.0f;
-					continue;
-				}
-
 				if (visibilityTBOData[slabZ * 85 + slabX])
 				{
 					lightTBOData[z*255+x] = 0.3f; // bit of ambient light
@@ -418,16 +337,13 @@ namespace OpenDK
 			}
 		}
 
-		if (!singleColMode)
-		{
-			// Every WIP source code needs at least one 'wurst' variable
-			float wurst = 500.0f;
+		// Every WIP source code needs at least one 'wurst' variable
+		float wurst = 500.0f;
 
-			for (size_t i = 0; i < lights.size(); ++i)
-			{
-				lights[i].setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
-				bakeLight(lights[i]);
-			}
+		for (size_t i = 0; i < lights.size(); ++i)
+		{
+			lights[i].setIntensity(1.8f + ((std::rand() % 100) / wurst) - 0.5);
+			bakeLight(lights[i]);
 		}
 
 		bakeLight(light);
@@ -438,10 +354,10 @@ namespace OpenDK
 	{
 		// scale, rotate, translate (note: glm operations should be in reverse!)
 
-		sp->use();
+		sp.use();
 
 		glActiveTexture(GL_TEXTURE0);
-		tex->bind();
+		tex.bind();
 
 		glActiveTexture(GL_TEXTURE1);
 		tboCubes.bindTexture();
@@ -455,80 +371,38 @@ namespace OpenDK
 		glActiveTexture(GL_TEXTURE4);
 		tboColumns.bindTexture();
 
-		glUniformMatrix4fv(sp->getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
-		glUniformMatrix4fv(sp->getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
+		glUniformMatrix4fv(sp.getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
+		glUniformMatrix4fv(sp.getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
 
 		VertexArrayObject vao = cube->getVAO();
 		vao.bind();
 
-		if (singleColMode)
+
+		int camX = camera.getPosition().x * 2 / 3;
+		int camZ = camera.getPosition().z * 2 / 3;
+
+		int xStart = camX - 15;
+		xStart = xStart < 0 ? 0 : xStart;
+
+		int zStart = camZ - 15;
+		zStart = zStart < 0 ? 0 : zStart;
+
+		int xEnd = camX + 15;
+		xEnd = xEnd > 85 ? 85 : xEnd;
+
+		int zEnd = camZ + 15;
+		zEnd = zEnd > 85 ? 85 : zEnd;
+
+
+		for (int z = zStart; z < zEnd; ++z)
 		{
-			for (int h = 0; h < 8; ++h)
+			for (int x = xStart; x < xEnd; ++x)
 			{
-				if (!clm.cubeIsSolid(col, h))
-				{
-					continue;
-				}
-				std::int16_t cubeType = clm.getCubeType(col, h);
-				if (cubeType == 0)
-				{
-					continue;
-				}
-				renderColumn(vao, 0, 0, 0, 0, col);
-			}
-		}
-		else
-		{
-			int camX = camera.getPosition().x * 2 / 3;
-			int camZ = camera.getPosition().z * 2 / 3;
-
-			int xStart = camX - 15;
-			xStart = xStart < 0 ? 0 : xStart;
-
-			int zStart = camZ - 15;
-			zStart = zStart < 0 ? 0 : zStart;
-
-			int xEnd = camX + 15;
-			xEnd = xEnd > 85 ? 85 : xEnd;
-
-			int zEnd = camZ + 15;
-			zEnd = zEnd > 85 ? 85 : zEnd;
-
-
-			for (int z = zStart; z < zEnd; ++z)
-			{
-				for (int x = xStart; x < xEnd; ++x)
-				{
-					renderBlock(vao, x, z);
-					/*
-					for (int r = 0; r < 3; ++r)
-					{
-						for (int c = 0; c < 3; ++c)
-						{
-							renderColumn(vao, x, z, c, r);
-						}
-					}
-					*/
-				}
+				renderBlock(vao, x, z);
 			}
 		}
 
 		vao.unbind();
-	}
-
-	void MapRenderer::renderCube(const VertexArrayObject& vao, int x, int z, int cube)
-	{
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(), glm::vec3((float)x, 0.0f, (float)z));
-		glUniformMatrix4fv(sp2->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-
-		if (vao.hasIBO())
-		{
-			glDrawElements(GL_TRIANGLES, vao.getIBO()->getSize(), GL_UNSIGNED_INT, 0);
-		}
-		else // We *know* all cubes have an IBO, but better be safe than sorry
-		{
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-		}
 	}
 
 	void MapRenderer::renderColumn(const VertexArrayObject& vao, int tileX, int tileZ, int subtileX, int subtileZ, int column)
@@ -558,7 +432,7 @@ namespace OpenDK
 		columnMatrix[2][3] = getLightLevelAt(x, z, 2);
 		columnMatrix[3][3] = getLightLevelAt(x, z, 3);
 
-		glUniformMatrix4fv(sp->getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
+		glUniformMatrix4fv(sp.getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
 
 		if (vao.hasIBO())
 		{
@@ -588,7 +462,7 @@ namespace OpenDK
 		columnMatrix[2][1] = dat.getColumnIndex(slabX, slabZ, 2, 1);
 		columnMatrix[2][2] = dat.getColumnIndex(slabX, slabZ, 2, 2);
 
-		glUniformMatrix4fv(sp->getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
+		glUniformMatrix4fv(sp.getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
 
 		if (vao.hasIBO())
 		{

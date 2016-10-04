@@ -57,7 +57,8 @@ namespace OpenDK
 
 		ShaderProgram sp;
 		Texture tex;
-		CubeGeometry* cube;
+		//CubeGeometry* cube;
+		CubeGeometry cube;
 
 		SlabFile slb;
 		OwnerFile own;

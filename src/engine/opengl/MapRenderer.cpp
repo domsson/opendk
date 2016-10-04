@@ -4,14 +4,12 @@ namespace OpenDK
 {
 
 	MapRenderer::MapRenderer()
-	: cube(nullptr)
 	{
 	}
 
 	MapRenderer::~MapRenderer()
 	{
 		tex.free();
-		delete cube;
 	}
 
 	void MapRenderer::moveLight(float offsetX, float offsetY, float offsetZ)
@@ -95,7 +93,8 @@ namespace OpenDK
 		//tex.unbind();
 
 		// INIT CUBE GEOMETRY
-		cube = new CubeGeometry();
+		//cube = new CubeGeometry();
+		cube.create();
 
 		// CAMERA INIT
 		camera.setPosition(65.0f, 0.0f, 63.0f);
@@ -374,7 +373,7 @@ namespace OpenDK
 		glUniformMatrix4fv(sp.getUniformLocation("viewMatrix"),       1, GL_FALSE, camera.getViewMatrixPtr());
 		glUniformMatrix4fv(sp.getUniformLocation("projectionMatrix"), 1, GL_FALSE, camera.getProjectionMatrixPtr());
 
-		VertexArrayObject vao = cube->getVAO();
+		VertexArrayObject vao = cube.getVAO();
 		vao.bind();
 
 

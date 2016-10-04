@@ -5,7 +5,7 @@ namespace OpenDK
 
 	CubeGeometry::CubeGeometry()
 	{
-		create();
+		//create(); // prone to segfault if this class is used as member
 	}
 
 	void CubeGeometry::create()
@@ -143,6 +143,7 @@ namespace OpenDK
 
 		ibo.setData(indices, sizeof(indices));
 
+		vao.init();
 		vao.addVBO(vboPos, ShaderAttribute::POSITION);
 		vao.addVBO(vboCol, ShaderAttribute::COLOR);
 		vao.addVBO(vboUvw, ShaderAttribute::TEXTURE);

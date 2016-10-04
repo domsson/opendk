@@ -6,6 +6,11 @@ namespace OpenDK
 	VertexArrayObject::VertexArrayObject()
 	: id(0)
 	{
+		// generateId(); // will make for a nice segfault
+	}
+
+	void VertexArrayObject::init()
+	{
 		generateId();
 	}
 

@@ -18,6 +18,9 @@ namespace OpenDK
 
 		VertexArrayObject();
 
+		// TODO it should not be necessary to call this explicitly...
+		void init();
+
 		/**
 		 * Add a VBO to this VAO and enable it in the OpenGL state machine.
 		 * @param vbo The VBO that you want to add to this VAO

@@ -292,7 +292,7 @@ void main()
 
 	// Sprite (Which texture to use)
 	int column = getColumnFromInstanceID();
-	int sprite = getCubeIndexFromInstanceID() ? getBaseSpriteFromColumnBuffer(column) : getSpriteFromTexBuffer(getCubeFromColumnBuffer(column));
+	int sprite = getCubeIndexFromInstanceID()==0 ? getBaseSpriteFromColumnBuffer(column) : getSpriteFromTexBuffer(getCubeFromColumnBuffer(column));
 
 	if (sprite == 544) { sprite =  40; } // dirt near water
 	if (sprite == 545) { sprite =  48; } // water

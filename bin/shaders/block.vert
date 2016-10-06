@@ -11,10 +11,8 @@ uniform isamplerBuffer visibility;
 uniform isamplerBuffer columns;
 uniform mat4 columnInfo;
 
-uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-uniform mat4 modelViewProjectionMatrix;
 
 out vec3 pass_Color;
 out vec2 pass_Unwrap;
@@ -68,12 +66,154 @@ int getSpriteFromTexBuffer(int cube)
 
 float getLightLevelFromBuffer(int x, int z)
 {
+	float c = 0.0f; // current subtile (center)
+	float f = 0.0f; // subtile in front of current
+	float s = 0.0f; // subtile to side of current
+	float d = 0.0f; // subtile diagonal to current
+	float p = 0.333333f; // multiply the sum by this at the end
+
+	switch (gl_VertexID)
+	{
+		case  0:	// TOP - front left
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  1:	// TOP - front right
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  2:	// TOP - back right
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  3:	// TOP - back left
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  4:	// BOTTOM - back left
+			f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  5:	// BOTTOM - back right
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  6:	// BOTTOM - front right
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  7:	// BOTTOM - front left
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			c = texelFetch(light, z * 255 + x).r;
+			p = 0.25;
+			break;
+		case  8:	// FRONT - left
+		case 11:
+			// TODO check if these are fsd
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			s = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case  9:	// FRONT - right
+		case 10:
+			// TODO check if these are fsd
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 12:	// RIGHT - left
+		case 15:
+			// TODO check if these are fsd
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 13:	// RIGHT - right
+		case 14:
+			// TODO check if these are fsd
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 16:	// BACK - left
+		case 19:
+			f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 17:	// BACK - right
+		case 18:
+			f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 20:	// LEFT - left
+		case 23:
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+		case 21:	// LEFT - right
+		case 22:
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
+			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
+			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			c = 0.0f;
+			p = 0.333333f;
+			break;
+
+	}
+
+	return (c + f + s + d) * p;
+}
+
+/*
+float getLightLevelFromBuffer(int x, int z)
+{
 	//float c = -0.3f; // current subtile (center)
 	float c = 0.0f; // current subtile (center)
 	float f = 0.0f; // subtile in front of current
 	float s = 0.0f; // subtile to side of current
 	float d = 0.0f; // subtile diagonal to current
 	float p = 0.333333f; // multiply the sum by this at the end
+
 
 	if (gl_VertexID < 8) // TOP OR BOTTOM
 	{
@@ -189,6 +329,7 @@ float getLightLevelFromBuffer(int x, int z)
 
 	return (c + f + s + d) * p;
 }
+*/
 
 // http://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float rand(vec2 co){
@@ -268,28 +409,6 @@ int getVisibilityFromBuffer(int x, int z)
 
 void main()
 {
-	// Position (Geometry)
-	float x = columnInfo[3][0] + getColumnPositionFromInstanceID().x;
-	float z = columnInfo[3][2] + getColumnPositionFromInstanceID().y;
-	float y = columnInfo[3][1] + getCubeIndexFromInstanceID();
-
-    vec4 cubePos = vec4(x, y, z, 1.0f);
-    gl_Position = projectionMatrix * viewMatrix * skewPosition(cubePos + vec4(in_Position, 1.0f));
-
-	// Color (Light level)
-    float lightLevel = getLightLevelFromBuffer(int(cubePos.x), int(cubePos.z));
-    //lightLevel = 1.0f;
-	/*
-    if (getVisibilityFromBuffer(int(cubePos.x), int(cubePos.z)) == 0)
-    {
-		lightLevel = 0.0f;
-	}
-	*/
-	pass_Color = vec3(lightLevel, lightLevel, lightLevel);
-
-	// Unwrap (Texture coordinates)
-	pass_Unwrap = in_Unwrap;
-
 	// Sprite (Which texture to use)
 	int column = getColumnFromInstanceID();
 	int sprite = getCubeIndexFromInstanceID()==0 ? getBaseSpriteFromColumnBuffer(column) : getSpriteFromTexBuffer(getCubeFromColumnBuffer(column));
@@ -306,5 +425,33 @@ void main()
 	if (sprite == 553) { sprite =  92; } // gold near lava 1
 	if (sprite == 554) { sprite =  92; } // gold near lava 1
 	if (sprite == 581) { sprite = 195; } // center top of portal
+
 	pass_Sprite = sprite;
+
+
+	// Position (Geometry)
+	vec4 cubePos = vec4(
+		columnInfo[3][0] + getColumnPositionFromInstanceID().x,
+		columnInfo[3][1] + getCubeIndexFromInstanceID(),
+		columnInfo[3][2] + getColumnPositionFromInstanceID().y,
+		1.0f
+	);
+
+	gl_Position = projectionMatrix * viewMatrix * skewPosition(cubePos + vec4(in_Position, 1.0f));
+
+	// Color (Light level)
+	float lightLevel = getLightLevelFromBuffer(int(cubePos.x), int(cubePos.z));
+	//float lightLevel = 0.7f;
+	/*
+	if (getVisibilityFromBuffer(int(cubePos.x), int(cubePos.z)) == 0)
+	{
+		lightLevel = 0.0f;
+	}
+	*/
+	pass_Color = vec3(lightLevel, lightLevel, lightLevel);
+
+	// Unwrap (Texture coordinates)
+	pass_Unwrap = in_Unwrap;
+
+
 }

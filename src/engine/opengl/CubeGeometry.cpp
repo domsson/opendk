@@ -11,9 +11,9 @@ namespace OpenDK
 	void CubeGeometry::create()
 	{
 		VertexBufferObject vboPos;
-		VertexBufferObject vboCol;
+		//VertexBufferObject vboCol;
 		VertexBufferObject vboUvw;
-		VertexBufferObject vboNrm;
+		//VertexBufferObject vboNrm;
 		IndexBufferObject ibo;
 
 		GLfloat vertices[] = {
@@ -54,7 +54,7 @@ namespace OpenDK
 			-0.5f,  0.5f, -0.5f		// 15 (=10)
 		};
 
-
+		/*
 		GLfloat normals[] = {
 			 0.0f,  1.0f,  0.0f, // up
 			 0.0f,  1.0f,  0.0f, // up
@@ -86,13 +86,16 @@ namespace OpenDK
 			-1.0f,  0.0f,  0.0f, // left
 			-1.0f,  0.0f,  0.0f // left
 		};
+		*/
 
+		/*
 		GLubyte colors[sizeof(vertices)];
 
 		for (size_t i = 0; i < sizeof(vertices); ++i)
 		{
 			colors[i] = 255;
 		}
+		*/
 
 		GLfloat unwrap[] = {
 			0.0f, 1.0f,	// 0: bottom left front
@@ -136,18 +139,18 @@ namespace OpenDK
 		};
 
 		vboPos.setData(vertices, sizeof(vertices));
-		vboCol.setData(colors, sizeof(colors));
+		//vboCol.setData(colors, sizeof(colors));
 		vboUvw.setData(unwrap, sizeof(unwrap));
 		vboUvw.setChunkSize(2);
-		vboNrm.setData(normals, sizeof(normals));
+		//vboNrm.setData(normals, sizeof(normals));
 
 		ibo.setData(indices, sizeof(indices));
 
 		vao.init();
 		vao.addVBO(vboPos, ShaderAttribute::POSITION);
-		vao.addVBO(vboCol, ShaderAttribute::COLOR);
+		//vao.addVBO(vboCol, ShaderAttribute::COLOR, true);
 		vao.addVBO(vboUvw, ShaderAttribute::TEXTURE);
-		vao.addVBO(vboNrm, ShaderAttribute::NORMALS);
+		//vao.addVBO(vboNrm, ShaderAttribute::NORMALS);
 		vao.setIBO(ibo);
 	}
 

@@ -26,7 +26,7 @@ namespace OpenDK
 		 * @param vbo The VBO that you want to add to this VAO
 		 * @param shaderAttribute The ShaderAttribute that the VBO belongs to
 		 */
-		void addVBO(VertexBufferObject vbo, ShaderAttribute shaderAttribute);
+		void addVBO(VertexBufferObject vbo, ShaderAttribute shaderAttribute, bool normalize = false);
 
 		/**
 		 * Get a VBO that has been previously added to this VAO.

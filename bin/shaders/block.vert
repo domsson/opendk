@@ -1,9 +1,9 @@
 #version 140
 
 in vec3 in_Position;
-in vec3 in_Color;
+//in vec3 in_Color;
 in vec2 in_Unwrap;
-in vec3 in_Normal;
+//in vec3 in_Normal;
 
 uniform isamplerBuffer cubes;
 uniform samplerBuffer light;
@@ -17,6 +17,22 @@ uniform mat4 projectionMatrix;
 out vec3 pass_Color;
 out vec2 pass_Unwrap;
 flat out int pass_Sprite; // `flat` for 'no interpolation'
+
+/*
+vec3 VERTEX_ID_TO_CUBE_SIDE[8] = vec3[](
+	vec3( 0.0, 0.0, 0.0 ),
+	vec3( 0.5, 0.5, 0.5 )
+);
+*/
+
+int VERTEX_ID_TO_CUBE_SIDE[6] = int[](
+	4, // TOP
+	5, // BOTTOM
+	2, // FRONT
+	1, // RIGHT
+	0, // BACK
+	3  // LEFT
+);
 
 /*
 	// CUBE.DAT face order:
@@ -36,33 +52,63 @@ flat out int pass_Sprite; // `flat` for 'no interpolation'
 	LEFT
 */
 
+ivec4 LIGHT_LEVEL_LOOKUPS[24] = ivec4[](
+	ivec4(7, 3, 6, 1), //  0 (TOP - front left)
+	ivec4(7, 5, 8, 1), //  1 (TOP - front right)
+	ivec4(5, 1, 2, 1), //  2 (TOP - back right)
+	ivec4(3, 1, 0, 1), //  3 (TOP - back left)
+	ivec4(1, 3, 0, 1), //  4 (BOTTOM - back left)
+	ivec4(5, 1, 2, 1), //  5 (BOTTOM - back right)
+	ivec4(7, 5, 8, 1), //  6 (BOTTOM - front right)
+	ivec4(3, 7, 6, 1), //  7 (BOTTOM - front left)
+	ivec4(3, 6, 7, 0), //  8 (FRONT - left)
+	ivec4(5, 7, 8, 0), //  9 (FRONT - right)
+	ivec4(5, 7, 8, 0), // 10 (FRONT - right)
+	ivec4(3, 6, 7, 0), // 11 (FRONT - left)
+	ivec4(5, 7, 8, 0), // 12 (RIGHT - left)
+	ivec4(5, 1, 2, 0), // 13 (RIGHT - right)
+	ivec4(5, 1, 2, 0), // 14 (RIGHT - right)
+	ivec4(5, 7, 8, 0), // 15 (RIGHT - left)
+	ivec4(1, 5, 2, 0), // 16 (BACK  - left)
+	ivec4(1, 3, 0, 0), // 17 (BACK  - right)
+	ivec4(1, 3, 0, 0), // 18 (BACK  - right)
+	ivec4(1, 5, 2, 0), // 19 (BACK  - left)
+	ivec4(3, 1, 0, 0), // 20 (LEFT  - left)
+	ivec4(3, 7, 6, 0), // 21 (LEFT  - right)
+	ivec4(3, 7, 6, 0), // 22 (LEFT  - right)
+	ivec4(3, 1, 0, 0)  // 23 (LEFT  - left)
+);
+
 int getSpriteFromTexBuffer(int cube)
 {
-	if (gl_VertexID < 4)	// TOP
-	{
-		return texelFetch(cubes, cube * 6 + 4).r;
-	}
-	if (gl_VertexID < 8)	// BOTTOM
-	{
-		return texelFetch(cubes, cube * 6 + 5).r;
-	}
-	if (gl_VertexID < 12)	// FRONT
-	{
-		return texelFetch(cubes, cube * 6 + 2).r;
-	}
-	if (gl_VertexID < 16)	// RIGHT
-	{
-		return texelFetch(cubes, cube * 6 + 1).r;
-	}
-	if (gl_VertexID < 20)	// BACK
-	{
-		return texelFetch(cubes, cube * 6 + 0).r;
-	}
-	if (gl_VertexID < 24)	// LEFT
-	{
-		return texelFetch(cubes, cube * 6 + 3).r;
-	}
+	int cubeSide = VERTEX_ID_TO_CUBE_SIDE[int(gl_VertexID / 4)];
+	return texelFetch(cubes, cube * 6 + cubeSide).r;
 }
+
+/*
+float getLightLevelFromBuffer(int x, int z)
+{
+	int texels[9] = int[](
+		(z - 1) * 255 + (x - 1), // 0
+		(z - 1) * 255 + (x + 0), // 1
+		(z - 1) * 255 + (x + 1), // 2
+		(z + 0) * 255 + (x - 1), // 3
+		(z + 0) * 255 + (x + 0), // 4
+		(z + 0) * 255 + (x + 1), // 5
+		(z + 1) * 255 + (x - 1), // 6
+		(z + 1) * 255 + (x + 0), // 7
+		(z + 1) * 255 + (x + 1)  // 8
+	);
+
+	float f = texelFetch(light, texels[LIGHT_LEVEL_LOOKUPS[gl_VertexID][0]]).r;
+	float s = texelFetch(light, texels[LIGHT_LEVEL_LOOKUPS[gl_VertexID][1]]).r;
+	float d = texelFetch(light, texels[LIGHT_LEVEL_LOOKUPS[gl_VertexID][2]]).r;
+	float c = LIGHT_LEVEL_LOOKUPS[gl_VertexID][3] * texelFetch(light, texels[4]).r;
+	float p = 3.0f + LIGHT_LEVEL_LOOKUPS[gl_VertexID][3];
+
+	return (c + f + s + d) / p;
+}
+*/
 
 float getLightLevelFromBuffer(int x, int z)
 {
@@ -75,58 +121,58 @@ float getLightLevelFromBuffer(int x, int z)
 	switch (gl_VertexID)
 	{
 		case  0:	// TOP - front left
-			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r; // 7
+			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r; // 3
+			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r; // 6
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  1:	// TOP - front right
-			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r; // 7
+			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r; // 5
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r; // 8
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  2:	// TOP - back right
-			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r; // 5
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r; // 1
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r; // 2
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  3:	// TOP - back left
-			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r; // 3
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r; // 1
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r; // 0
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  4:	// BOTTOM - back left
-			f = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r;
+			f = texelFetch(light, (z - 1) * 255 + (x + 0)).r; // 1
+			s = texelFetch(light, (z + 0) * 255 + (x - 1)).r; // 3
+			d = texelFetch(light, (z - 1) * 255 + (x - 1)).r; // 0
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  5:	// BOTTOM - back right
-			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r;
-			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r;
+			f = texelFetch(light, (z + 0) * 255 + (x + 1)).r; // 5
+			s = texelFetch(light, (z - 1) * 255 + (x + 0)).r; // 1
+			d = texelFetch(light, (z - 1) * 255 + (x + 1)).r; // 2
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  6:	// BOTTOM - front right
-			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r;
-			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r;
+			f = texelFetch(light, (z + 1) * 255 + (x + 0)).r; // 7
+			s = texelFetch(light, (z + 0) * 255 + (x + 1)).r; // 5
+			d = texelFetch(light, (z + 1) * 255 + (x + 1)).r; // 8
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
 		case  7:	// BOTTOM - front left
-			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r;
-			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r;
-			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r;
+			f = texelFetch(light, (z + 0) * 255 + (x - 1)).r; // 3
+			s = texelFetch(light, (z + 1) * 255 + (x + 0)).r; // 7
+			d = texelFetch(light, (z + 1) * 255 + (x - 1)).r; // 6
 			c = texelFetch(light, z * 255 + x).r;
 			p = 0.25;
 			break;
@@ -200,7 +246,6 @@ float getLightLevelFromBuffer(int x, int z)
 			break;
 
 	}
-
 	return (c + f + s + d) * p;
 }
 
@@ -376,6 +421,7 @@ int getBaseSpriteFromColumnBuffer(int column)
 
 int getColumnFromInstanceID()
 {
+	/*
 	if (gl_InstanceID < 9)  { return int(columnInfo[0][0]); }
 	if (gl_InstanceID < 18) { return int(columnInfo[0][1]); }
 	if (gl_InstanceID < 27) { return int(columnInfo[0][2]); }
@@ -385,10 +431,13 @@ int getColumnFromInstanceID()
 	if (gl_InstanceID < 63) { return int(columnInfo[2][0]); }
 	if (gl_InstanceID < 72) { return int(columnInfo[2][1]); }
 	if (gl_InstanceID < 81) { return int(columnInfo[2][2]); }
+	*/
+	return int(columnInfo[int(gl_InstanceID / 27)][(gl_InstanceID / 9) % 3]);
 }
 
 vec2 getColumnPositionFromInstanceID()
 {
+	/*
 	int column = int(gl_InstanceID / 9);
 	if (column == 0) { return vec2(0.0f, 0.0f); }
 	if (column == 1) { return vec2(0.0f, 1.0f); }
@@ -399,6 +448,8 @@ vec2 getColumnPositionFromInstanceID()
 	if (column == 6) { return vec2(2.0f, 0.0f); }
 	if (column == 7) { return vec2(2.0f, 1.0f); }
 	if (column == 8) { return vec2(2.0f, 2.0f); }
+	*/
+	return vec2(int(gl_InstanceID / 27), (gl_InstanceID / 9) % 3);
 }
 
 int getVisibilityFromBuffer(int x, int z)
@@ -448,7 +499,8 @@ void main()
 		lightLevel = 0.0f;
 	}
 	*/
-	pass_Color = vec3(lightLevel, lightLevel, lightLevel);
+	pass_Color = vec3(1.0 * lightLevel, 1.0 * lightLevel, 1.0 * lightLevel);
+	//pass_Color = vec3(lightLevel, lightLevel, lightLevel);
 
 	// Unwrap (Texture coordinates)
 	pass_Unwrap = in_Unwrap;

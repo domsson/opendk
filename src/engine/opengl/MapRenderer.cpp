@@ -78,9 +78,9 @@ namespace OpenDK
 		sp.addShader("./bin/shaders/block.vert", GL_VERTEX_SHADER);
 		sp.addShader("./bin/shaders/block.frag", GL_FRAGMENT_SHADER);
 		sp.bindAttribute(ShaderAttribute::POSITION, "in_Position");
-		sp.bindAttribute(ShaderAttribute::COLOR,    "in_Color");
+		//sp.bindAttribute(ShaderAttribute::COLOR,    "in_Color");
 		sp.bindAttribute(ShaderAttribute::TEXTURE,  "in_Unwrap");
-		sp.bindAttribute(ShaderAttribute::NORMALS,  "in_Normal");
+		//sp.bindAttribute(ShaderAttribute::NORMALS,  "in_Normal");
 		sp.link();
 		sp.use();
 
@@ -375,7 +375,6 @@ namespace OpenDK
 		VertexArrayObject vao = cube.getVAO();
 		vao.bind();
 
-
 		int camX = camera.getPosition().x * 2 / 3;
 		int camZ = camera.getPosition().z * 2 / 3;
 
@@ -390,7 +389,6 @@ namespace OpenDK
 
 		int zEnd = camZ + 15;
 		zEnd = zEnd > 85 ? 85 : zEnd;
-
 
 		for (int z = zStart; z < zEnd; ++z)
 		{
@@ -421,7 +419,7 @@ namespace OpenDK
 		columnMatrix[2][1] = dat.getColumnIndex(slabX, slabZ, 2, 1);
 		columnMatrix[2][2] = dat.getColumnIndex(slabX, slabZ, 2, 2);
 
-		glUniformMatrix4fv(sp.getUniformLocation("columnInfo"), 1, GL_FALSE, glm::value_ptr(columnMatrix));
+		glUniformMatrix4fv(sp.getUniformLocation("columnInfo"),  1, GL_FALSE, glm::value_ptr(columnMatrix));
 
 		if (vao.hasIBO())
 		{
